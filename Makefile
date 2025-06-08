@@ -1,3 +1,8 @@
 .PHONY: dev
 dev:
-	docker compose up -d
+	docker compose up --build -d
+
+
+.PHONY: format
+format:
+	docker exec repeater-backend uvx ruff format

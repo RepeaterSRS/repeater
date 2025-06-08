@@ -1,9 +1,13 @@
 services:
   backend:
     build: backend
+    container_name: repeater-backend
 
     ports:
       - "8000:8000"
+
+    volumes:
+      - ./backend/src:/app/src
 
     develop:
       watch:
