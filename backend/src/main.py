@@ -1,8 +1,5 @@
 from fastapi import FastAPI
+from src.api import auth
 
 app = FastAPI()
-
-
-@app.get("/ping")
-def ping():
-    return "Pong"
+app.include_router(auth.router)
