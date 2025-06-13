@@ -5,7 +5,7 @@ from uvicorn.importer import import_from_string
 
 APP_DIR = "."
 APP_STR = "src.main:app"
-OUT_PATH = "docs/openapi.yaml"
+OUT_PATH = "/tmp/openapi.yaml"
 
 
 if __name__ == "__main__":

@@ -16,3 +16,4 @@ test:
 .PHONY: export-openapi
 export-openapi:
 	docker exec repeater-backend python scripts/extract-openapi.py
+	docker cp repeater-backend:/tmp/openapi.yaml docs/openapi.yaml
