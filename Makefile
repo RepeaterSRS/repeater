@@ -11,3 +11,8 @@ format:
 .PHONY: test
 test:
 	docker exec repeater-backend uv run pytest
+
+
+.PHONY: export-openapi
+export-openapi:
+	docker exec repeater-backend python scripts/extract-openapi.py

@@ -9,6 +9,8 @@ services:
     volumes:
       - ./backend/src:/app/src
       - ./backend/tests:/app/tests
+      - ./backend/scripts:/app/scripts
+      - ./backend/docs:/app/docs
 
     develop:
       watch:
