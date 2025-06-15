@@ -1,4 +1,5 @@
 import bcrypt
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -16,6 +17,7 @@ def login():
 
 @router.post("/register", response_model=UserOut)
 def register(user_req: UserCreate, session: Session = Depends(get_db)):
+    # Always hash to prevent timing attack
     bytes = user_req.password.encode("utf-8")
     hashed_pw = bcrypt.hashpw(bytes, bcrypt.gensalt())
 
@@ -24,4 +26,5 @@ def register(user_req: UserCreate, session: Session = Depends(get_db)):
 
     user = User(email=user_req.email, password_hash=hashed_pw, role=UserRole.USER)
     user.save(session)
+    logging.info(f"Created user {user.email}")
     return user
