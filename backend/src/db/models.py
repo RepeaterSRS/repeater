@@ -29,6 +29,10 @@ class BaseMixin:
     def all(cls, db):
         return db.query(cls).all()
 
+    @classmethod
+    def filter_by(cls, db, **kwargs):
+        return db.query(cls).filter_by(**kwargs).all()
+
 
 class UserRole(StrEnum):
     GUEST = "guest"
