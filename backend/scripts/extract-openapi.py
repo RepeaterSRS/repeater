@@ -1,7 +1,7 @@
 import sys
+
 import yaml
 from uvicorn.importer import import_from_string
-
 
 APP_DIR = "."
 APP_STR = "src.main:app"
