@@ -13,8 +13,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/login")
-def login(user_req: UserLogin, session: Session = Depends(get_db)):
-    user = User.filter_by(session, email=user_req.email).first()
+def login(user_req: UserLogin, db_session: Session = Depends(get_db)):
+    user = User.filter_by(db_session, email=user_req.email).first()
     if not user:
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
@@ -35,13 +35,13 @@ def login(user_req: UserLogin, session: Session = Depends(get_db)):
 
 
 @router.post("/register", response_model=UserOut)
-def register(user_req: UserCreate, session: Session = Depends(get_db)):
-    if User.filter_by(session, email=user_req.email).first():
+def register(user_req: UserCreate, db_session: Session = Depends(get_db)):
+    if User.filter_by(db_session, email=user_req.email).first():
         raise HTTPException(status_code=400, detail="Email is in use")
 
     pw_bytes = user_req.password.encode("utf-8")
     pw_hashed = bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
     user = User(email=user_req.email, password_hash=pw_hashed, role=UserRole.USER)
-    user.save(session)
+    user.save(db_session)
     logging.info(f"Created user {user.email}")
     return user

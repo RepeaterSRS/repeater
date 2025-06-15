@@ -31,10 +31,5 @@ migrate-and-bootstrap:
 	docker exec repeater-backend python scripts/bootstrap.py
 
 
-.PHONY: activate-venv
-activate-venv:
-	source backend/.venv/bin/activate
-
-
 .PHONY: dev
 dev: reset-db build-and-start-local migrate-and-bootstrap
