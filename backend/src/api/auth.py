@@ -1,30 +1,47 @@
-import bcrypt
 import logging
+
+import bcrypt
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from src.auth.jwt import create_access_token
 from src.db import get_db
 from src.db.models import User, UserRole
-from src.schemas.user import UserCreate, UserOut
+from src.schemas.user import UserCreate, UserLogin, UserOut
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/login")
-def login():
-    raise HTTPException(status_code=501)
+def login(user_req: UserLogin, session: Session = Depends(get_db)):
+    user = User.filter_by(session, email=user_req.email).first()
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    pw_bytes = user_req.password.encode("utf-8")
+    pw_hashed = user.password_hash.encode("utf-8")
+    if not bcrypt.checkpw(pw_bytes, pw_hashed):
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    access_token = create_access_token(
+        {
+            "sub": str(user.id),
+            "email": user.email,
+            "role": user.role,
+        }
+    )
+    logging.info(f"User {user.email} logged in")
+    return {"access_token": access_token}
 
 
 @router.post("/register", response_model=UserOut)
 def register(user_req: UserCreate, session: Session = Depends(get_db)):
-    # Always hash to prevent timing attack
-    bytes = user_req.password.encode("utf-8")
-    hashed_pw = bcrypt.hashpw(bytes, bcrypt.gensalt())
-
-    if User.filter_by(session, email=user_req.email):
+    if User.filter_by(session, email=user_req.email).first():
         raise HTTPException(status_code=400, detail="Email is in use")
 
-    user = User(email=user_req.email, password_hash=hashed_pw, role=UserRole.USER)
+    pw_bytes = user_req.password.encode("utf-8")
+    pw_hashed = bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
+    user = User(email=user_req.email, password_hash=pw_hashed, role=UserRole.USER)
     user.save(session)
     logging.info(f"Created user {user.email}")
     return user

@@ -12,3 +12,8 @@ class UserOut(BaseModel):
     id: UUID
     email: EmailStr
     role: str
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str

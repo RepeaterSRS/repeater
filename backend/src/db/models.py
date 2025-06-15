@@ -31,7 +31,7 @@ class BaseMixin:
 
     @classmethod
     def filter_by(cls, db, **kwargs):
-        return db.query(cls).filter_by(**kwargs).all()
+        return db.query(cls).filter_by(**kwargs)
 
 
 class UserRole(StrEnum):

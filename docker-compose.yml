@@ -14,6 +14,7 @@ services:
 
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/repeater
+      - SECRET_KEY=abc123
 
     develop:
       watch:

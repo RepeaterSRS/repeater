@@ -1,6 +1,6 @@
-import sys
 import logging
 import logging.handlers
+import sys
 
 
 def set_up_logger(debug: bool = True, log_filename: str = None):
