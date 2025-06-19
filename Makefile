@@ -2,6 +2,7 @@
 format:
 	docker exec repeater-backend uvx ruff check --select I --fix
 	docker exec repeater-backend uvx ruff format
+	docker exec repeater-web pnpm exec prettier --write .
 
 
 .PHONY: build-and-start-local
@@ -23,6 +24,10 @@ test:
 export-openapi:
 	docker exec repeater-backend python scripts/extract-openapi.py
 	docker cp repeater-backend:/tmp/openapi.yaml docs/openapi.yaml
+
+.PHONY: generate-client
+generate-client: export-openapi
+	docker exec repeater-web pnpm run openapi-ts
 
 
 .PHONY: migrate-and-bootstrap

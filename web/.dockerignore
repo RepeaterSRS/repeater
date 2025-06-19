@@ -1,0 +1,23 @@
+# Generated API client - build artifacts shouldn't be in base image
+app/lib/client/
+
+# Environment files - secrets managed via Docker env vars
+.env*
+
+# IDE files - developer tools not needed in production
+.vscode/
+.idea/
+
+# Logs - runtime data not needed in build
+*.log
+
+# Git metadata - not needed in containers
+.git
+.gitignore
+
+# Documentation - reduces image size
+README.md
+
+# OS files - platform-specific metadata
+.DS_Store
+Thumbs.db

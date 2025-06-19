@@ -1,0 +1,25 @@
+.git
+.gitignore
+
+README.md
+
+# Generated API client
+web/app/lib/client/
+
+# Environment files
+.env*
+
+# IDE files
+.vscode/
+
+web/node_modules/
+
+# Build outputs - generated during container build
+web/.next/
+web/build/
+web/dist/
+
+# OS files - platform-specific metadata
+.DS_Store
+Thumbs.db
+
