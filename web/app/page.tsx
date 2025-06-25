@@ -1,7 +1,3 @@
 export default function Home() {
-    return (
-        <div>
-            <h1 className="text-5xl text-center">Heeeere&apos;s Repeater!</h1>
-        </div>
-    );
+    return <h1>Hey! You can&apos;t be here!</h1>;
 }
