@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-FROM base as development
+FROM base AS development
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules/
 COPY . .
