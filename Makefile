@@ -36,5 +36,13 @@ migrate-and-bootstrap:
 	docker exec repeater-backend python scripts/bootstrap.py
 
 
+.PHONY: start
+start:
+	docker compose start
+
+.PHONY: stop
+stop:
+	docker compose stop
+
 .PHONY: dev
 dev: reset-db build-and-start-local migrate-and-bootstrap
