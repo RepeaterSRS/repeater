@@ -1,8 +1,14 @@
+BACKEND_CONTAINER=repeater-backend
+FRONTEND_CONTAINER=repeater-web
+BACKEND_EXEC=docker exec $(BACKEND_CONTAINER)
+FRONTEND_EXEC=docker exec $(FRONTEND_CONTAINER)
+
+
 .PHONY: format
 format:
-	docker exec repeater-backend uvx ruff check --select I --fix
-	docker exec repeater-backend uvx ruff format
-	docker exec repeater-web pnpm exec prettier --write .
+	$(BACKEND_EXEC) uvx ruff check --select I --fix
+	$(BACKEND_EXEC) uvx ruff format
+	$(FRONTEND_EXEC) pnpm exec prettier --write .
 
 
 .PHONY: build-and-start-local
@@ -17,23 +23,29 @@ reset-db:
 
 .PHONY: test
 test:
-	docker exec repeater-backend uv run pytest -s --tb=short
+	$(BACKEND_EXEC) uv run pytest -s --tb=short
+
+
+.PHONY: revision
+revision:
+	$(BACKEND_EXEC) alembic revision --autogenerate -m "$(m)"
 
 
 .PHONY: export-openapi
 export-openapi:
-	docker exec repeater-backend python scripts/extract-openapi.py
+	$(BACKEND_EXEC) python scripts/extract-openapi.py
 	docker cp repeater-backend:/tmp/openapi.yaml docs/openapi.yaml
+
 
 .PHONY: generate-client
 generate-client: export-openapi
-	docker exec repeater-web pnpm run openapi-ts
+	$(FRONTEND_EXEC) pnpm run openapi-ts
 
 
 .PHONY: migrate-and-bootstrap
 migrate-and-bootstrap:
-	docker exec repeater-backend alembic upgrade head
-	docker exec repeater-backend python scripts/bootstrap.py
+	$(BACKEND_EXEC) alembic upgrade head
+	$(BACKEND_EXEC) python scripts/bootstrap.py
 
 
 .PHONY: dev
