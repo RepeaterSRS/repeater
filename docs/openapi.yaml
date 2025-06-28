@@ -40,7 +40,7 @@ paths:
               $ref: '#/components/schemas/UserCreate'
         required: true
       responses:
-        '200':
+        '201':
           description: Successful Response
           content:
             application/json:
@@ -53,21 +53,80 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
   /decks:
-    get:
+    post:
       tags:
       - decks
-      summary: Get Decks
-      operationId: get_decks_decks_get
+      summary: Create Deck
+      operationId: create_deck_decks_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeckCreate'
+        required: true
       responses:
-        '200':
+        '201':
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/DeckOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
       security:
       - OAuth2PasswordBearer: []
 components:
   schemas:
+    DeckCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+      type: object
+      required:
+      - name
+      - description
+      title: DeckCreate
+    DeckOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - user_id
+      - name
+      - description
+      - created_at
+      - updated_at
+      title: DeckOut
     HTTPValidationError:
       properties:
         detail:
@@ -118,11 +177,21 @@ components:
         role:
           type: string
           title: Role
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
       type: object
       required:
       - id
       - email
       - role
+      - created_at
+      - updated_at
       title: UserOut
     ValidationError:
       properties:
