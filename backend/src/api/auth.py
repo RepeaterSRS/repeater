@@ -34,7 +34,7 @@ def login(user_req: UserLogin, db_session: Session = Depends(get_db)):
     return {"access_token": access_token}
 
 
-@router.post("/register", response_model=UserOut)
+@router.post("/register", response_model=UserOut, status_code=201)
 def register(user_req: UserCreate, db_session: Session = Depends(get_db)):
     if User.filter_by(db_session, email=user_req.email).first():
         raise HTTPException(status_code=400, detail="Email is in use")

@@ -9,7 +9,7 @@ async def test_register_user(client):
     res = await client.post(
         "/auth/register", json={"email": "user@domain.com", "password": "123"}
     )
-    assert res.status_code == 200
+    assert res.status_code == 201
     assert res.json() == {
         "id": is_uuid_string(),
         "email": "user@domain.com",
@@ -23,7 +23,7 @@ async def test_cant_register_user_with_existing_email(client):
     res = await client.post(
         "/auth/register", json={"email": "user@domain.com", "password": "123"}
     )
-    assert res.status_code == 200
+    assert res.status_code == 201
     assert res.json() == {
         "id": is_uuid_string(),
         "email": "user@domain.com",
@@ -43,7 +43,7 @@ async def test_register_and_login_user(client):
     res = await client.post(
         "/auth/register", json={"email": "user@domain.com", "password": "123"}
     )
-    assert res.status_code == 200
+    assert res.status_code == 201
 
     res = await client.post(
         "/auth/login", json={"email": "user@domain.com", "password": "123"}
@@ -63,7 +63,7 @@ async def test_register_and_login_user_wrong_credentials(client):
     res = await client.post(
         "/auth/register", json={"email": "user@domain.com", "password": "123"}
     )
-    assert res.status_code == 200
+    assert res.status_code == 201
 
     res = await client.post(
         "/auth/login", json={"email": "user@domain.com", "password": "wrongpassword"}

@@ -12,7 +12,7 @@ async def test_create_deck_returns_deck(user, user_client):
     assert res.status_code == 201
     assert res.json() == {
         "id": is_uuid_string(),
-        "user_id": user.id,
+        "user_id": str(user.id),
         "name": "deck",
         "description": "my deck",
         "created_at": is_utc_isoformat_string(),
