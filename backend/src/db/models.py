@@ -56,6 +56,8 @@ class User(Base, BaseMixin):
     )
     role = mapped_column(String, nullable=False)
 
+    decks = relationship("Deck", back_populates="user")
+
 
 class Deck(Base, BaseMixin):
     __tablename__ = "decks"

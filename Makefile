@@ -45,7 +45,7 @@ generate-client: export-openapi
 .PHONY: migrate-and-bootstrap
 migrate-and-bootstrap:
 	$(BACKEND_EXEC) alembic upgrade head
-	$(BACKEND_EXEC) python scripts/bootstrap.py
+	$(BACKEND_EXEC) python -m src.db.bootstrap
 
 
 .PHONY: dev
