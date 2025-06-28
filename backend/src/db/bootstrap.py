@@ -11,7 +11,7 @@ def bootstrap():
 
         pw_bytes = password.encode("utf-8")
         pw_hashed = bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
-        user = User(email=email, password_hash=pw_hashed, role=UserRole.USER)
+        user = User(email=email, password_hash=pw_hashed, role=UserRole.ADMIN)
         user.save(db_session)
 
 

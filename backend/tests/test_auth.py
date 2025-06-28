@@ -2,7 +2,7 @@ import time
 
 from src.auth.jwt import decode_access_token
 from src.db.models import UserRole
-from tests.asserts import IsUUIDString
+from tests.asserts import is_utc_isoformat_string, is_uuid_string
 
 
 async def test_register_user(client):
@@ -11,9 +11,11 @@ async def test_register_user(client):
     )
     assert res.status_code == 200
     assert res.json() == {
-        "id": IsUUIDString(),
+        "id": is_uuid_string(),
         "email": "user@domain.com",
         "role": UserRole.USER,
+        "created_at": is_utc_isoformat_string(),
+        "updated_at": is_utc_isoformat_string(),
     }
 
 
@@ -23,9 +25,11 @@ async def test_cant_register_user_with_existing_email(client):
     )
     assert res.status_code == 200
     assert res.json() == {
-        "id": IsUUIDString(),
+        "id": is_uuid_string(),
         "email": "user@domain.com",
         "role": UserRole.USER,
+        "created_at": is_utc_isoformat_string(),
+        "updated_at": is_utc_isoformat_string(),
     }
 
     res = await client.post(
@@ -47,7 +51,7 @@ async def test_register_and_login_user(client):
     assert res.status_code == 200
     assert "access_token" in res.json()
     access_token = decode_access_token(res.json()["access_token"])
-    access_token["sub"] == IsUUIDString()
+    access_token["sub"] == is_uuid_string()
     access_token["email"] == "user@domain.com"
     access_token["role"] == UserRole.USER
     now = int(time.time())

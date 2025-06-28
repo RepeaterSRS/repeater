@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
@@ -12,6 +13,8 @@ class UserOut(BaseModel):
     id: UUID
     email: EmailStr
     role: str
+    created_at: datetime
+    updated_at: datetime
 
 
 class UserLogin(BaseModel):
