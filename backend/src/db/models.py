@@ -2,8 +2,8 @@ import uuid
 from datetime import datetime, timezone
 from enum import StrEnum
 
-from sqlalchemy import UUID, DateTime, String, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, relationship, mapped_column
+from sqlalchemy import UUID, DateTime, ForeignKey, String
+from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -60,7 +60,9 @@ class User(Base, BaseMixin):
 class Deck(Base, BaseMixin):
     __tablename__ = "decks"
     id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
-    user_id = mapped_column((UUID(as_uuid=True)), ForeignKey("users.id"), nullable=False)
+    user_id = mapped_column(
+        (UUID(as_uuid=True)), ForeignKey("users.id"), nullable=False
+    )
     name = mapped_column(String, nullable=False)
     description = mapped_column(String)
     created_at = mapped_column(
