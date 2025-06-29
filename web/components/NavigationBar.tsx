@@ -6,8 +6,8 @@ import Link from 'next/link';
 
 export default function NavigationBar() {
     const pathname = usePathname();
-    const containerRef = useRef(null);
-    const activeTabRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const activeTabRef = useRef<HTMLAnchorElement>(null);
     const [isClient, setIsClient] = useState(false);
 
     const tabs = [
@@ -21,7 +21,7 @@ export default function NavigationBar() {
 
     const clipPath = useTransform(
         [clipLeft, clipRight],
-        ([left, right]) =>
+        ([left, right]: number[]) =>
             `inset(3px calc(${100 - right}% + 3px) 3px calc(${left}% + 3px) round 8px)`
     );
 
