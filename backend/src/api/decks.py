@@ -24,16 +24,19 @@ def create_deck(
 
 
 @router.get("", response_model=List[DeckOut])
-def get_decks(user: User = Depends(get_current_user),
-              db_session: Session = Depends(get_db)):
+def get_decks(
+    user: User = Depends(get_current_user), db_session: Session = Depends(get_db)
+):
     return user.decks
 
 
 @router.patch("/{deck_id}", response_model=DeckOut)
-def update_deck(deck_id: UUID,
-                deck_req: DeckUpdate,
-                user: User = Depends(get_current_user),
-                db_session: Session = Depends(get_db)):
+def update_deck(
+    deck_id: UUID,
+    deck_req: DeckUpdate,
+    user: User = Depends(get_current_user),
+    db_session: Session = Depends(get_db),
+):
     deck = Deck.get(db_session, deck_id)
     if not deck:
         raise HTTPException(status_code=404)
@@ -49,9 +52,11 @@ def update_deck(deck_id: UUID,
 
 
 @router.delete("/{deck_id}")
-def delete_deck(deck_id: UUID,
-                user: User = Depends(get_current_user),
-                db_session: Session = Depends(get_db)):
+def delete_deck(
+    deck_id: UUID,
+    user: User = Depends(get_current_user),
+    db_session: Session = Depends(get_db),
+):
     deck = Deck.get(db_session, deck_id)
 
     if not deck:

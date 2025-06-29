@@ -41,14 +41,16 @@ async def test_get_decks(user, user_client):
     )
     res = await user_client.get("/decks")
     assert res.status_code == 200
-    assert res.json() == [{
-        "id": is_uuid_string(),
-        "user_id": str(user.id),
-        "name": "deck",
-        "description": "my deck",
-        "created_at": is_utc_isoformat_string(),
-        "updated_at": is_utc_isoformat_string(),
-    }]
+    assert res.json() == [
+        {
+            "id": is_uuid_string(),
+            "user_id": str(user.id),
+            "name": "deck",
+            "description": "my deck",
+            "created_at": is_utc_isoformat_string(),
+            "updated_at": is_utc_isoformat_string(),
+        }
+    ]
 
 
 async def test_get_decks_unauthorized_returns_401(client):
@@ -66,11 +68,9 @@ async def test_update_deck(user, user_client):
     )
     assert res.status_code == 201
 
-    deck_id = res.json()['id']
+    deck_id = res.json()["id"]
     res = await user_client.patch(
-            f"/decks/{deck_id}",
-            json={"name": "test",
-                  "description": "test"}
+        f"/decks/{deck_id}", json={"name": "test", "description": "test"}
     )
     assert res.status_code == 200
     assert res.json() == {
@@ -85,9 +85,7 @@ async def test_update_deck(user, user_client):
 
 async def test_update_deck_doesnt_exist_returns_404(user_client):
     res = await user_client.patch(
-            f"/decks/{uuid.uuid4()}",
-            json={"name": "test",
-                  "description": "test"}
+        f"/decks/{uuid.uuid4()}", json={"name": "test", "description": "test"}
     )
     assert res.status_code == 404
 
@@ -102,11 +100,9 @@ async def test_update_deck_wrong_user_returns_403(admin_client, user_client):
     )
     assert res.status_code == 201
 
-    deck_id = res.json()['id']
+    deck_id = res.json()["id"]
     res = await user_client.patch(
-            f"/decks/{deck_id}",
-            json={"name": "test",
-                  "description": "test"}
+        f"/decks/{deck_id}", json={"name": "test", "description": "test"}
     )
     assert res.status_code == 403
 
@@ -121,7 +117,7 @@ async def test_delete_deck(user_client):
     )
     assert res.status_code == 201
 
-    deck_id = res.json()['id']
+    deck_id = res.json()["id"]
     res = await user_client.delete(f"/decks/{deck_id}")
     assert res.status_code == 200
     assert res.json() == {"id": is_uuid_string()}
