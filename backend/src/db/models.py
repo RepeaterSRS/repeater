@@ -82,3 +82,31 @@ class Deck(Base, BaseMixin):
     )
 
     user = relationship("User", back_populates="decks")
+    cards = relationship("Card", back_populates="deck", cascade="all, delete-orphan")
+
+
+class Card(Base, BaseMixin):
+    __tablename__ = "cards"
+    id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
+    deck_id = mapped_column(
+        (UUID(as_uuid=True)), ForeignKey("decks.id"), nullable=False
+    )
+    content = mapped_column(String)
+    next_review_date = mapped_column(
+            DateTime(timezone=True),
+            default=lambda: datetime.now(timezone.utc),
+            nullable=False,
+    )
+    created_at = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    deck = relationship("Deck", back_populates="cards")
