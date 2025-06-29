@@ -23,7 +23,7 @@ reset-db:
 
 .PHONY: test
 test:
-	$(BACKEND_EXEC) uv run pytest -s --tb=short
+	$(BACKEND_EXEC) uv run pytest -s --tb=short "${t}"
 
 
 .PHONY: revision

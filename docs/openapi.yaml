@@ -53,6 +53,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
   /decks:
+    get:
+      tags:
+      - decks
+      summary: Get Decks
+      operationId: get_decks_decks_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DeckOut'
+                type: array
+                title: Response Get Decks Decks Get
+      security:
+      - OAuth2PasswordBearer: []
     post:
       tags:
       - decks
@@ -79,6 +96,68 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - OAuth2PasswordBearer: []
+  /decks/{deck_id}:
+    patch:
+      tags:
+      - decks
+      summary: Update Deck
+      operationId: update_deck_decks__deck_id__patch
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeckUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - decks
+      summary: Delete Deck
+      operationId: delete_deck_decks__deck_id__delete
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     DeckCreate:
@@ -127,6 +206,20 @@ components:
       - created_at
       - updated_at
       title: DeckOut
+    DeckUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      type: object
+      title: DeckUpdate
     HTTPValidationError:
       properties:
         detail:

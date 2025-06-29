@@ -28,7 +28,7 @@ def db_session():
 
 
 @pytest.fixture
-async def client(db_session):
+def client_factory(db_session):
     def override_get_db():
         try:
             yield db_session
@@ -37,12 +37,20 @@ async def client(db_session):
 
     app.dependency_overrides[get_db] = override_get_db
 
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as ac:
-        yield ac
+    async def _make_client():
+        ac = AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
+        return ac
+
+    yield _make_client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+async def client(client_factory):
+    client = await client_factory()
+    yield client
+    await client.aclose()
 
 
 @pytest.fixture
@@ -58,7 +66,8 @@ def admin(db_session):
 
 
 @pytest.fixture
-async def admin_client(admin, client):
+async def admin_client(admin, client_factory):
+    client = await client_factory()
     res = await client.post(
         "/auth/login",
         json={
@@ -69,6 +78,7 @@ async def admin_client(admin, client):
     token = res.json()["access_token"]
     client.headers.update({"Authorization": f"Bearer {token}"})
     yield client
+    await client.aclose()
 
 
 @pytest.fixture
@@ -84,7 +94,8 @@ def user(db_session):
 
 
 @pytest.fixture
-async def user_client(admin, client):
+async def user_client(user, client_factory):
+    client = await client_factory()
     res = await client.post(
         "/auth/login",
         json={
@@ -95,3 +106,4 @@ async def user_client(admin, client):
     token = res.json()["access_token"]
     client.headers.update({"Authorization": f"Bearer {token}"})
     yield client
+    await client.aclose()
