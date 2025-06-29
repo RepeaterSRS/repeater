@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function NavigationBar() {
     const pathname = usePathname();
-    const containerRef = useRef<HTMLDivElement>(null);
+    const clipPathContainerRef = useRef<HTMLDivElement>(null);
     const activeTabRef = useRef<HTMLAnchorElement>(null);
     const [isClient, setIsClient] = useState(false);
 
@@ -22,7 +22,7 @@ export default function NavigationBar() {
     const clipPath = useTransform(
         [clipLeft, clipRight],
         ([left, right]: number[]) =>
-            `inset(3px calc(${100 - right}% + 3px) 3px calc(${left}% + 3px) round 8px)`
+            `inset(0 ${100 - right}% 0 ${left}% round 8px)`
     );
 
     useEffect(() => {
@@ -33,13 +33,13 @@ export default function NavigationBar() {
         useState(false);
 
     useEffect(() => {
-        const container = containerRef.current;
+        const clipPathContainer = clipPathContainerRef.current;
 
-        if (container && activeTabRef.current) {
+        if (clipPathContainer && activeTabRef.current) {
             const activeTabElement = activeTabRef.current;
             const { offsetLeft, offsetWidth } = activeTabElement;
 
-            const containerWidth = container.offsetWidth;
+            const containerWidth = clipPathContainer.offsetWidth;
             const targetClipLeft = (offsetLeft / containerWidth) * 100;
             const targetClipRight =
                 ((offsetLeft + offsetWidth) / containerWidth) * 100;
@@ -67,8 +67,12 @@ export default function NavigationBar() {
     }
 
     return (
-        <div className="relative my-2 flex h-9 bg-background border-primary text-primary/50 border-2 rounded-lg">
-            <div className="flex">
+        <nav
+            role="navigation"
+            aria-label="Main navigation"
+            className="relative my-2 py-1 flex bg-foreground/20 text-primary/90 rounded-lg"
+        >
+            <div className="flex gap-2 h-9 px-2">
                 {tabs.map((tab) => {
                     const isActive = pathname === tab.href;
                     return (
@@ -76,7 +80,7 @@ export default function NavigationBar() {
                             key={tab.href}
                             href={tab.href}
                             ref={isActive ? activeTabRef : null}
-                            className="hover:text-primary px-3 rounded-xl flex items-center"
+                            className="hover:bg-primary/20 hover:text-primary px-4 rounded-lg flex items-center"
                         >
                             {tab.label}
                         </Link>
@@ -86,16 +90,16 @@ export default function NavigationBar() {
 
             <motion.div
                 aria-hidden
-                ref={containerRef}
-                className="absolute inset-0 bg-primary flex items-center"
-                style={{ clipPath }}
+                ref={clipPathContainerRef}
+                className="absolute inset-0 bg-foreground flex items-center gap-2 px-2 h-9"
+                style={{ clipPath, inset: '0.25rem 0' }}
             >
                 {tabs.map((tab) => {
                     return (
                         <Link
                             key={`active-${tab.href}`}
                             href={tab.href}
-                            className="text-background px-3 flex items-center"
+                            className="text-background px-4 flex items-center"
                             tabIndex={-1}
                         >
                             {tab.label}
@@ -103,6 +107,7 @@ export default function NavigationBar() {
                     );
                 })}
             </motion.div>
-        </div>
+        </nav>
     );
 }
+
