@@ -37,8 +37,8 @@ export-openapi:
 	docker cp repeater-backend:/tmp/openapi.yaml docs/openapi.yaml
 
 
-.PHONY: generate-client
-generate-client: export-openapi
+.PHONY: generate-web-client
+generate-web-client: export-openapi
 	$(FRONTEND_EXEC) pnpm run openapi-ts
 
 

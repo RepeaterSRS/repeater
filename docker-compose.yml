@@ -42,7 +42,8 @@ services:
 
     volumes:
       - ./web:/app
-      - /app/node_modules
+      - ./docs:/app/docs
+      - web_node_modules:/app/node_modules
 
     develop:
       watch:
@@ -78,3 +79,4 @@ services:
 
 volumes:
   postgres_data:
+  web_node_modules:
