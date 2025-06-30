@@ -9,8 +9,15 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 FROM base AS development
+# Install dependencies in separate location
+RUN mkdir -p /install/node_modules
+COPY package.json pnpm-lock.yaml /install/
+WORKDIR /install
+RUN pnpm install --frozen-lockfile
+ENV NODE_PATH=/install/node_modules
+
+# App code in different location
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules/
 COPY . .
 EXPOSE 3000
 CMD ["pnpm", "run", "dev"]
