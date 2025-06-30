@@ -93,9 +93,9 @@ class Card(Base, BaseMixin):
     )
     content = mapped_column(String)
     next_review_date = mapped_column(
-            DateTime(timezone=True),
-            default=lambda: datetime.now(timezone.utc),
-            nullable=False,
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
     created_at = mapped_column(
         DateTime(timezone=True),
