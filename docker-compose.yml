@@ -32,7 +32,7 @@ services:
         condition: service_healthy
 
   web:
-    build: 
+    build:
       context: web
       target: development
     container_name: repeater-web
@@ -43,7 +43,6 @@ services:
     volumes:
       - ./web:/app
       - ./docs:/app/docs
-      - web_node_modules:/app/node_modules
 
     develop:
       watch:
@@ -53,6 +52,12 @@ services:
           ignore:
             - node_modules/
             - .next/
+
+        - action: rebuild
+          path: ./web/package.json
+
+        - action: rebuild
+          path: ./web/pnpm-lock.yaml
 
     environment:
       - NODE_ENV=development
@@ -79,4 +84,3 @@ services:
 
 volumes:
   postgres_data:
-  web_node_modules:
