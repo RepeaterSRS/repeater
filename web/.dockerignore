@@ -1,5 +1,5 @@
 # Generated API client - build artifacts shouldn't be in base image
-app/lib/client/
+gen
 
 # Environment files - secrets managed via Docker env vars
 .env*
@@ -21,3 +21,5 @@ README.md
 # OS files - platform-specific metadata
 .DS_Store
 Thumbs.db
+
+node_modules
