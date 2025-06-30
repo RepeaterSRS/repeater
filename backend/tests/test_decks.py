@@ -1,5 +1,6 @@
 import uuid
 
+from src.db.models import Card
 from tests.asserts import is_utc_isoformat_string, is_uuid_string
 
 
@@ -327,7 +328,7 @@ async def test_delete_card(user, user_client):
     assert res.json() == []
 
 
-async def test_delete_deck_deletes_all_cards_in_deck(user, user_client):
+async def test_delete_deck_deletes_all_cards_in_deck(db_session, user, user_client):
     res = await user_client.post(
         "/decks",
         json={
@@ -346,6 +347,5 @@ async def test_delete_deck_deletes_all_cards_in_deck(user, user_client):
     res = await user_client.delete(f"/decks/{deck_id}")
     assert res.status_code == 200
 
-    res = await user_client.get(f"/decks")
-    assert res.status_code == 200
-    assert res.json() == []
+    cards = Card.filter_by(db_session, deck_id=deck_id).all()
+    assert cards == []

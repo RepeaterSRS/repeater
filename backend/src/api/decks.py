@@ -22,7 +22,7 @@ def get_user_deck(deck_id, user_id, db_session):
 
 def get_user_card(card_id, deck_id, user_id, db_session):
     deck = get_user_deck(deck_id, user_id, db_session)
-    card = db_session.query(Card).filter_by(id=card_id, deck_id=deck.id).first()
+    card = Card.filter_by(db_session, id=card_id, deck_id=deck.id).first()
     if not card:
         raise HTTPException(status_code=404, detail="Card not found or access denied")
     return card
