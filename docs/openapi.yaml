@@ -158,8 +158,202 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /decks/{deck_id}/cards:
+    post:
+      tags:
+      - decks
+      summary: Create Card
+      operationId: create_card_decks__deck_id__cards_post
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - decks
+      summary: Get Cards
+      operationId: get_cards_decks__deck_id__cards_get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardOut'
+                title: Response Get Cards Decks  Deck Id  Cards Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /decks/{deck_id}/cards/{card_id}:
+    patch:
+      tags:
+      - decks
+      summary: Update Card
+      operationId: update_card_decks__deck_id__cards__card_id__patch
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      - name: card_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Card Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - decks
+      summary: Delete Card
+      operationId: delete_card_decks__deck_id__cards__card_id__delete
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      - name: card_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Card Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    CardCreate:
+      properties:
+        content:
+          type: string
+          title: Content
+      type: object
+      required:
+      - content
+      title: CardCreate
+    CardOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        deck_id:
+          type: string
+          format: uuid
+          title: Deck Id
+        content:
+          type: string
+          title: Content
+        next_review_date:
+          type: string
+          format: date-time
+          title: Next Review Date
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - deck_id
+      - content
+      - next_review_date
+      - created_at
+      - updated_at
+      title: CardOut
+    CardUpdate:
+      properties:
+        content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content
+      type: object
+      title: CardUpdate
     DeckCreate:
       properties:
         name:
