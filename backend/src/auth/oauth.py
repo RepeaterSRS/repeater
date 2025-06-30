@@ -1,13 +1,12 @@
-from authlib.integrations.starlette_client import OAuth
-from starlette.config import Config
-from sqlalchemy.orm import Session
-
-import bcrypt
-
 import uuid
 
-from src.db.models import User, UserRole
+import bcrypt
+from authlib.integrations.starlette_client import OAuth
+from sqlalchemy.orm import Session
+from starlette.config import Config
+
 from src.auth.jwt import create_access_token
+from src.db.models import User, UserRole
 
 config = Config(".env")
 oauth = OAuth(config)

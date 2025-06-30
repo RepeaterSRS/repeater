@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from src.auth.oauth import get_access_token_oauth, oauth
@@ -14,7 +14,6 @@ async def login(request: Request):
 
 
 @router.get("/auth")
-async def auth(request: Request,
-               db_session: Session = Depends(get_db)):
+async def auth(request: Request, db_session: Session = Depends(get_db)):
     access_token = await get_access_token_oauth(request, db_session)
     return {"access_token": access_token}
