@@ -44,7 +44,7 @@ class User(Base, BaseMixin):
     __tablename__ = "users"
     id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
     email = mapped_column(String, unique=True, nullable=False)
-    password_hash = mapped_column(String, nullable=False)
+    password_hash = mapped_column(String)
     created_at = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -57,6 +57,7 @@ class User(Base, BaseMixin):
         nullable=False,
     )
     role = mapped_column(String, nullable=False)
+    auth_provider = mapped_column(String, default="password", nullable=False)
 
     decks = relationship("Deck", back_populates="user")
 

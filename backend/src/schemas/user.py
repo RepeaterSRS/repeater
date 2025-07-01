@@ -13,6 +13,7 @@ class UserOut(BaseModel):
     id: UUID
     email: EmailStr
     role: str
+    auth_provider: str
     created_at: datetime
     updated_at: datetime
 

@@ -18,6 +18,13 @@ def login(user_req: UserLogin, db_session: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
+    if user.password_hash is None:
+        auth_provider = user.auth_provider
+        raise HTTPException(
+            status_code=403,
+            detail=f"This account was created via {auth_provider.title()}. Please use that provider to sign in.",
+        )
+
     pw_bytes = user_req.password.encode("utf-8")
     pw_hashed = user.password_hash.encode("utf-8")
     if not bcrypt.checkpw(pw_bytes, pw_hashed):
