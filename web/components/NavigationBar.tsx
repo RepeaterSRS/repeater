@@ -70,9 +70,9 @@ export default function NavigationBar() {
         <nav
             role="navigation"
             aria-label="Main navigation"
-            className="relative my-2 py-1 flex bg-foreground/20 text-primary/90 rounded-lg"
+            className="bg-background text-foreground relative my-2 flex w-5/6 max-w-md rounded-lg border py-1 shadow-sm"
         >
-            <div className="flex gap-2 h-9 px-2">
+            <div className="flex h-10 w-full justify-evenly px-2">
                 {tabs.map((tab) => {
                     const isActive = pathname === tab.href;
                     return (
@@ -80,7 +80,7 @@ export default function NavigationBar() {
                             key={tab.href}
                             href={tab.href}
                             ref={isActive ? activeTabRef : null}
-                            className="hover:bg-primary/20 hover:text-primary px-4 rounded-lg flex items-center"
+                            className="hover:bg-accent/50 hover:text-primary flex w-full max-w-48 items-center justify-center rounded-lg px-4"
                         >
                             {tab.label}
                         </Link>
@@ -91,7 +91,7 @@ export default function NavigationBar() {
             <motion.div
                 aria-hidden
                 ref={clipPathContainerRef}
-                className="absolute inset-0 bg-foreground flex items-center gap-2 px-2 h-9"
+                className="bg-accent text-foreground absolute inset-0 flex h-10 w-full items-center justify-evenly px-2"
                 style={{ clipPath, inset: '0.25rem 0' }}
             >
                 {tabs.map((tab) => {
@@ -99,7 +99,7 @@ export default function NavigationBar() {
                         <Link
                             key={`active-${tab.href}`}
                             href={tab.href}
-                            className="text-background px-4 flex items-center"
+                            className="flex w-full max-w-48 items-center justify-center px-4"
                             tabIndex={-1}
                         >
                             {tab.label}
@@ -110,4 +110,3 @@ export default function NavigationBar() {
         </nav>
     );
 }
-
