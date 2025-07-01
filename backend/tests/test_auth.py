@@ -1,11 +1,11 @@
 import time
 
 from src.auth.jwt import decode_access_token
-from src.db.models import UserRole
+from src.db.models import User, UserRole
 from tests.asserts import is_utc_isoformat_string, is_uuid_string
 
 
-async def test_register_user(client):
+async def test_register_user(db_session, client):
     res = await client.post(
         "/auth/register", json={"email": "user@domain.com", "password": "123"}
     )
@@ -19,8 +19,11 @@ async def test_register_user(client):
         "updated_at": is_utc_isoformat_string(),
     }
 
+    user = User.filter_by(db_session, email="user@domain.com").first()
+    assert user is not None
 
-async def test_cant_register_user_with_existing_email(client):
+
+async def test_cant_register_user_with_existing_email(db_session, client):
     res = await client.post(
         "/auth/register", json={"email": "user@domain.com", "password": "123"}
     )
