@@ -26,10 +26,9 @@ async def get_access_token_oauth(request, db_session: Session):
 
     user = User.filter_by(db_session, email=email).first()
     if not user:
-        password = str(uuid.uuid4())
-        pw_bytes = password.encode("utf-8")
-        pw_hashed = bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
-        user = User(email=email, password_hash=pw_hashed, role=UserRole.USER)
+        user = User(
+            email=email, password_hash=None, role=UserRole.USER, auth_provider="google"
+        )
         user.save(db_session)
 
     return create_access_token(

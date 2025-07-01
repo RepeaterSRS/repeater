@@ -14,6 +14,7 @@ async def test_register_user(client):
         "id": is_uuid_string(),
         "email": "user@domain.com",
         "role": UserRole.USER,
+        "auth_provider": "password",
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -28,6 +29,7 @@ async def test_cant_register_user_with_existing_email(client):
         "id": is_uuid_string(),
         "email": "user@domain.com",
         "role": UserRole.USER,
+        "auth_provider": "password",
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }

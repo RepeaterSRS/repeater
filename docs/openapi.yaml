@@ -300,6 +300,32 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/HTTPValidationError'
+    /oauth/login:
+        get:
+            tags:
+                - auth
+                - oauth
+            summary: Login
+            operationId: login_oauth_login_get
+            responses:
+                '200':
+                    description: Successful Response
+                    content:
+                        application/json:
+                            schema: {}
+    /oauth/auth:
+        get:
+            tags:
+                - auth
+                - oauth
+            summary: Auth
+            operationId: auth_oauth_auth_get
+            responses:
+                '200':
+                    description: Successful Response
+                    content:
+                        application/json:
+                            schema: {}
 components:
     schemas:
         CardCreate:
@@ -464,6 +490,9 @@ components:
                 role:
                     type: string
                     title: Role
+                auth_provider:
+                    type: string
+                    title: Auth Provider
                 created_at:
                     type: string
                     format: date-time
@@ -477,6 +506,7 @@ components:
                 - id
                 - email
                 - role
+                - auth_provider
                 - created_at
                 - updated_at
             title: UserOut
