@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 
-from src.api import auth, decks, oauth, me
+from src.api import auth, decks, me, oauth
 from src.log import set_up_logger
 
 load_dotenv()

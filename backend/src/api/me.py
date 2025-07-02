@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 
+from src.auth.jwt import get_current_user
 from src.db.models import User
 from src.schemas.user import UserOut
-from src.auth.jwt import get_current_user
 
 router = APIRouter(tags=["me"])
 
