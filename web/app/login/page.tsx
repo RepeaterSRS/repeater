@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { loginAuthLoginPost } from '@/gen';
-import { setCookie } from 'cookies-next';
 import { Button } from '@/components/ui/button';
 
 export default function Login() {
