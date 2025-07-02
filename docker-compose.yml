@@ -45,10 +45,7 @@ services:
     volumes:
       - ./web:/app
       - ./docs:/app/docs
-<<<<<<< Updated upstream
-=======
       - /app/node_modules
->>>>>>> Stashed changes
 
     develop:
       watch:
