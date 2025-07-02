@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from enum import StrEnum
 
-from sqlalchemy import UUID, DateTime, ForeignKey, String
+from sqlalchemy import UUID, DateTime, ForeignKey, String, Integer, Float
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship
 
 
@@ -40,6 +40,12 @@ class UserRole(StrEnum):
     ADMIN = "admin"
 
 
+class ReviewFeedback(StrEnum):
+    OK = "ok"
+    SKIPPED = "skipped"
+    FORGOT = "forgot"
+
+
 class User(Base, BaseMixin):
     __tablename__ = "users"
     id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
@@ -60,6 +66,7 @@ class User(Base, BaseMixin):
     auth_provider = mapped_column(String, default="password", nullable=False)
 
     decks = relationship("Deck", back_populates="user")
+    reviews = relationship("Review", back_populates="user")
 
 
 class Deck(Base, BaseMixin):
@@ -111,3 +118,32 @@ class Card(Base, BaseMixin):
     )
 
     deck = relationship("Deck", back_populates="cards")
+    reviews = relationship("Review", back_populates="card")
+
+
+class Review(Base, BaseMixin):
+    __tablename__ = "reviews"
+    id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
+    card_id = mapped_column(
+        (UUID(as_uuid=True)), ForeignKey("cards.id"), nullable=False
+    )
+    user_id = mapped_column(
+        (UUID(as_uuid=True)), ForeignKey("users.id"), nullable=False
+    )
+    reviewed_at = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    feedback = mapped_column(String, nullable=False)
+    interval = mapped_column(Integer, nullable=False)
+    repetitions = mapped_column(Integer, nullable=False)
+    ease_factor = mapped_column(Float, default=2.5, nullable=False)
+    created_at = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    card = relationship("Card", back_populates="reviews")
+    user = relationship("User", back_populates="reviews")
