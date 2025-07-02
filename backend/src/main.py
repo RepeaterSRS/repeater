@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 
-from src.api import auth, decks, oauth
+from src.api import auth, decks, oauth, me
 from src.log import set_up_logger
 
 load_dotenv()
@@ -44,3 +44,4 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(decks.router)
 app.include_router(oauth.router)
+app.include_router(me.router)

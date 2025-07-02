@@ -1,586 +1,614 @@
 openapi: 3.1.0
 info:
-    title: FastAPI
-    version: 0.1.0
+  title: FastAPI
+  version: 0.1.0
 paths:
-    /auth/login:
-        post:
-            tags:
-                - auth
-            summary: Login
-            operationId: login_auth_login_post
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UserLogin'
-                required: true
-            responses:
-                '204':
-                    description: Successful Response
-                '422':
-                    description: Validation Error
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HTTPValidationError'
-    /auth/register:
-        post:
-            tags:
-                - auth
-            summary: Register
-            operationId: register_auth_register_post
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UserCreate'
-                required: true
-            responses:
-                '201':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UserOut'
-                '422':
-                    description: Validation Error
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HTTPValidationError'
-    /decks:
-        post:
-            tags:
-                - decks
-            summary: Create Deck
-            operationId: create_deck_decks_post
-            parameters:
-                - name: access_token
-                  in: cookie
-                  required: false
-                  schema:
-                      anyOf:
-                          - type: string
-                          - type: 'null'
-                      title: Access Token
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DeckCreate'
-            responses:
-                '201':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeckOut'
-                '422':
-                    description: Validation Error
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HTTPValidationError'
-        get:
-            tags:
-                - decks
-            summary: Get Decks
-            operationId: get_decks_decks_get
-            parameters:
-                - name: access_token
-                  in: cookie
-                  required: false
-                  schema:
-                      anyOf:
-                          - type: string
-                          - type: 'null'
-                      title: Access Token
-            responses:
-                '200':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: '#/components/schemas/DeckOut'
-                                title: Response Get Decks Decks Get
-                '422':
-                    description: Validation Error
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HTTPValidationError'
-    /decks/{deck_id}:
-        patch:
-            tags:
-                - decks
-            summary: Update Deck
-            operationId: update_deck_decks__deck_id__patch
-            parameters:
-                - name: deck_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      format: uuid
-                      title: Deck Id
-                - name: access_token
-                  in: cookie
-                  required: false
-                  schema:
-                      anyOf:
-                          - type: string
-                          - type: 'null'
-                      title: Access Token
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DeckUpdate'
-            responses:
-                '200':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeckOut'
-                '422':
-                    description: Validation Error
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HTTPValidationError'
-        delete:
-            tags:
-                - decks
-            summary: Delete Deck
-            operationId: delete_deck_decks__deck_id__delete
-            parameters:
-                - name: deck_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      format: uuid
-                      title: Deck Id
-                - name: access_token
-                  in: cookie
-                  required: false
-                  schema:
-                      anyOf:
-                          - type: string
-                          - type: 'null'
-                      title: Access Token
-            responses:
-                '200':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema: {}
-                '422':
-                    description: Validation Error
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HTTPValidationError'
-    /decks/{deck_id}/cards:
-        post:
-            tags:
-                - decks
-            summary: Create Card
-            operationId: create_card_decks__deck_id__cards_post
-            parameters:
-                - name: deck_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      format: uuid
-                      title: Deck Id
-                - name: access_token
-                  in: cookie
-                  required: false
-                  schema:
-                      anyOf:
-                          - type: string
-                          - type: 'null'
-                      title: Access Token
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CardCreate'
-            responses:
-                '201':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CardOut'
-                '422':
-                    description: Validation Error
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HTTPValidationError'
-        get:
-            tags:
-                - decks
-            summary: Get Cards
-            operationId: get_cards_decks__deck_id__cards_get
-            parameters:
-                - name: deck_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      format: uuid
-                      title: Deck Id
-                - name: access_token
-                  in: cookie
-                  required: false
-                  schema:
-                      anyOf:
-                          - type: string
-                          - type: 'null'
-                      title: Access Token
-            responses:
-                '200':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: '#/components/schemas/CardOut'
-                                title: Response Get Cards Decks  Deck Id  Cards Get
-                '422':
-                    description: Validation Error
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HTTPValidationError'
-    /decks/{deck_id}/cards/{card_id}:
-        patch:
-            tags:
-                - decks
-            summary: Update Card
-            operationId: update_card_decks__deck_id__cards__card_id__patch
-            parameters:
-                - name: deck_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      format: uuid
-                      title: Deck Id
-                - name: card_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      format: uuid
-                      title: Card Id
-                - name: access_token
-                  in: cookie
-                  required: false
-                  schema:
-                      anyOf:
-                          - type: string
-                          - type: 'null'
-                      title: Access Token
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CardUpdate'
-            responses:
-                '200':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CardOut'
-                '422':
-                    description: Validation Error
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HTTPValidationError'
-        delete:
-            tags:
-                - decks
-            summary: Delete Card
-            operationId: delete_card_decks__deck_id__cards__card_id__delete
-            parameters:
-                - name: deck_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      format: uuid
-                      title: Deck Id
-                - name: card_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      format: uuid
-                      title: Card Id
-                - name: access_token
-                  in: cookie
-                  required: false
-                  schema:
-                      anyOf:
-                          - type: string
-                          - type: 'null'
-                      title: Access Token
-            responses:
-                '200':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema: {}
-                '422':
-                    description: Validation Error
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HTTPValidationError'
-    /oauth/login:
-        get:
-            tags:
-                - auth
-                - oauth
-            summary: Login
-            operationId: login_oauth_login_get
-            responses:
-                '200':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema: {}
-    /oauth/auth:
-        get:
-            tags:
-                - auth
-                - oauth
-            summary: Auth
-            operationId: auth_oauth_auth_get
-            responses:
-                '302':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema: {}
+  /auth/login:
+    post:
+      tags:
+      - auth
+      summary: Login
+      operationId: login_auth_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/register:
+    post:
+      tags:
+      - auth
+      summary: Register
+      operationId: register_auth_register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /decks:
+    post:
+      tags:
+      - decks
+      summary: Create Deck
+      operationId: create_deck_decks_post
+      parameters:
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeckCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - decks
+      summary: Get Decks
+      operationId: get_decks_decks_get
+      parameters:
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeckOut'
+                title: Response Get Decks Decks Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /decks/{deck_id}:
+    patch:
+      tags:
+      - decks
+      summary: Update Deck
+      operationId: update_deck_decks__deck_id__patch
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeckUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - decks
+      summary: Delete Deck
+      operationId: delete_deck_decks__deck_id__delete
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /decks/{deck_id}/cards:
+    post:
+      tags:
+      - decks
+      summary: Create Card
+      operationId: create_card_decks__deck_id__cards_post
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - decks
+      summary: Get Cards
+      operationId: get_cards_decks__deck_id__cards_get
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardOut'
+                title: Response Get Cards Decks  Deck Id  Cards Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /decks/{deck_id}/cards/{card_id}:
+    patch:
+      tags:
+      - decks
+      summary: Update Card
+      operationId: update_card_decks__deck_id__cards__card_id__patch
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      - name: card_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Card Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - decks
+      summary: Delete Card
+      operationId: delete_card_decks__deck_id__cards__card_id__delete
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      - name: card_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Card Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oauth/login:
+    get:
+      tags:
+      - auth
+      - oauth
+      summary: Login
+      operationId: login_oauth_login_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /oauth/auth:
+    get:
+      tags:
+      - auth
+      - oauth
+      summary: Auth
+      operationId: auth_oauth_auth_get
+      responses:
+        '302':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /me:
+    get:
+      tags:
+      - me
+      summary: Get User Info
+      operationId: get_user_info_me_get
+      parameters:
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
-    schemas:
-        CardCreate:
-            properties:
-                content:
-                    type: string
-                    title: Content
-            type: object
-            required:
-                - content
-            title: CardCreate
-        CardOut:
-            properties:
-                id:
-                    type: string
-                    format: uuid
-                    title: Id
-                deck_id:
-                    type: string
-                    format: uuid
-                    title: Deck Id
-                content:
-                    type: string
-                    title: Content
-                next_review_date:
-                    type: string
-                    format: date-time
-                    title: Next Review Date
-                created_at:
-                    type: string
-                    format: date-time
-                    title: Created At
-                updated_at:
-                    type: string
-                    format: date-time
-                    title: Updated At
-            type: object
-            required:
-                - id
-                - deck_id
-                - content
-                - next_review_date
-                - created_at
-                - updated_at
-            title: CardOut
-        CardUpdate:
-            properties:
-                content:
-                    anyOf:
-                        - type: string
-                        - type: 'null'
-                    title: Content
-            type: object
-            title: CardUpdate
-        DeckCreate:
-            properties:
-                name:
-                    type: string
-                    title: Name
-                description:
-                    type: string
-                    title: Description
-            type: object
-            required:
-                - name
-                - description
-            title: DeckCreate
-        DeckOut:
-            properties:
-                id:
-                    type: string
-                    format: uuid
-                    title: Id
-                user_id:
-                    type: string
-                    format: uuid
-                    title: User Id
-                name:
-                    type: string
-                    title: Name
-                description:
-                    type: string
-                    title: Description
-                created_at:
-                    type: string
-                    format: date-time
-                    title: Created At
-                updated_at:
-                    type: string
-                    format: date-time
-                    title: Updated At
-            type: object
-            required:
-                - id
-                - user_id
-                - name
-                - description
-                - created_at
-                - updated_at
-            title: DeckOut
-        DeckUpdate:
-            properties:
-                name:
-                    anyOf:
-                        - type: string
-                        - type: 'null'
-                    title: Name
-                description:
-                    anyOf:
-                        - type: string
-                        - type: 'null'
-                    title: Description
-            type: object
-            title: DeckUpdate
-        HTTPValidationError:
-            properties:
-                detail:
-                    items:
-                        $ref: '#/components/schemas/ValidationError'
-                    type: array
-                    title: Detail
-            type: object
-            title: HTTPValidationError
-        UserCreate:
-            properties:
-                email:
-                    type: string
-                    format: email
-                    title: Email
-                password:
-                    type: string
-                    title: Password
-            type: object
-            required:
-                - email
-                - password
-            title: UserCreate
-        UserLogin:
-            properties:
-                email:
-                    type: string
-                    format: email
-                    title: Email
-                password:
-                    type: string
-                    title: Password
-            type: object
-            required:
-                - email
-                - password
-            title: UserLogin
-        UserOut:
-            properties:
-                id:
-                    type: string
-                    format: uuid
-                    title: Id
-                email:
-                    type: string
-                    format: email
-                    title: Email
-                role:
-                    type: string
-                    title: Role
-                auth_provider:
-                    type: string
-                    title: Auth Provider
-                created_at:
-                    type: string
-                    format: date-time
-                    title: Created At
-                updated_at:
-                    type: string
-                    format: date-time
-                    title: Updated At
-            type: object
-            required:
-                - id
-                - email
-                - role
-                - auth_provider
-                - created_at
-                - updated_at
-            title: UserOut
-        ValidationError:
-            properties:
-                loc:
-                    items:
-                        anyOf:
-                            - type: string
-                            - type: integer
-                    type: array
-                    title: Location
-                msg:
-                    type: string
-                    title: Message
-                type:
-                    type: string
-                    title: Error Type
-            type: object
-            required:
-                - loc
-                - msg
-                - type
-            title: ValidationError
+  schemas:
+    CardCreate:
+      properties:
+        content:
+          type: string
+          title: Content
+      type: object
+      required:
+      - content
+      title: CardCreate
+    CardOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        deck_id:
+          type: string
+          format: uuid
+          title: Deck Id
+        content:
+          type: string
+          title: Content
+        next_review_date:
+          type: string
+          format: date-time
+          title: Next Review Date
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - deck_id
+      - content
+      - next_review_date
+      - created_at
+      - updated_at
+      title: CardOut
+    CardUpdate:
+      properties:
+        content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content
+      type: object
+      title: CardUpdate
+    DeckCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+      type: object
+      required:
+      - name
+      - description
+      title: DeckCreate
+    DeckOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - user_id
+      - name
+      - description
+      - created_at
+      - updated_at
+      title: DeckOut
+    DeckUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      type: object
+      title: DeckUpdate
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    UserCreate:
+      properties:
+        email:
+          type: string
+          format: email
+          title: Email
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+      - email
+      - password
+      title: UserCreate
+    UserLogin:
+      properties:
+        email:
+          type: string
+          format: email
+          title: Email
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+      - email
+      - password
+      title: UserLogin
+    UserOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        email:
+          type: string
+          format: email
+          title: Email
+        role:
+          type: string
+          title: Role
+        auth_provider:
+          type: string
+          title: Auth Provider
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - email
+      - role
+      - auth_provider
+      - created_at
+      - updated_at
+      title: UserOut
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
