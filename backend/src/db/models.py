@@ -2,8 +2,10 @@ import uuid
 from datetime import datetime, timezone
 from enum import StrEnum
 
-from sqlalchemy import UUID, DateTime, ForeignKey, String, Integer, Float
+from sqlalchemy import UUID, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship
+
+from src.const import SCHEDULE_DEFAULT_EASE_FACTOR
 
 
 class Base(DeclarativeBase):
@@ -138,7 +140,9 @@ class Review(Base, BaseMixin):
     feedback = mapped_column(String, nullable=False)
     interval = mapped_column(Integer, nullable=False)
     repetitions = mapped_column(Integer, nullable=False)
-    ease_factor = mapped_column(Float, default=2.5, nullable=False)
+    ease_factor = mapped_column(
+        Float, default=SCHEDULE_DEFAULT_EASE_FACTOR, nullable=False
+    )
     created_at = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
