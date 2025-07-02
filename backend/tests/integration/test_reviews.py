@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from src.api.reviews import get_scheduler
-from src.db.models import Card, ReviewFeedback
+from src.db.models import Card, Review, ReviewFeedback
 from src.main import app
 from src.schedulers.basic import BasicScheduler
 from tests.asserts import is_utc_isoformat_string, is_uuid_string
@@ -90,6 +90,7 @@ async def test_create_review(db_session, user, user_client):
     card = Card.get(db_session, card_id)
     assert card is not None
     assert card.next_review_date.date() == next_review_date
+    assert len(Review.all(db_session)) == 2
 
     app.dependency_overrides.clear()
 
