@@ -3,6 +3,9 @@ FROM node:22-alpine AS base
 RUN apk add --no-cache libc6-compat && \
   corepack enable pnpm
 
+ARG API_URL
+ENV NEXT_PUBLIC_API_URL=${API_URL}
+
 FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
@@ -18,6 +21,10 @@ ENV NODE_PATH=/install/node_modules
 
 # App code in different location
 WORKDIR /app
+<<<<<<< Updated upstream
+=======
+COPY --from=deps /install/node_modules ./node_modules
+>>>>>>> Stashed changes
 COPY . .
 EXPOSE 3000
 CMD ["pnpm", "run", "dev"]

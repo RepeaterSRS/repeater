@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from src.auth.oauth import get_access_token_oauth, oauth
@@ -13,7 +14,17 @@ async def login(request: Request):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@router.get("/auth")
+@router.get("/auth", status_code=302)
 async def auth(request: Request, db_session: Session = Depends(get_db)):
     access_token = await get_access_token_oauth(request, db_session)
-    return {"access_token": access_token}
+
+    response = RedirectResponse(url="http://localhost:3000", status_code=302)
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=3600,
+    )
+    return response

@@ -16,11 +16,8 @@ paths:
                             $ref: '#/components/schemas/UserLogin'
                 required: true
             responses:
-                '200':
+                '204':
                     description: Successful Response
-                    content:
-                        application/json:
-                            schema: {}
                 '422':
                     description: Validation Error
                     content:
@@ -53,34 +50,26 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/HTTPValidationError'
     /decks:
-        get:
-            tags:
-                - decks
-            summary: Get Decks
-            operationId: get_decks_decks_get
-            responses:
-                '200':
-                    description: Successful Response
-                    content:
-                        application/json:
-                            schema:
-                                items:
-                                    $ref: '#/components/schemas/DeckOut'
-                                type: array
-                                title: Response Get Decks Decks Get
-            security:
-                - OAuth2PasswordBearer: []
         post:
             tags:
                 - decks
             summary: Create Deck
             operationId: create_deck_decks_post
+            parameters:
+                - name: access_token
+                  in: cookie
+                  required: false
+                  schema:
+                      anyOf:
+                          - type: string
+                          - type: 'null'
+                      title: Access Token
             requestBody:
+                required: true
                 content:
                     application/json:
                         schema:
                             $ref: '#/components/schemas/DeckCreate'
-                required: true
             responses:
                 '201':
                     description: Successful Response
@@ -94,16 +83,42 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/HTTPValidationError'
-            security:
-                - OAuth2PasswordBearer: []
+        get:
+            tags:
+                - decks
+            summary: Get Decks
+            operationId: get_decks_decks_get
+            parameters:
+                - name: access_token
+                  in: cookie
+                  required: false
+                  schema:
+                      anyOf:
+                          - type: string
+                          - type: 'null'
+                      title: Access Token
+            responses:
+                '200':
+                    description: Successful Response
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/DeckOut'
+                                title: Response Get Decks Decks Get
+                '422':
+                    description: Validation Error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HTTPValidationError'
     /decks/{deck_id}:
         patch:
             tags:
                 - decks
             summary: Update Deck
             operationId: update_deck_decks__deck_id__patch
-            security:
-                - OAuth2PasswordBearer: []
             parameters:
                 - name: deck_id
                   in: path
@@ -112,6 +127,14 @@ paths:
                       type: string
                       format: uuid
                       title: Deck Id
+                - name: access_token
+                  in: cookie
+                  required: false
+                  schema:
+                      anyOf:
+                          - type: string
+                          - type: 'null'
+                      title: Access Token
             requestBody:
                 required: true
                 content:
@@ -136,8 +159,6 @@ paths:
                 - decks
             summary: Delete Deck
             operationId: delete_deck_decks__deck_id__delete
-            security:
-                - OAuth2PasswordBearer: []
             parameters:
                 - name: deck_id
                   in: path
@@ -146,6 +167,14 @@ paths:
                       type: string
                       format: uuid
                       title: Deck Id
+                - name: access_token
+                  in: cookie
+                  required: false
+                  schema:
+                      anyOf:
+                          - type: string
+                          - type: 'null'
+                      title: Access Token
             responses:
                 '200':
                     description: Successful Response
@@ -164,8 +193,6 @@ paths:
                 - decks
             summary: Create Card
             operationId: create_card_decks__deck_id__cards_post
-            security:
-                - OAuth2PasswordBearer: []
             parameters:
                 - name: deck_id
                   in: path
@@ -174,6 +201,14 @@ paths:
                       type: string
                       format: uuid
                       title: Deck Id
+                - name: access_token
+                  in: cookie
+                  required: false
+                  schema:
+                      anyOf:
+                          - type: string
+                          - type: 'null'
+                      title: Access Token
             requestBody:
                 required: true
                 content:
@@ -198,8 +233,6 @@ paths:
                 - decks
             summary: Get Cards
             operationId: get_cards_decks__deck_id__cards_get
-            security:
-                - OAuth2PasswordBearer: []
             parameters:
                 - name: deck_id
                   in: path
@@ -208,6 +241,14 @@ paths:
                       type: string
                       format: uuid
                       title: Deck Id
+                - name: access_token
+                  in: cookie
+                  required: false
+                  schema:
+                      anyOf:
+                          - type: string
+                          - type: 'null'
+                      title: Access Token
             responses:
                 '200':
                     description: Successful Response
@@ -230,8 +271,6 @@ paths:
                 - decks
             summary: Update Card
             operationId: update_card_decks__deck_id__cards__card_id__patch
-            security:
-                - OAuth2PasswordBearer: []
             parameters:
                 - name: deck_id
                   in: path
@@ -247,6 +286,14 @@ paths:
                       type: string
                       format: uuid
                       title: Card Id
+                - name: access_token
+                  in: cookie
+                  required: false
+                  schema:
+                      anyOf:
+                          - type: string
+                          - type: 'null'
+                      title: Access Token
             requestBody:
                 required: true
                 content:
@@ -271,8 +318,6 @@ paths:
                 - decks
             summary: Delete Card
             operationId: delete_card_decks__deck_id__cards__card_id__delete
-            security:
-                - OAuth2PasswordBearer: []
             parameters:
                 - name: deck_id
                   in: path
@@ -288,6 +333,14 @@ paths:
                       type: string
                       format: uuid
                       title: Card Id
+                - name: access_token
+                  in: cookie
+                  required: false
+                  schema:
+                      anyOf:
+                          - type: string
+                          - type: 'null'
+                      title: Access Token
             responses:
                 '200':
                     description: Successful Response
@@ -321,7 +374,7 @@ paths:
             summary: Auth
             operationId: auth_oauth_auth_get
             responses:
-                '200':
+                '302':
                     description: Successful Response
                     content:
                         application/json:
@@ -531,10 +584,3 @@ components:
                 - msg
                 - type
             title: ValidationError
-    securitySchemes:
-        OAuth2PasswordBearer:
-            type: oauth2
-            flows:
-                password:
-                    scopes: {}
-                    tokenUrl: auth/login

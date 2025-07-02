@@ -6,7 +6,7 @@ from src.db.models import User, UserRole
 
 def bootstrap():
     with next(get_db()) as db_session:
-        email = "admin@domain"
+        email = "admin@domain.com"
         password = "password"
 
         pw_bytes = password.encode("utf-8")

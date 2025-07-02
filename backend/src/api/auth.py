@@ -2,6 +2,7 @@ import logging
 
 import bcrypt
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
 from src.auth.jwt import create_access_token
@@ -12,8 +13,10 @@ from src.schemas.user import UserCreate, UserLogin, UserOut
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/login")
-def login(user_req: UserLogin, db_session: Session = Depends(get_db)):
+@router.post("/login", status_code=204)
+def login(
+    user_req: UserLogin, response: Response, db_session: Session = Depends(get_db)
+):
     user = User.filter_by(db_session, email=user_req.email).first()
     if not user:
         raise HTTPException(status_code=400, detail="Invalid credentials")
@@ -38,7 +41,16 @@ def login(user_req: UserLogin, db_session: Session = Depends(get_db)):
         }
     )
     logging.info(f"User {user.email} logged in")
-    return {"access_token": access_token}
+
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=3600,
+    )
+    return
 
 
 @router.post("/register", response_model=UserOut, status_code=201)

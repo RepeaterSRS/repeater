@@ -75,8 +75,11 @@ async def admin_client(admin, client_factory):
             "password": "password",
         },
     )
-    token = res.json()["access_token"]
-    client.headers.update({"Authorization": f"Bearer {token}"})
+    assert res.status_code == 204
+    token = res.cookies.get("access_token")
+    assert token is not None
+
+    client.cookies.set("access_token", token)
     yield client
     await client.aclose()
 
@@ -103,7 +106,10 @@ async def user_client(user, client_factory):
             "password": "password",
         },
     )
-    token = res.json()["access_token"]
-    client.headers.update({"Authorization": f"Bearer {token}"})
+    assert res.status_code == 204
+    token = res.cookies.get("access_token")
+    assert token is not None
+
+    client.cookies.set("access_token", token)
     yield client
     await client.aclose()

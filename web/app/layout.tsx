@@ -28,7 +28,7 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <header className="w-screen flex flex-row justify-center">
+                <header className="flex w-screen flex-row justify-center">
                     <NavigationBar />
                 </header>
                 {children}
