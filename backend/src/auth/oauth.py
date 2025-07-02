@@ -1,6 +1,3 @@
-import uuid
-
-import bcrypt
 from authlib.integrations.starlette_client import OAuth
 from sqlalchemy.orm import Session
 from starlette.config import Config
@@ -21,8 +18,8 @@ oauth.register(
 
 async def get_access_token_oauth(request, db_session: Session):
     token = await oauth.google.authorize_access_token(request)
-    user_info = await oauth.google.parse_id_token(request, token)
-    email = user_info["email"]
+    user = token["userinfo"]
+    email = user["email"]
 
     user = User.filter_by(db_session, email=email).first()
     if not user:

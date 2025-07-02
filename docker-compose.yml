@@ -35,6 +35,8 @@ services:
     build:
       context: web
       target: development
+      args:
+        API_URL: http://localhost:8000
     container_name: repeater-web
 
     ports:
@@ -43,6 +45,10 @@ services:
     volumes:
       - ./web:/app
       - ./docs:/app/docs
+<<<<<<< Updated upstream
+=======
+      - /app/node_modules
+>>>>>>> Stashed changes
 
     develop:
       watch:

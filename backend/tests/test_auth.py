@@ -53,9 +53,11 @@ async def test_register_and_login_user(client):
     res = await client.post(
         "/auth/login", json={"email": "user@domain.com", "password": "123"}
     )
-    assert res.status_code == 200
-    assert "access_token" in res.json()
-    access_token = decode_access_token(res.json()["access_token"])
+    assert res.status_code == 204
+    cookies = res.cookies
+    assert "access_token" in cookies
+    access_token = cookies.get("access_token")
+    access_token = decode_access_token(access_token)
     access_token["sub"] == is_uuid_string()
     access_token["email"] == "user@domain.com"
     access_token["role"] == UserRole.USER

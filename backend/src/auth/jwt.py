@@ -2,14 +2,12 @@ from datetime import datetime, timedelta, timezone
 from os import getenv
 
 import jwt
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Cookie, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.db import get_db
 from src.db.models import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 SECRET_KEY = getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
@@ -28,11 +26,14 @@ def decode_access_token(token: str) -> dict:
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    access_token: str | None = Cookie(default=None),
     db_session: Session = Depends(get_db),
 ):
+    if access_token is None:
+        raise HTTPException(status_code=401, detail="Missing access token")
+
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("sub")
         if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid token")
