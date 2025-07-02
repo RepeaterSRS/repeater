@@ -1,7 +1,9 @@
 BACKEND_CONTAINER=repeater-backend
 FRONTEND_CONTAINER=repeater-web
+DB_CONTAINER=repeater-db
 BACKEND_EXEC=docker exec $(BACKEND_CONTAINER)
 FRONTEND_EXEC=docker exec $(FRONTEND_CONTAINER)
+DB_EXEC=docker exec $(DB_CONTAINER)
 
 
 .PHONY: format
@@ -18,7 +20,12 @@ build-and-start-local:
 
 .PHONY: reset-db
 reset-db:
-	docker compose down db --volumes
+	docker compose up -d db
+	@echo "Waiting for database to be ready..."
+	@until $(DB_EXEC) pg_isready -U user -d postgres > /dev/null 2>&1; do sleep 1; done
+	$(DB_EXEC) psql -U user -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='repeater';"
+	$(DB_EXEC) psql -U user -d postgres -c "DROP DATABASE IF EXISTS repeater;"
+	$(DB_EXEC) psql -U user -d postgres -c "CREATE DATABASE repeater;"
 
 
 .PHONY: test
@@ -43,7 +50,7 @@ generate-web-client: export-openapi
 
 
 .PHONY: migrate-and-bootstrap
-migrate-and-bootstrap:
+migrate-and-bootstrap: reset-db
 	$(BACKEND_EXEC) alembic upgrade head
 	$(BACKEND_EXEC) python -m src.db.bootstrap
 

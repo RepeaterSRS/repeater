@@ -68,6 +68,7 @@ services:
 
   db:
     image: postgres:17
+    container_name: repeater-db
 
     environment:
       POSTGRES_USER: user
