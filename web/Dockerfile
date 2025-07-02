@@ -7,7 +7,7 @@ ARG API_URL
 ENV NEXT_PUBLIC_API_URL=${API_URL}
 
 FROM base AS deps
-WORKDIR /app
+WORKDIR /install
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
