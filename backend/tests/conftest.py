@@ -113,3 +113,10 @@ async def user_client(user, client_factory):
     client.cookies.set("access_token", token)
     yield client
     await client.aclose()
+
+
+@pytest.fixture
+def frontend_url(scope="session"):
+    frontend_url = getenv("FRONTEND_URL")
+    assert frontend_url, "FRONTEND_URL must be set"
+    return frontend_url

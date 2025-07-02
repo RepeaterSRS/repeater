@@ -1,3 +1,5 @@
+from os import getenv
+
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
@@ -18,7 +20,10 @@ async def login(request: Request):
 async def auth(request: Request, db_session: Session = Depends(get_db)):
     access_token = await get_access_token_oauth(request, db_session)
 
-    response = RedirectResponse(url="http://localhost:3000", status_code=302)
+    frontend_url = getenv("FRONTEND_URL")
+    assert frontend_url, "FRONTEND_URL must be set"
+
+    response = RedirectResponse(url=frontend_url, status_code=302)
     response.set_cookie(
         key="access_token",
         value=access_token,

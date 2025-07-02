@@ -13,7 +13,9 @@ from src.log import set_up_logger
 load_dotenv()
 set_up_logger()
 
-origins = ["http://localhost:3000"]
+frontend_url = getenv("FRONTEND_URL")
+assert frontend_url, "FRONTEND_URL must be set"
+origins = [frontend_url]
 
 app = FastAPI()
 

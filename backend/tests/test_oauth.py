@@ -4,12 +4,12 @@ from src.db.models import User
 
 
 @patch("src.auth.oauth.oauth.google.authorize_access_token")
-async def test_oauth_auth(mock_token, client, db_session):
+async def test_oauth_auth(mock_token, client, frontend_url, db_session):
     mock_token.return_value = {"userinfo": {"email": "user@domain.com"}}
 
     res = await client.get("/oauth/auth")
     assert res.status_code == 302
-    assert res.headers["location"] == "http://localhost:3000"
+    assert res.headers["location"] == frontend_url
     cookies = res.cookies
     assert "access_token" in cookies
 
@@ -19,7 +19,7 @@ async def test_oauth_auth(mock_token, client, db_session):
 
 
 @patch("src.auth.oauth.oauth.google.authorize_access_token")
-async def test_oauth_auth_user_exists(mock_token, client, db_session):
+async def test_oauth_auth_user_exists(mock_token, client, frontend_url, db_session):
     mock_token.return_value = {"userinfo": {"email": "user@domain.com"}}
 
     res = await client.post(
@@ -29,7 +29,7 @@ async def test_oauth_auth_user_exists(mock_token, client, db_session):
 
     res = await client.get("/oauth/auth")
     assert res.status_code == 302
-    assert res.headers["location"] == "http://localhost:3000"
+    assert res.headers["location"] == frontend_url
     cookies = res.cookies
     assert "access_token" in cookies
 
@@ -40,13 +40,13 @@ async def test_oauth_auth_user_exists(mock_token, client, db_session):
 
 @patch("src.auth.oauth.oauth.google.authorize_access_token")
 async def test_oauth_auth_log_in_with_password_should_return_403(
-    mock_token, client, db_session
+    mock_token, client, frontend_url, db_session
 ):
     mock_token.return_value = {"userinfo": {"email": "user@domain.com"}}
 
     res = await client.get("/oauth/auth")
     assert res.status_code == 302
-    assert res.headers["location"] == "http://localhost:3000"
+    assert res.headers["location"] == frontend_url
     cookies = res.cookies
     assert "access_token" in cookies
 
