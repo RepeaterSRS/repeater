@@ -24,12 +24,12 @@ export default function Profile() {
                 loading: false,
             }));
         } catch (err: any) {
-            setUserState((prev) => ({
+            setUserState({
                 data: null,
                 loading: false,
                 error:
                     err.detail ?? 'There was an error while fetching profile',
-            }));
+            });
         }
     }
 
