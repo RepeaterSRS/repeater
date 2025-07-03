@@ -22,7 +22,7 @@ async def test_create_review(db_session, user, user_client):
     deck_id = res.json()["id"]
 
     res = await user_client.post(
-        f"/decks/{deck_id}/cards", json={"content": "Test card"}
+        "/cards", json={"deck_id": deck_id, "content": "Test card"}
     )
     assert res.status_code == 201
     card_id = res.json()["id"]
@@ -107,7 +107,7 @@ async def test_create_review_card_wrong_user_returns_403(db_session, user, user_
     deck_id = res.json()["id"]
 
     res = await user_client.post(
-        f"/decks/{deck_id}/cards", json={"content": "Test card"}
+        "/cards", json={"deck_id": deck_id, "content": "Test card"}
     )
     assert res.status_code == 201
     card_id = res.json()["id"]
@@ -137,7 +137,7 @@ async def test_create_review_other_user_card(
     deck_id = res.json()["id"]
 
     res = await admin_client.post(
-        f"/decks/{deck_id}/cards", json={"content": "Test card"}
+        "/cards", json={"deck_id": deck_id, "content": "Test card"}
     )
     assert res.status_code == 201
     card_id = res.json()["id"]
@@ -167,7 +167,7 @@ async def test_create_review_skipped(db_session, user, user_client):
     deck_id = res.json()["id"]
 
     res = await user_client.post(
-        f"/decks/{deck_id}/cards", json={"content": "Test card"}
+        "/cards", json={"deck_id": deck_id, "content": "Test card"}
     )
     assert res.status_code == 201
     card_id = res.json()["id"]
@@ -220,7 +220,7 @@ async def test_create_review_forgot(db_session, user, user_client):
     deck_id = res.json()["id"]
 
     res = await user_client.post(
-        f"/decks/{deck_id}/cards", json={"content": "Test card"}
+        "/cards", json={"deck_id": deck_id, "content": "Test card"}
     )
     assert res.status_code == 201
     card_id = res.json()["id"]

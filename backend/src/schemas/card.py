@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 
 class CardCreate(BaseModel):
+    deck_id: UUID
     content: str
 
 
