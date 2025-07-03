@@ -492,12 +492,13 @@ components:
           type: string
           title: Name
         description:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Description
       type: object
       required:
       - name
-      - description
       title: DeckCreate
     DeckOut:
       properties:

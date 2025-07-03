@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 class DeckCreate(BaseModel):
     name: str
-    description: str
+    description: Optional[str] = None
 
 
 class DeckOut(BaseModel):
