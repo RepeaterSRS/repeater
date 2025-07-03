@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { loginAuthLoginPost } from '@/gen';
+import { registerAuthRegisterPost } from '@/gen';
 import { Button } from '@/components/ui/button';
 import GoogleLogin from '@/components/GoogleLogin';
 
-export default function Login() {
+export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -16,14 +16,14 @@ export default function Login() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await loginAuthLoginPost({
+            await registerAuthRegisterPost({
                 body: {
                     email: email,
                     password: password,
                 },
             });
         } catch (err: any) {
-            setError(err.detail ?? 'Failed to log in');
+            setError(err.detail ?? 'Failed to register');
         }
     };
 
@@ -50,14 +50,14 @@ export default function Login() {
                     className="border p-2"
                 />
                 {error && <p className="text-red-500">{error}</p>}
-                <Button type="submit">Login</Button>
+                <Button type="submit">Register</Button>
             </form>
             <div className="mt-4 flex items-center justify-center gap-4">
                 <a
-                    href="/register"
+                    href="/login"
                     className="whitespace-nowrap text-blue-600 hover:underline"
                 >
-                    Register
+                    Sign in
                 </a>
                 <div className="h-5 w-px bg-gray-300" />
                 <GoogleLogin href={apiURL.concat(googleOAuthURI)} />
