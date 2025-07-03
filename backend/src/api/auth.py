@@ -23,6 +23,9 @@ def login(
 
     if user.password_hash is None:
         auth_provider = user.auth_provider
+        assert auth_provider is not None, (
+            "Missing auth_provider with null password_hash"
+        )
         raise HTTPException(
             status_code=403,
             detail=f"This account was created via {auth_provider.title()}. Please use that provider to sign in.",
