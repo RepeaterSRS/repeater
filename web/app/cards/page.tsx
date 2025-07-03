@@ -2,6 +2,20 @@
 
 import { getDecksDecksGet, DeckOut, getCardsCardsGet, CardOut } from '@/gen';
 import { useEffect, useState } from 'react';
+import { Plus } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+    DialogTitle,
+    DialogTrigger,
+    DialogClose,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 export default function Cards() {
     const [decksState, setDecksState] = useState({
@@ -58,35 +72,80 @@ export default function Cards() {
     }
 
     return (
-        <div>
+        <div className="flex flex-col gap-4 px-8 py-4">
             <div>
-                <h2>Decks</h2>
+                <h1 className="mb-2 text-2xl">Decks</h1>
+
                 {decksState.loading && <p>Loading decks...</p>}
                 {decksState.error && <p>{decksState.error}</p>}
-                {!decksState.loading &&
-                    !decksState.error &&
-                    decksState.data.length === 0 && <p>No decks found</p>}
-                {!decksState.loading &&
-                    !decksState.error &&
-                    decksState.data.length > 0 &&
-                    decksState.data.map((deck) => (
-                        <p key={deck.id}>{deck.name}</p>
-                    ))}
+                {!decksState.loading && !decksState.error && (
+                    <div className="flex flex-row gap-4">
+                        {decksState.data.length > 0 &&
+                            decksState.data.map((deck) => (
+                                <Card
+                                    key={deck.id}
+                                    className="flex aspect-[3/4] w-34 flex-col items-center justify-center"
+                                ></Card>
+                            ))}
+                        <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline">
+                                        <Plus />
+                                        Create
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Create deck</DialogTitle>
+                                    </DialogHeader>
+                                    <form>
+                                        <Input
+                                            type="text"
+                                            placeholder="Deck name"
+                                        ></Input>
+                                        <Input
+                                            type="text"
+                                            placeholder="Description"
+                                        ></Input>
+                                    </form>
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button variant="secondary">
+                                                Discard
+                                            </Button>
+                                        </DialogClose>
+                                        <Button>Create</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </Card>
+                    </div>
+                )}
             </div>
+
             <div>
-                <h2>Cards</h2>
+                <h1 className="mb-2 text-2xl">Cards</h1>
 
                 {cardsState.loading && <p>Loading cards...</p>}
                 {cardsState.error && <p>{cardsState.error}</p>}
-                {!cardsState.loading &&
-                    !cardsState.error &&
-                    cardsState.data.length === 0 && <p>No cards found</p>}
-                {!cardsState.loading &&
-                    !cardsState.error &&
-                    cardsState.data.length > 0 &&
-                    cardsState.data.map((card) => (
-                        <p key={card.id}>{card.content}</p>
-                    ))}
+                {!cardsState.loading && !cardsState.error && (
+                    <div className="flex flex-row gap-4">
+                        {cardsState.data.length > 0 &&
+                            cardsState.data.map((card) => (
+                                <Card
+                                    key={card.id}
+                                    className="flex aspect-[3/4] w-34 flex-col items-center justify-center"
+                                ></Card>
+                            ))}
+                        <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
+                            <Button variant="outline">
+                                <Plus />
+                                Create
+                            </Button>
+                        </Card>
+                    </div>
+                )}
             </div>
         </div>
     );
