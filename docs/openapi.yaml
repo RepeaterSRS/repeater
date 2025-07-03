@@ -187,20 +187,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /decks/{deck_id}/cards:
+  /cards:
     post:
       tags:
-      - decks
+      - cards
       summary: Create Card
-      operationId: create_card_decks__deck_id__cards_post
+      operationId: create_card_cards_post
       parameters:
-      - name: deck_id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-          title: Deck Id
       - name: access_token
         in: cookie
         required: false
@@ -230,17 +223,24 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
     get:
       tags:
-      - decks
+      - cards
       summary: Get Cards
-      operationId: get_cards_decks__deck_id__cards_get
+      operationId: get_cards_cards_get
       parameters:
       - name: deck_id
-        in: path
-        required: true
+        in: query
+        required: false
         schema:
           type: string
           format: uuid
           title: Deck Id
+      - name: only_due
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Only Due
       - name: access_token
         in: cookie
         required: false
@@ -258,27 +258,20 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CardOut'
-                title: Response Get Cards Decks  Deck Id  Cards Get
+                title: Response Get Cards Cards Get
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /decks/{deck_id}/cards/{card_id}:
+  /cards/{card_id}:
     patch:
       tags:
-      - decks
+      - cards
       summary: Update Card
-      operationId: update_card_decks__deck_id__cards__card_id__patch
+      operationId: update_card_cards__card_id__patch
       parameters:
-      - name: deck_id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-          title: Deck Id
       - name: card_id
         in: path
         required: true
@@ -315,17 +308,10 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
     delete:
       tags:
-      - decks
+      - cards
       summary: Delete Card
-      operationId: delete_card_decks__deck_id__cards__card_id__delete
+      operationId: delete_card_cards__card_id__delete
       parameters:
-      - name: deck_id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-          title: Deck Id
       - name: card_id
         in: path
         required: true
@@ -445,11 +431,16 @@ components:
   schemas:
     CardCreate:
       properties:
+        deck_id:
+          type: string
+          format: uuid
+          title: Deck Id
         content:
           type: string
           title: Content
       type: object
       required:
+      - deck_id
       - content
       title: CardCreate
     CardOut:
