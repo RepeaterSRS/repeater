@@ -1,6 +1,13 @@
 'use client';
 
-import { getDecksDecksGet, DeckOut, getCardsCardsGet, CardOut } from '@/gen';
+import {
+    getDecksDecksGet,
+    DeckOut,
+    getCardsCardsGet,
+    CardOut,
+    createDeckDecksPost,
+    DeckCreate,
+} from '@/gen';
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 
@@ -29,6 +36,13 @@ export default function Cards() {
         loading: true,
         error: null as string | null,
     });
+
+    const [deckCreationState, setDeckCreationState] = useState({
+        name: '',
+        description: '',
+    });
+
+    const [isDeckDialogOpen, setIsDeckDialogOpen] = useState(false);
 
     useEffect(() => {
         fetchDecks();
@@ -71,6 +85,26 @@ export default function Cards() {
         }
     }
 
+    async function onDeckCreate(e: React.FormEvent) {
+        e.preventDefault();
+        try {
+            await createDeckDecksPost({
+                body: {
+                    name: deckCreationState.name,
+                    description: deckCreationState.description,
+                },
+            });
+            fetchDecks();
+            setDeckCreationState({ name: '', description: '' });
+            setIsDeckDialogOpen(false);
+        } catch (err: any) {
+            console.error(
+                'There was an error creating deck: ',
+                err.detail ?? 'no details found'
+            );
+        }
+    }
+
     return (
         <div className="flex flex-col gap-4 px-8 py-4">
             <div>
@@ -79,16 +113,26 @@ export default function Cards() {
                 {decksState.loading && <p>Loading decks...</p>}
                 {decksState.error && <p>{decksState.error}</p>}
                 {!decksState.loading && !decksState.error && (
-                    <div className="flex flex-row gap-4">
+                    <div className="flex flex-row flex-wrap gap-4">
                         {decksState.data.length > 0 &&
                             decksState.data.map((deck) => (
                                 <Card
                                     key={deck.id}
-                                    className="flex aspect-[3/4] w-34 flex-col items-center justify-center"
-                                ></Card>
+                                    className="flex aspect-[3/4] w-34 flex-col p-4"
+                                >
+                                    <p className="text-lg font-bold">
+                                        {deck.name}
+                                    </p>
+                                    <p className="text-neutral-700">
+                                        {deck.description}
+                                    </p>
+                                </Card>
                             ))}
                         <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
-                            <Dialog>
+                            <Dialog
+                                open={isDeckDialogOpen}
+                                onOpenChange={setIsDeckDialogOpen}
+                            >
                                 <DialogTrigger asChild>
                                     <Button variant="outline">
                                         <Plus />
@@ -99,24 +143,51 @@ export default function Cards() {
                                     <DialogHeader>
                                         <DialogTitle>Create deck</DialogTitle>
                                     </DialogHeader>
-                                    <form>
+                                    <form onSubmit={onDeckCreate}>
                                         <Input
                                             type="text"
                                             placeholder="Deck name"
+                                            value={deckCreationState.name}
+                                            onChange={(e) =>
+                                                setDeckCreationState(
+                                                    (prev) => ({
+                                                        ...prev,
+                                                        name: e.target.value,
+                                                    })
+                                                )
+                                            }
                                         ></Input>
                                         <Input
                                             type="text"
                                             placeholder="Description"
+                                            value={
+                                                deckCreationState.description
+                                            }
+                                            onChange={(e) =>
+                                                setDeckCreationState(
+                                                    (prev) => ({
+                                                        ...prev,
+                                                        description:
+                                                            e.target.value,
+                                                    })
+                                                )
+                                            }
                                         ></Input>
-                                    </form>
-                                    <DialogFooter>
-                                        <DialogClose asChild>
-                                            <Button variant="secondary">
-                                                Discard
+                                        <DialogFooter>
+                                            <Button
+                                                type="button"
+                                                variant="secondary"
+                                                onClick={() =>
+                                                    setIsDeckDialogOpen(false)
+                                                }
+                                            >
+                                                Close
                                             </Button>
-                                        </DialogClose>
-                                        <Button>Create</Button>
-                                    </DialogFooter>
+                                            <Button type="submit">
+                                                Create
+                                            </Button>
+                                        </DialogFooter>
+                                    </form>
                                 </DialogContent>
                             </Dialog>
                         </Card>
