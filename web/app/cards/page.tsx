@@ -11,6 +11,10 @@ import {
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -22,7 +26,16 @@ import {
     DialogTrigger,
     DialogClose,
 } from '@/components/ui/dialog';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function Cards() {
     const [decksState, setDecksState] = useState({
@@ -35,11 +48,6 @@ export default function Cards() {
         data: [] as CardOut[],
         loading: true,
         error: null as string | null,
-    });
-
-    const [deckCreationState, setDeckCreationState] = useState({
-        name: '',
-        description: '',
     });
 
     const [isDeckDialogOpen, setIsDeckDialogOpen] = useState(false);
@@ -85,17 +93,29 @@ export default function Cards() {
         }
     }
 
-    async function onDeckCreate(e: React.FormEvent) {
-        e.preventDefault();
+    const deckFormSchema = z.object({
+        name: z.string().min(1, 'Deck name required').max(50),
+        description: z.string().optional(),
+    }) satisfies z.ZodType<DeckCreate>;
+
+    const deckForm = useForm<z.infer<typeof deckFormSchema>>({
+        resolver: zodResolver(deckFormSchema),
+        defaultValues: {
+            name: '',
+            description: '',
+        },
+    });
+
+    async function onDeckCreate(values: z.infer<typeof deckFormSchema>) {
         try {
             await createDeckDecksPost({
                 body: {
-                    name: deckCreationState.name,
-                    description: deckCreationState.description,
+                    name: values.name,
+                    description: values.description,
                 },
             });
             fetchDecks();
-            setDeckCreationState({ name: '', description: '' });
+            deckForm.reset();
             setIsDeckDialogOpen(false);
         } catch (err: any) {
             console.error(
@@ -123,12 +143,13 @@ export default function Cards() {
                                     <p className="text-lg font-bold">
                                         {deck.name}
                                     </p>
-                                    <p className="text-neutral-700">
+                                    <p className="text-sm text-neutral-700">
                                         {deck.description}
                                     </p>
                                 </Card>
                             ))}
                         <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
+                            {/* TODO: break out deck creation into separate component  */}
                             <Dialog
                                 open={isDeckDialogOpen}
                                 onOpenChange={setIsDeckDialogOpen}
@@ -143,51 +164,67 @@ export default function Cards() {
                                     <DialogHeader>
                                         <DialogTitle>Create deck</DialogTitle>
                                     </DialogHeader>
-                                    <form onSubmit={onDeckCreate}>
-                                        <Input
-                                            type="text"
-                                            placeholder="Deck name"
-                                            value={deckCreationState.name}
-                                            onChange={(e) =>
-                                                setDeckCreationState(
-                                                    (prev) => ({
-                                                        ...prev,
-                                                        name: e.target.value,
-                                                    })
-                                                )
-                                            }
-                                        ></Input>
-                                        <Input
-                                            type="text"
-                                            placeholder="Description"
-                                            value={
-                                                deckCreationState.description
-                                            }
-                                            onChange={(e) =>
-                                                setDeckCreationState(
-                                                    (prev) => ({
-                                                        ...prev,
-                                                        description:
-                                                            e.target.value,
-                                                    })
-                                                )
-                                            }
-                                        ></Input>
-                                        <DialogFooter>
-                                            <Button
-                                                type="button"
-                                                variant="secondary"
-                                                onClick={() =>
-                                                    setIsDeckDialogOpen(false)
-                                                }
-                                            >
-                                                Close
-                                            </Button>
-                                            <Button type="submit">
-                                                Create
-                                            </Button>
-                                        </DialogFooter>
-                                    </form>
+                                    <Form {...deckForm}>
+                                        <form
+                                            className="flex flex-col gap-4"
+                                            onSubmit={deckForm.handleSubmit(
+                                                onDeckCreate
+                                            )}
+                                        >
+                                            <FormField
+                                                control={deckForm.control}
+                                                name="name"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="font-semibold">
+                                                            Deck name
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                type="text"
+                                                                placeholder="Deck name"
+                                                                className="w-32"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={deckForm.control}
+                                                name="description"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="font-semibold">
+                                                            Description
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Description"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <DialogFooter>
+                                                <DialogClose asChild>
+                                                    <Button
+                                                        type="button"
+                                                        variant="secondary"
+                                                    >
+                                                        Close
+                                                    </Button>
+                                                </DialogClose>
+                                                <Button type="submit">
+                                                    Create
+                                                </Button>
+                                            </DialogFooter>
+                                        </form>
+                                    </Form>
                                 </DialogContent>
                             </Dialog>
                         </Card>
@@ -210,7 +247,7 @@ export default function Cards() {
                                 ></Card>
                             ))}
                         <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
-                            <Button variant="outline">
+                            <Button variant="outline" disabled>
                                 <Plus />
                                 Create
                             </Button>
