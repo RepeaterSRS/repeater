@@ -46,6 +46,7 @@ services:
     volumes:
       - ./web:/app
       - ./docs:/app/docs
+      - /app/node_modules
 
     develop:
       watch:
