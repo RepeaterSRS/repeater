@@ -1,0 +1,17 @@
+{
+    "version": "repeater-v1",
+    "name": "deck",
+    "description": "",
+    "cards": [
+        {"content": "card 1"},
+        {"content": "card 2"},
+        {"content": "card 3"},
+        {"content": "card 4"},
+        {"content": "card 5"},
+        {"content": "card 6"},
+        {"content": "card 7"},
+        {"content": "card 8"},
+        {"content": "card 9"},
+        {"content": "card 10"}
+    ]
+}

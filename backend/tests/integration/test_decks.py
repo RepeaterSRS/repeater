@@ -1,6 +1,7 @@
+import json
 import uuid
 
-from src.db.models import Deck
+from src.db.models import Card, Deck
 from tests.asserts import is_utc_isoformat_string, is_uuid_string
 
 
@@ -151,3 +152,51 @@ async def test_delete_deck_doesnt_exist_returns_404(db_session, user_client):
 
     deck = Deck.filter_by(db_session, name="deck").first()
     assert deck is not None
+
+
+async def test_import_deck_custom_importer(db_session, user_client):
+    with open("data/deck.json", "rb") as file:
+        file_bytes = file.read()
+        file.seek(0)
+        deck_json = json.load(file)
+
+    files = {"file": ("deck.json", file_bytes, "application/json")}
+    res = await user_client.post(
+        "decks/import", params={"format": "repeater"}, files=files
+    )
+    assert res.status_code == 201
+
+    deck = Deck.all(db_session)[0]
+    assert deck_json["name"] == deck.name
+    assert len(deck_json["cards"]) == len(Card.all(db_session))
+
+
+async def test_export_deck(db_session, user_client):
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    deck_id = res.json()["id"]
+    res = await user_client.post(
+        "/cards",
+        json={
+            "deck_id": deck_id,
+            "content": "Test card",
+        },
+    )
+
+    res = await user_client.get(f"/decks/{deck_id}/export")
+    assert res.status_code == 200
+    assert res.headers["content-type"] == "application/octet-stream"
+
+    json_str = res.content.decode("utf-8")
+    json_obj = json.loads(json_str)
+    assert json_obj == {
+        "version": "repeater-v1",
+        "name": "deck",
+        "description": "my deck",
+        "cards": [{"content": "Test card"}],
+    }

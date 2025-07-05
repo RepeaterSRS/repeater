@@ -1,12 +1,21 @@
+from io import BytesIO
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from src.auth.jwt import get_current_user
 from src.db import get_db
 from src.db.models import Deck, User
+from src.import_export import (
+    BaseImporter,
+    deck_to_deck_data,
+    export,
+    store_imported_deck,
+)
+from src.import_export.custom import CustomImporter
 from src.schemas.deck import DeckCreate, DeckOut, DeckUpdate
 from src.util import get_user_deck
 
@@ -63,3 +72,44 @@ def delete_deck(
 
     deck.delete(db_session)
     return {"id": deck.id}
+
+
+@router.post("/import", status_code=201)
+async def import_deck(
+    format: str = "repeater",
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+    db_session: Session = Depends(get_db),
+):
+    if format == "repeater":
+        importer: BaseImporter = CustomImporter()
+        try:
+            content = await file.read()
+            deck_data = importer.parse(content)
+        except Exception as err:
+            raise HTTPException(status_code=400, detail=err)
+        store_imported_deck(deck_data, user.id, db_session)
+    else:
+        raise HTTPException(status_code=400, detail="Unknown format")
+
+
+@router.get("/{deck_id}/export")
+def export_deck(
+    deck_id: UUID,
+    user: User = Depends(get_current_user),
+    db_session: Session = Depends(get_db),
+):
+    try:
+        deck = get_user_deck(deck_id, user.id, db_session)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+    deck_data = deck_to_deck_data(deck)
+    deck_bytes = export(deck_data)
+    return StreamingResponse(
+        BytesIO(deck_bytes),
+        media_type="application/octet-stream",
+        headers={
+            "Content-Disposition": f'attachment; filename="deck_{deck.name}.json"'
+        },
+    )
