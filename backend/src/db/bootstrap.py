@@ -1,7 +1,13 @@
+import logging
+
 import bcrypt
 
 from src.db import get_db
 from src.db.models import User, UserRole
+from src.import_export import BaseImporter, store_imported_deck
+from src.import_export.custom import CustomImporter
+
+DECK_JSON_PATH = "data/deck.json"
 
 
 def bootstrap():
@@ -12,7 +18,17 @@ def bootstrap():
         pw_bytes = password.encode("utf-8")
         pw_hashed = bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
         user = User(email=email, password_hash=pw_hashed, role=UserRole.ADMIN)
-        user.save(db_session)
+        user = user.save(db_session)
+
+        logging.info(f"Bootstrapped user {email} : {password}")
+
+        with open(DECK_JSON_PATH, "rb") as file:
+            content = file.read()
+            importer: BaseImporter = CustomImporter()
+            deck_data = importer.parse(content)
+            store_imported_deck(deck_data, user.id, db_session)
+
+        logging.info(f"Bootstrapped {DECK_JSON_PATH}")
 
 
 if __name__ == "__main__":
