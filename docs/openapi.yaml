@@ -187,6 +187,80 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /decks/import:
+    post:
+      tags:
+      - decks
+      summary: Import Deck
+      operationId: import_deck_decks_import_post
+      parameters:
+      - name: format
+        in: query
+        required: false
+        schema:
+          type: string
+          default: repeater
+          title: Format
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_import_deck_decks_import_post'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /decks/{deck_id}/export:
+    get:
+      tags:
+      - decks
+      summary: Export Deck
+      operationId: export_deck_decks__deck_id__export_get
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /cards:
     post:
       tags:
@@ -429,6 +503,16 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    Body_import_deck_decks_import_post:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_import_deck_decks_import_post
     CardCreate:
       properties:
         deck_id:
