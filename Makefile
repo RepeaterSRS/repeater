@@ -56,4 +56,4 @@ migrate-and-bootstrap: reset-db
 
 
 .PHONY: dev
-dev: reset-db build-and-start-local migrate-and-bootstrap
+dev: reset-db build-and-start-local generate-web-client migrate-and-bootstrap

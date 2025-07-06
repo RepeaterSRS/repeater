@@ -18,7 +18,7 @@ def bootstrap():
         user = User(email=email, password_hash=pw_hashed, role=UserRole.ADMIN)
         user = user.save(db_session)
 
-        print(f"Bootstrapped user {email} : {password}")
+        print(f"Bootstrapped {email}")
 
         with open(DECK_JSON_PATH, "rb") as file:
             content = file.read()
