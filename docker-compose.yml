@@ -44,10 +44,9 @@ services:
       - "3000:3000"
 
     volumes:
-      - ./web:/app
+      - ./web/src:/app/src
+      - ./web/public:/app/public
       - ./docs:/app/docs
-      - /app/node_modules
-      - /app/.next
 
     develop:
       watch:

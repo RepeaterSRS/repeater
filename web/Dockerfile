@@ -14,7 +14,9 @@ RUN pnpm install --frozen-lockfile
 FROM base AS development
 WORKDIR /app
 COPY --from=deps /install/node_modules ./node_modules
-COPY . .
+COPY package.json pnpm-lock.yaml next.config.ts tsconfig.json ./
+COPY src ./src
+COPY public ./public
 EXPOSE 3000
 CMD ["pnpm", "run", "dev"]
 
