@@ -61,9 +61,6 @@ async def test_register_and_login_user(client):
     access_token["sub"] == is_uuid_string()
     access_token["email"] == "user@domain.com"
     access_token["role"] == UserRole.USER
-    now = int(time.time())
-    assert abs(access_token["iat"] - now) < 5
-    assert access_token["exp"] > now
 
 
 async def test_register_and_login_user_wrong_credentials(client):

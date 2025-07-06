@@ -151,3 +151,9 @@ class Review(Base, BaseMixin):
 
     card = relationship("Card", back_populates="reviews")
     user = relationship("User", back_populates="reviews")
+
+    def review_succeeded(self):
+        return self.feedback in {ReviewFeedback.OK}
+
+    def review_failed(self):
+        return self.feedback in {ReviewFeedback.FORGOT}

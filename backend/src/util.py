@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from sqlalchemy.orm import Session
@@ -17,3 +18,22 @@ def get_user_card(card_id: UUID, user_id: UUID, db_session: Session):
     if not card or card.deck.user_id != user_id:
         raise ValueError("Card not found or access denied")
     return card
+
+
+def calculate_streak(start: datetime, dates: list[datetime]) -> int:
+    seen = set(d.date() for d in dates)
+    streak = 0
+    current = start.date()
+
+    # The start day may or may not be in dates, but don't penalize the streak if it isn't
+    if current not in seen:
+        current -= timedelta(days=1)
+    else:
+        streak += 1
+        current -= timedelta(days=1)
+
+    while current in seen:
+        streak += 1
+        current -= timedelta(days=1)
+
+    return streak
