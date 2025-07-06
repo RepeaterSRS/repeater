@@ -47,6 +47,7 @@ services:
       - ./web:/app
       - ./docs:/app/docs
       - /app/node_modules
+      - /app/.next
 
     develop:
       watch:
