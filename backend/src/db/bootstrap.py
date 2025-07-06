@@ -1,5 +1,3 @@
-import logging
-
 import bcrypt
 
 from src.db import get_db
@@ -20,7 +18,7 @@ def bootstrap():
         user = User(email=email, password_hash=pw_hashed, role=UserRole.ADMIN)
         user = user.save(db_session)
 
-        logging.info(f"Bootstrapped user {email} : {password}")
+        print(f"Bootstrapped user {email} : {password}")
 
         with open(DECK_JSON_PATH, "rb") as file:
             content = file.read()
@@ -28,7 +26,7 @@ def bootstrap():
             deck_data = importer.parse(content)
             store_imported_deck(deck_data, user.id, db_session)
 
-        logging.info(f"Bootstrapped {DECK_JSON_PATH}")
+        print(f"Bootstrapped {DECK_JSON_PATH}")
 
 
 if __name__ == "__main__":

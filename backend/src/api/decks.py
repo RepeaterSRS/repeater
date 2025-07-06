@@ -102,7 +102,7 @@ def export_deck(
     try:
         deck = get_user_deck(deck_id, user.id, db_session)
     except ValueError as err:
-        raise HTTPException(status_code=400, detail=str(err))
+        raise HTTPException(status_code=404, detail=str(err))
 
     deck_data = deck_to_deck_data(deck)
     deck_bytes = export(deck_data)
