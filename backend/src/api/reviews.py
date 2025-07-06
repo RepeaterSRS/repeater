@@ -1,3 +1,6 @@
+from typing import List
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -65,7 +68,23 @@ def create_review(
         feedback=review_req.feedback,
         interval=schedule_result.interval,
         repetitions=schedule_result.repetitions,
-        ease_factor=schedule_result.ease_factor,
+        ease_factor="{:.2f}".format(schedule_result.ease_factor),
     )
     review.save(db_session)
     return review
+
+
+@router.get("/{card_id}", response_model=List[ReviewOut])
+def get_review_history(
+    card_id: UUID,
+    user: User = Depends(get_current_user),
+    db_session: Session = Depends(get_db),
+):
+    card = Card.get(db_session, card_id)
+    if not card:
+        raise HTTPException(status_code=404)
+
+    if card.deck.user_id != user.id:
+        raise HTTPException(status_code=403)
+
+    return sorted(card.reviews, key=lambda r: r.reviewed_at, reverse=True)
