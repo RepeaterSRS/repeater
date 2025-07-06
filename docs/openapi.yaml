@@ -501,6 +501,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /stats:
+    get:
+      tags:
+      - statistics
+      summary: Get User Statistics
+      operationId: get_user_statistics_stats_get
+      parameters:
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticsOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     Body_import_deck_decks_import_post:
@@ -710,6 +738,29 @@ components:
       - ease_factor
       - created_at
       title: ReviewOut
+    StatisticsOut:
+      properties:
+        total_reviews:
+          type: integer
+          title: Total Reviews
+        daily_reviews:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Daily Reviews
+        streak:
+          type: integer
+          title: Streak
+        success_rate:
+          type: number
+          title: Success Rate
+      type: object
+      required:
+      - total_reviews
+      - daily_reviews
+      - streak
+      - success_rate
+      title: StatisticsOut
     UserCreate:
       properties:
         email:
