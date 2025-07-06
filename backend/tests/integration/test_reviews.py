@@ -257,3 +257,64 @@ async def test_create_review_forgot(db_session, user, user_client):
     assert card.next_review_date.date() == next_review_date
 
     app.dependency_overrides.clear()
+
+
+async def test_get_review_history(user, user_client):
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    deck_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/cards", json={"deck_id": deck_id, "content": "Test card"}
+    )
+    card_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/reviews",
+        json={
+            "card_id": card_id,
+            "user_id": str(user.id),
+            "feedback": ReviewFeedback.FORGOT,
+        },
+    )
+
+    res = await user_client.post(
+        "/reviews",
+        json={
+            "card_id": card_id,
+            "user_id": str(user.id),
+            "feedback": ReviewFeedback.OK,
+        },
+    )
+
+    # Reviews should be ordered in descending order based on reviewed_at
+    res = await user_client.get(f"/reviews/{card_id}")
+    assert res.json() == [
+        {
+            "id": is_uuid_string(),
+            "card_id": is_uuid_string(),
+            "user_id": is_uuid_string(),
+            "reviewed_at": is_utc_isoformat_string(),
+            "feedback": ReviewFeedback.OK,
+            "interval": 1,
+            "repetitions": 1,
+            "ease_factor": 2.45,
+            "created_at": is_utc_isoformat_string(),
+        },
+        {
+            "id": is_uuid_string(),
+            "card_id": is_uuid_string(),
+            "user_id": is_uuid_string(),
+            "reviewed_at": is_utc_isoformat_string(),
+            "feedback": ReviewFeedback.FORGOT,
+            "interval": 1,
+            "repetitions": 0,
+            "ease_factor": 2.3,
+            "created_at": is_utc_isoformat_string(),
+        },
+    ]
