@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
 import DeckCreationDialog from '@/components/DeckCreationDialog';
 import CardCreationDialog from '@/components/CardCreationDialog';
@@ -77,14 +77,18 @@ export default function Decks() {
                             decksState.data.map((deck) => (
                                 <Card
                                     key={deck.id}
-                                    className="flex aspect-[3/4] w-34 flex-col p-4"
+                                    className="flex aspect-[3/4] w-34 flex-col gap-2"
                                 >
-                                    <p className="text-lg font-bold">
-                                        {deck.name}
-                                    </p>
-                                    <p className="text-sm text-neutral-700">
-                                        {deck.description}
-                                    </p>
+                                    <CardHeader>
+                                        <h3 className="text-lg font-bold">
+                                            {deck.name}
+                                        </h3>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm text-neutral-600">
+                                            {deck.description}
+                                        </p>
+                                    </CardContent>
                                 </Card>
                             ))}
                         <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
@@ -112,8 +116,18 @@ export default function Decks() {
                             cardsState.data.map((card) => (
                                 <Card
                                     key={card.id}
-                                    className="flex aspect-[3/4] w-34 flex-col items-center justify-center"
-                                ></Card>
+                                    className="flex aspect-[3/4] w-34 flex-col gap-2"
+                                >
+                                    <CardHeader>
+                                        <p className="text-xs text-neutral-600">
+                                            {decksState.data.find(
+                                                (deck) =>
+                                                    deck.id === card.deck_id
+                                            )?.name || '-'}
+                                        </p>
+                                    </CardHeader>
+                                    <CardContent>{card.content}</CardContent>
+                                </Card>
                             ))}
                         <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
                             <CardCreationDialog
