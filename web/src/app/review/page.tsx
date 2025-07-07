@@ -19,13 +19,13 @@ export default function Review() {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/cards">
+                                <BreadcrumbLink href="/decks">
                                     Deck
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
-                                <BreadcrumbLink href="/cards?deckid=french-deck-ID">
+                                <BreadcrumbLink href="/decks?deckid=french-deck-ID">
                                     French
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
