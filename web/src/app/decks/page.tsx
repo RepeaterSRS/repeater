@@ -1,41 +1,13 @@
 'use client';
 
-import {
-    getDecksDecksGet,
-    DeckOut,
-    getCardsCardsGet,
-    CardOut,
-    createDeckDecksPost,
-    DeckCreate,
-} from '@/gen';
+import { getDecksDecksGet, DeckOut, getCardsCardsGet, CardOut } from '@/gen';
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogFooter,
-    DialogTitle,
-    DialogTrigger,
-    DialogClose,
-} from '@/components/ui/dialog';
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+
+import DeckCreationDialog from '@/components/DeckCreationDialog';
 
 export default function Decks() {
     const [decksState, setDecksState] = useState({
@@ -49,8 +21,6 @@ export default function Decks() {
         loading: true,
         error: null as string | null,
     });
-
-    const [isDeckDialogOpen, setIsDeckDialogOpen] = useState(false);
 
     useEffect(() => {
         fetchDecks();
@@ -93,38 +63,6 @@ export default function Decks() {
         }
     }
 
-    const deckFormSchema = z.object({
-        name: z.string().min(1, 'Deck name required').max(50),
-        description: z.string().optional(),
-    }) satisfies z.ZodType<DeckCreate>;
-
-    const deckForm = useForm<z.infer<typeof deckFormSchema>>({
-        resolver: zodResolver(deckFormSchema),
-        defaultValues: {
-            name: '',
-            description: '',
-        },
-    });
-
-    async function onDeckCreate(values: z.infer<typeof deckFormSchema>) {
-        try {
-            await createDeckDecksPost({
-                body: {
-                    name: values.name,
-                    description: values.description,
-                },
-            });
-            fetchDecks();
-            deckForm.reset();
-            setIsDeckDialogOpen(false);
-        } catch (err: any) {
-            console.error(
-                'There was an error creating deck: ',
-                err.detail ?? 'no details found'
-            );
-        }
-    }
-
     return (
         <div className="flex flex-col gap-4 px-8 py-4">
             <div>
@@ -149,84 +87,14 @@ export default function Decks() {
                                 </Card>
                             ))}
                         <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
-                            {/* TODO: break out deck creation into separate component  */}
-                            <Dialog
-                                open={isDeckDialogOpen}
-                                onOpenChange={setIsDeckDialogOpen}
-                            >
-                                <DialogTrigger asChild>
+                            <DeckCreationDialog
+                                onSuccess={fetchDecks}
+                                trigger={
                                     <Button variant="outline">
-                                        <Plus />
-                                        Create
+                                        <Plus /> Create
                                     </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Create deck</DialogTitle>
-                                    </DialogHeader>
-                                    <Form {...deckForm}>
-                                        <form
-                                            className="flex flex-col gap-4"
-                                            onSubmit={deckForm.handleSubmit(
-                                                onDeckCreate
-                                            )}
-                                        >
-                                            <FormField
-                                                control={deckForm.control}
-                                                name="name"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="font-semibold">
-                                                            Deck name
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                type="text"
-                                                                placeholder="Deck name"
-                                                                className="w-32"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={deckForm.control}
-                                                name="description"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="font-semibold">
-                                                            Description
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Textarea
-                                                                placeholder="Description"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-
-                                            <DialogFooter>
-                                                <DialogClose asChild>
-                                                    <Button
-                                                        type="button"
-                                                        variant="secondary"
-                                                    >
-                                                        Close
-                                                    </Button>
-                                                </DialogClose>
-                                                <Button type="submit">
-                                                    Create
-                                                </Button>
-                                            </DialogFooter>
-                                        </form>
-                                    </Form>
-                                </DialogContent>
-                            </Dialog>
+                                }
+                            ></DeckCreationDialog>
                         </Card>
                     </div>
                 )}
