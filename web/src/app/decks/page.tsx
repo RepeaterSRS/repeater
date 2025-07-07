@@ -37,7 +37,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
-export default function Cards() {
+export default function Decks() {
     const [decksState, setDecksState] = useState({
         data: [] as DeckOut[],
         loading: true,

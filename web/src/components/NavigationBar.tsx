@@ -12,7 +12,7 @@ export default function NavigationBar() {
 
     const tabs = [
         { href: '/review', label: 'Review' },
-        { href: '/cards', label: 'Cards' },
+        { href: '/decks', label: 'Decks' },
         { href: '/profile', label: 'Profile' },
     ];
 
