@@ -1,10 +1,7 @@
-import logging
-
 from authlib.integrations.starlette_client import OAuth
 from sqlalchemy.orm import Session
 from starlette.config import Config
 
-from src.auth.jwt import create_access_token
 from src.db.models import User, UserRole
 
 config = Config(".env")
@@ -18,7 +15,7 @@ oauth.register(
 )
 
 
-async def get_access_token_oauth(request, db_session: Session):
+async def get_user_oauth(request, db_session: Session):
     token = await oauth.google.authorize_access_token(request)
 
     assert "userinfo" in token, "Missing userinfo in token"
@@ -34,12 +31,4 @@ async def get_access_token_oauth(request, db_session: Session):
         )
         user.save(db_session)
 
-    logging.info(f"Authorized {email} via oauth")
-
-    return create_access_token(
-        {
-            "sub": str(user.id),
-            "email": user.email,
-            "role": user.role,
-        }
-    )
+    return user
