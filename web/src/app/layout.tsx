@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import NavigationBar from '@/components/NavigationBar';
+import { AppProviders } from './providers';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -31,7 +32,7 @@ export default function RootLayout({
                 <header className="flex w-screen flex-row justify-center">
                     <NavigationBar />
                 </header>
-                {children}
+                <AppProviders>{children}</AppProviders>
             </body>
         </html>
     );
