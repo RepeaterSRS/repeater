@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 import DeckCreationDialog from '@/components/DeckCreationDialog';
+import CardCreationDialog from '@/components/CardCreationDialog';
 
 export default function Decks() {
     const [decksState, setDecksState] = useState({
@@ -91,7 +92,7 @@ export default function Decks() {
                                 onSuccess={fetchDecks}
                                 trigger={
                                     <Button variant="outline">
-                                        <Plus /> Create
+                                        <Plus /> New
                                     </Button>
                                 }
                             ></DeckCreationDialog>
@@ -115,10 +116,15 @@ export default function Decks() {
                                 ></Card>
                             ))}
                         <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
-                            <Button variant="outline" disabled>
-                                <Plus />
-                                Create
-                            </Button>
+                            <CardCreationDialog
+                                decks={decksState.data}
+                                onSuccess={fetchCards}
+                                trigger={
+                                    <Button variant="outline">
+                                        <Plus /> Add
+                                    </Button>
+                                }
+                            ></CardCreationDialog>
                         </Card>
                     </div>
                 )}
