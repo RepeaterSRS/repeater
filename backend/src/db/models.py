@@ -66,6 +66,7 @@ class User(Base, BaseMixin):
     )
     role = mapped_column(String, nullable=False)
     auth_provider = mapped_column(String, default="password", nullable=False)
+    token_version = mapped_column(Integer, default=0, nullable=False)
 
     decks = relationship("Deck", back_populates="user")
     reviews = relationship("Review", back_populates="user")

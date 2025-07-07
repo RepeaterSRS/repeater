@@ -16,9 +16,10 @@ engine = create_engine(database_url)
 TestingSessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def set_env():
-    os.environ["TEST_MODE"] = "true"
+@pytest.fixture(scope="function")
+def ignore_jwt_expiration():
+    # This is used on tests that require the freezegun to ignore JWT expiration
+    os.environ["IGNORE_JWT_EXPIRATION"] = "true"
 
 
 @pytest.fixture(scope="function")
@@ -113,30 +114,10 @@ async def user_client(user, client_factory):
         },
     )
     assert res.status_code == 204
-    token = res.cookies.get("access_token")
-    assert token is not None
+    access_token = res.cookies.get("access_token")
+    assert access_token is not None
 
-    client.cookies.set("access_token", token)
-    yield client
-    await client.aclose()
-
-
-@pytest.fixture
-async def long_lived_user_client(user, client_factory):
-    """User client with a JWT that doesnt expire"""
-    client = await client_factory()
-    res = await client.post(
-        "/auth/login",
-        json={
-            "email": "user@domain.com",
-            "password": "password",
-        },
-    )
-    assert res.status_code == 204
-    token = res.cookies.get("access_token")
-    assert token is not None
-
-    client.cookies.set("access_token", token)
+    client.cookies.set("access_token", access_token)
     yield client
     await client.aclose()
 

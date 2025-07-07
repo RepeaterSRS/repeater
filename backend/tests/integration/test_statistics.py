@@ -4,7 +4,7 @@ from src.db.models import ReviewFeedback
 
 
 @freeze_time("2025-07-02 13:00:00")
-async def test_get_statistics(user, user_client):
+async def test_get_statistics(ignore_jwt_expiration, user, user_client):
     res = await user_client.post(
         "/decks",
         json={
@@ -55,7 +55,7 @@ async def test_get_statistics(user, user_client):
 
 
 @freeze_time("2025-07-01")
-async def test_get_statistics_same_day(user, user_client):
+async def test_get_statistics_same_day(ignore_jwt_expiration, user, user_client):
     res = await user_client.post(
         "/decks",
         json={
@@ -105,7 +105,7 @@ async def test_get_statistics_same_day(user, user_client):
 
 
 @freeze_time("2025-07-02")
-async def test_get_statistics_skipped(user, user_client):
+async def test_get_statistics_skipped(ignore_jwt_expiration, user, user_client):
     res = await user_client.post(
         "/decks",
         json={

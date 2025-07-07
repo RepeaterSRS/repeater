@@ -12,6 +12,7 @@ async def test_oauth_auth(mock_token, client, frontend_url, db_session):
     assert res.headers["location"] == frontend_url
     cookies = res.cookies
     assert "access_token" in cookies
+    assert "refresh_token" in cookies
 
     user = User.filter_by(db_session, email="user@domain.com").first()
     assert user is not None
