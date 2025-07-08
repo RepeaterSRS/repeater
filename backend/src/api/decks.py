@@ -81,6 +81,9 @@ async def import_deck(
     user: User = Depends(get_current_user),
     db_session: Session = Depends(get_db),
 ):
+    if user.is_guest:
+        raise HTTPException(status_code=403)
+
     if format == "repeater":
         importer: BaseImporter = CustomImporter()
         try:
@@ -99,6 +102,9 @@ def export_deck(
     user: User = Depends(get_current_user),
     db_session: Session = Depends(get_db),
 ):
+    if user.is_guest:
+        raise HTTPException(status_code=403)
+
     try:
         deck = get_user_deck(deck_id, user.id, db_session)
     except ValueError as err:

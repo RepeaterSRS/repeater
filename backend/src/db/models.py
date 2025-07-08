@@ -100,6 +100,10 @@ class User(Base, BaseMixin):
         self.role = UserRole.USER
         self.token_version += 1  # Invalidate refresh tokens
 
+    @property
+    def is_guest(self):
+        return self.role == UserRole.GUEST
+
 
 class Deck(Base, BaseMixin):
     __tablename__ = "decks"

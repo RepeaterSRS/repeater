@@ -187,3 +187,33 @@ async def test_export_deck(db_session, user_client):
         "description": "my deck",
         "cards": [{"content": "Test card"}],
     }
+
+
+async def test_guest_user_import_deck_returns_403(client):
+    with open("data/deck.json", "rb") as file:
+        file_bytes = file.read()
+
+    files = {"file": ("deck.json", file_bytes, "application/json")}
+    res = await client.post("decks/import", params={"format": "repeater"}, files=files)
+    assert res.status_code == 403
+
+
+async def test_guest_user_export_deck_returns_403(client):
+    res = await client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    deck_id = res.json()["id"]
+    res = await client.post(
+        "/cards",
+        json={
+            "deck_id": deck_id,
+            "content": "Test card",
+        },
+    )
+
+    res = await client.get(f"/decks/{deck_id}/export")
+    assert res.status_code == 403
