@@ -24,6 +24,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /auth/logout:
+    post:
+      tags:
+      - auth
+      summary: Logout
+      operationId: logout_auth_logout_post
+      responses:
+        '302':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
   /auth/register:
     post:
       tags:
