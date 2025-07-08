@@ -6,28 +6,24 @@ import { deleteCookie } from 'cookies-next/client';
 
 let isRefreshing = false;
 
-client.instance.interceptors.response.use(
-    (response: any) => {
-        return response;
-    },
-    async (error: any) => {
-        if (error.response?.status === 401 && !isRefreshing) {
+client.interceptors.response.use(
+    async (response: Response, request: Request) => {
+        if (response.status === 401 && !isRefreshing) {
             isRefreshing = true;
 
             try {
                 await refreshTokenAuthRefreshPost();
-                const originalRequest = error.config;
-                return client.instance(originalRequest);
+                return await fetch(request.clone());
             } catch (refreshError) {
                 deleteCookie('access_token');
                 deleteCookie('refresh_token');
                 window.location.href = '/login';
-                return Promise.reject(refreshError);
+                throw refreshError;
             } finally {
                 isRefreshing = false;
             }
         }
-        return Promise.reject(error);
+        return response;
     }
 );
 
