@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 from uuid import UUID
 
+from fastapi import Request
 from sqlalchemy.orm import Session
 
-from src.db.models import Card, Deck
+from src.auth.jwt import decode_jwt
+from src.db.models import Card, Deck, User
 
 
 def get_user_deck(deck_id: UUID, user_id: UUID, db_session: Session):
@@ -37,3 +39,18 @@ def calculate_streak(start: datetime, dates: list[datetime]) -> int:
         current -= timedelta(days=1)
 
     return streak
+
+
+def get_user_from_token(request: Request, db_session: Session) -> User | None:
+    token = request.cookies.get("access_token")
+    if not token:
+        return None
+    try:
+        payload = decode_jwt(token)
+        user_id = payload.get("sub")
+        if not user_id:
+            return None
+        user = User.get(db_session, user_id)
+        return user
+    except Exception:
+        return None

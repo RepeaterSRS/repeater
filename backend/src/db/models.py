@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from enum import StrEnum
 
+import bcrypt
 from sqlalchemy import UUID, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship
 
@@ -48,10 +49,15 @@ class ReviewFeedback(StrEnum):
     FORGOT = "forgot"
 
 
+class AuthProviders(StrEnum):
+    GOOGLE = "google"
+    PASSWORD = "password"
+
+
 class User(Base, BaseMixin):
     __tablename__ = "users"
     id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
-    email = mapped_column(String, unique=True, nullable=False)
+    email = mapped_column(String, unique=True)
     password_hash = mapped_column(String)
     created_at = mapped_column(
         DateTime(timezone=True),
@@ -65,11 +71,34 @@ class User(Base, BaseMixin):
         nullable=False,
     )
     role = mapped_column(String, nullable=False)
-    auth_provider = mapped_column(String, default="password", nullable=False)
+    auth_provider = mapped_column(
+        String, default=AuthProviders.PASSWORD, nullable=False
+    )
     token_version = mapped_column(Integer, default=0, nullable=False)
 
     decks = relationship("Deck", back_populates="user")
     reviews = relationship("Review", back_populates="user")
+
+    def set_password(self, password: str):
+        pw_bytes = password.encode("utf-8")
+        pw_hashed = bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
+        self.password_hash = pw_hashed
+
+    def promote_to_user(
+        self,
+        email: str,
+        password: str | None = None,
+        auth_provider: str = AuthProviders.PASSWORD,
+    ):
+        assert self.role == UserRole.GUEST, "Cannot promote non-guest"
+        if password is not None and auth_provider != AuthProviders.PASSWORD:
+            raise ValueError("Can't set password without auth_provider=password")
+        self.email = email
+        self.auth_provider = auth_provider
+        if password is not None:
+            self.set_password(password)
+        self.role = UserRole.USER
+        self.token_version += 1  # Invalidate refresh tokens
 
 
 class Deck(Base, BaseMixin):

@@ -843,8 +843,10 @@ components:
           format: uuid
           title: Id
         email:
-          type: string
-          format: email
+          anyOf:
+          - type: string
+            format: email
+          - type: 'null'
           title: Email
         role:
           type: string

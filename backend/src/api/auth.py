@@ -1,6 +1,5 @@
 import logging
 from os import getenv
-from uuid import uuid4
 
 import bcrypt
 import jwt
@@ -8,10 +7,10 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse, Response
 from sqlalchemy.orm import Session
 
+from src import util
 from src.auth.jwt import (
-    ACCESS_TOKEN_EXPIRE_SECONDS,
-    REFRESH_TOKEN_EXPIRE_SECONDS,
-    create_jwt,
+    create_access_token,
+    create_refresh_token,
     decode_jwt,
     get_access_token_cookie_kwargs,
     get_refresh_token_cookie_kwargs,
@@ -48,17 +47,8 @@ def login(
 
     logging.info(f"User {user.email} logged in")
 
-    access_token = create_jwt(
-        user.id,
-        ACCESS_TOKEN_EXPIRE_SECONDS,
-        {"role": user.role, "token_version": user.token_version},
-    )
-
-    refresh_token = create_jwt(
-        user.id,
-        REFRESH_TOKEN_EXPIRE_SECONDS,
-        {"jti": str(uuid4()), "token_version": user.token_version},
-    )
+    access_token = create_access_token(user)
+    refresh_token = create_refresh_token(user)
 
     response.set_cookie(**get_access_token_cookie_kwargs(access_token))
     response.set_cookie(**get_refresh_token_cookie_kwargs(refresh_token))
@@ -66,14 +56,24 @@ def login(
 
 
 @router.post("/register", response_model=UserOut, status_code=201)
-def register(user_req: UserCreate, db_session: Session = Depends(get_db)):
+def register(
+    user_req: UserCreate, request: Request, db_session: Session = Depends(get_db)
+):
     if User.filter_by(db_session, email=user_req.email).first():
         raise HTTPException(status_code=400, detail="Email is in use")
 
-    pw_bytes = user_req.password.encode("utf-8")
-    pw_hashed = bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
-    user = User(email=user_req.email, password_hash=pw_hashed, role=UserRole.USER)
+    user = util.get_user_from_token(request, db_session)
+    if user and user.role == UserRole.GUEST:
+        user.promote_to_user(user_req.email, user_req.password)
+        user.save(db_session)
+
+        logging.info(f"Promoted guest user to {user.email}")
+        return user
+
+    user = User(email=user_req.email, role=UserRole.USER)
+    user.set_password(user_req.password)
     user.save(db_session)
+
     logging.info(f"Created user {user.email}")
     return user
 
@@ -107,10 +107,6 @@ def refresh_token(
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
 
-    access_token = create_jwt(
-        user.id,
-        ACCESS_TOKEN_EXPIRE_SECONDS,
-        {"role": user.role, "token_version": user.token_version},
-    )
+    access_token = create_access_token(user)
     response.set_cookie(**get_access_token_cookie_kwargs(access_token))
     return
