@@ -192,3 +192,13 @@ async def test_guest_user_promotion_register(client):
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
+
+
+async def test_logout(user_client, frontend_url):
+    res = await user_client.post("/auth/logout")
+    assert res.status_code == 302
+    assert res.headers["location"] == f"{frontend_url}/login"
+    assert "access_token" not in res.cookies
+    assert "refresh_token" not in res.cookies
+    assert "access_token" not in user_client.cookies
+    assert "refresh_token" not in user_client.cookies
