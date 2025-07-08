@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from src import util
 from src.auth.jwt import (
+    get_current_user,
     create_access_token,
     create_refresh_token,
     decode_jwt,
@@ -53,6 +54,17 @@ def login(
     response.set_cookie(**get_access_token_cookie_kwargs(access_token))
     response.set_cookie(**get_refresh_token_cookie_kwargs(refresh_token))
     return
+
+
+@router.post("/logout", status_code=302)
+def logout(response: Response):
+    frontend_url = getenv("FRONTEND_URL")
+    assert frontend_url, "FRONTEND_URL must be set"
+
+    response = RedirectResponse(f"{frontend_url}/login", status_code=302)
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
+    return response
 
 
 @router.post("/register", response_model=UserOut, status_code=201)
