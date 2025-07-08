@@ -3,7 +3,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
     Breadcrumb,
@@ -15,7 +15,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 
-import { getCardsCardsGet } from '@/gen';
+import { getCardsCardsGet, createReviewReviewsPost } from '@/gen';
 import { useState } from 'react';
 
 export default function Review() {
@@ -28,9 +28,35 @@ export default function Review() {
         queryFn: () => getCardsCardsGet({ query: { only_due: true } }),
     });
 
+    const queryClient = useQueryClient();
+
+    const reviewCard = useMutation({
+        mutationFn: (feedback: 'ok' | 'skipped' | 'forgot') =>
+            createReviewReviewsPost({
+                body: {
+                    card_id: activeCard!.id,
+                    user_id: 'user_id_placeholder',
+                    feedback: feedback,
+                },
+            }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cards'] });
+        },
+        // TODO: implement error handling
+    });
+
     const [activeCardIndex, setActiveCardIndex] = useState(0);
 
     const activeCard = dueCards?.data?.[activeCardIndex];
+    const isActiveCardOverdue =
+        activeCard?.next_review_date &&
+        (() => {
+            const reviewDate = new Date(activeCard.next_review_date);
+            const today = new Date();
+            reviewDate.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+            return reviewDate < today;
+        })();
 
     const nextCard = () => {
         if (dueCards?.data && activeCardIndex < dueCards.data.length - 1) {
@@ -61,6 +87,7 @@ export default function Review() {
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
                                     <BreadcrumbLink href="/decks?deckid=french-deck-ID">
+                                        {/* TODO: change to deck name */}
                                         {activeCard.deck_id.substring(0, 2)}
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
@@ -88,16 +115,33 @@ export default function Review() {
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="text-3xl">
-                        {activeCard.content}
+                    <CardContent>
+                        {isActiveCardOverdue && (
+                            <p className="text-sm text-red-500">
+                                Overdue. Review date:{' '}
+                                {new Date(
+                                    activeCard.next_review_date
+                                ).toLocaleDateString()}
+                            </p>
+                        )}
+                        <p className="mt-2 text-xl">{activeCard.content}</p>
                     </CardContent>
                 </Card>
             )}
             <div className="flex w-full flex-row justify-center gap-4">
-                <Button variant="secondary" className="h-12 w-30">
+                <Button
+                    variant="secondary"
+                    className="h-12 w-30"
+                    onClick={() => reviewCard.mutate('forgot')}
+                >
                     Forgor
                 </Button>
-                <Button className="h-12 w-30">I got it :)</Button>
+                <Button
+                    className="h-12 w-30"
+                    onClick={() => reviewCard.mutate('ok')}
+                >
+                    I got it :)
+                </Button>
             </div>
         </div>
     );
