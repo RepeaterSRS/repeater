@@ -13,7 +13,7 @@ SECRET_KEY = getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60  # 1 hour
 REFRESH_TOKEN_EXPIRE_SECONDS = 60 * 60 * 24 * 10  # 10 days
-GUEST_REFRESH_TOKEN_EXPIRE_SECONDS = 60 * 60 * 24 * 10  # 30 days
+GUEST_REFRESH_TOKEN_EXPIRE_SECONDS = 60 * 60 * 24 * 30  # 30 days
 
 
 # TODO change the secure flag to True in production
