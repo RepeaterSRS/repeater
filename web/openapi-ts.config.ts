@@ -5,7 +5,7 @@ export default defineConfig({
     output: './src/gen',
     plugins: [
         {
-            name: '@hey-api/client-axios',
+            name: '@hey-api/client-fetch',
             runtimeConfigPath: './src/lib/api-config.ts',
         },
     ],
