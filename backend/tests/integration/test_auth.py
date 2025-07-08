@@ -1,10 +1,7 @@
-from datetime import timedelta
-from unittest.mock import patch
-
 from freezegun import freeze_time
 
 from src.auth.jwt import decode_jwt
-from src.db.models import User, UserRole
+from src.db.models import AuthProviders, User, UserRole
 from tests.asserts import is_utc_isoformat_string, is_uuid_string
 
 
@@ -17,7 +14,7 @@ async def test_register_user(db_session, client):
         "id": is_uuid_string(),
         "email": "user@domain.com",
         "role": UserRole.USER,
-        "auth_provider": "password",
+        "auth_provider": AuthProviders.PASSWORD,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -35,7 +32,7 @@ async def test_cant_register_user_with_existing_email(db_session, client):
         "id": is_uuid_string(),
         "email": "user@domain.com",
         "role": UserRole.USER,
-        "auth_provider": "password",
+        "auth_provider": AuthProviders.PASSWORD,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -95,11 +92,16 @@ async def test_refresh_token(client, frontend_url):
     assert res.status_code == 204
     access_token = res.cookies.get("access_token")
     refresh_token = res.cookies.get("refresh_token")
-    assert access_token
-    assert refresh_token
 
-    client.cookies.set("access_token", access_token)
-    client.cookies.set("refresh_token", refresh_token)
+    access_token_payload = decode_jwt(access_token)
+    refresh_token_payload = decode_jwt(refresh_token)
+
+    access_token_payload["sub"] == is_uuid_string()
+    access_token_payload["role"] == UserRole.GUEST
+    access_token_payload["token_version"] == 0
+
+    refresh_token_payload["jti"] == is_uuid_string()
+    refresh_token_payload["token_version"] == 0
 
     # Access token has expired
     with freeze_time("2025-07-07 13:01:00"):
@@ -109,7 +111,6 @@ async def test_refresh_token(client, frontend_url):
         res = await client.post("/auth/refresh")
         new_access_token = res.cookies.get("access_token")
         assert new_access_token
-        client.cookies.set("access_token", new_access_token)
 
         res = await client.get("/me")
         assert res.status_code == 200
@@ -132,13 +133,6 @@ async def test_token_version_mismatch_returns_401(client, db_session):
         "/auth/login", json={"email": "test@domain.com", "password": "password"}
     )
     assert res.status_code == 204
-    access_token = res.cookies.get("access_token")
-    refresh_token = res.cookies.get("refresh_token")
-    assert access_token
-    assert refresh_token
-
-    client.cookies.set("access_token", access_token)
-    client.cookies.set("refresh_token", refresh_token)
 
     user = User.get(db_session, user_id)
     assert user
@@ -147,3 +141,54 @@ async def test_token_version_mismatch_returns_401(client, db_session):
 
     res = await client.post("/auth/refresh")
     assert res.status_code == 401
+
+
+async def test_guest_user_is_created(client):
+    res1 = await client.get("/me")
+    assert res1.status_code == 200
+    assert "access_token" in res1.cookies
+    assert "refresh_token" in res1.cookies
+    assert res1.json() == {
+        "id": is_uuid_string(),
+        "email": None,
+        "role": UserRole.GUEST,
+        "auth_provider": AuthProviders.PASSWORD,
+        "created_at": is_utc_isoformat_string(),
+        "updated_at": is_utc_isoformat_string(),
+    }
+
+    res2 = await client.get("/me")
+    assert res1.json() == res2.json()
+    assert "access_token" not in res2.cookies
+    assert "refresh_token" not in res2.cookies
+
+
+async def test_guest_user_promotion_register(client):
+    res = await client.get("/me")
+    assert res.status_code == 200
+    assert "access_token" in res.cookies
+    assert "refresh_token" in res.cookies
+
+    assert res.json() == {
+        "id": is_uuid_string(),
+        "email": None,
+        "role": UserRole.GUEST,
+        "auth_provider": AuthProviders.PASSWORD,
+        "created_at": is_utc_isoformat_string(),
+        "updated_at": is_utc_isoformat_string(),
+    }
+    user_id = res.json()["id"]
+
+    res = await client.post(
+        "/auth/register",
+        json={"email": "guest_promote@domain.com", "password": "password"},
+    )
+    assert res.status_code == 201
+    assert res.json() == {
+        "id": user_id,
+        "email": "guest_promote@domain.com",
+        "role": UserRole.USER,
+        "auth_provider": AuthProviders.PASSWORD,
+        "created_at": is_utc_isoformat_string(),
+        "updated_at": is_utc_isoformat_string(),
+    }

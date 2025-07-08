@@ -11,7 +11,7 @@ class UserCreate(BaseModel):
 
 class UserOut(BaseModel):
     id: UUID
-    email: EmailStr
+    email: EmailStr | None
     role: str
     auth_provider: str
     created_at: datetime

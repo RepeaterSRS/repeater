@@ -27,14 +27,6 @@ async def test_create_deck_returns_deck(db_session, user, user_client):
     assert deck is not None
 
 
-async def test_create_deck_unauthorized_returns_401(db_session, client):
-    res = await client.post("/decks")
-    assert res.status_code == 401
-
-    deck = Deck.all(db_session)
-    assert deck == []
-
-
 async def test_get_decks(user, user_client):
     res = await user_client.get("/decks")
     assert res.status_code == 200
@@ -59,11 +51,6 @@ async def test_get_decks(user, user_client):
             "updated_at": is_utc_isoformat_string(),
         }
     ]
-
-
-async def test_get_decks_unauthorized_returns_401(client):
-    res = await client.get("/decks")
-    assert res.status_code == 401
 
 
 async def test_update_deck(user, user_client):

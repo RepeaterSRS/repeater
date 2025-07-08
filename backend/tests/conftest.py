@@ -45,7 +45,7 @@ def client_factory(db_session):
     app.dependency_overrides[get_db] = override_get_db
 
     async def _make_client():
-        ac = AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
+        ac = AsyncClient(transport=ASGITransport(app=app), base_url="http://test.local")
         return ac
 
     yield _make_client
@@ -83,10 +83,9 @@ async def admin_client(admin, client_factory):
         },
     )
     assert res.status_code == 204
-    token = res.cookies.get("access_token")
-    assert token is not None
+    assert "access_token" in res.cookies
+    assert "refresh_token" in res.cookies
 
-    client.cookies.set("access_token", token)
     yield client
     await client.aclose()
 
@@ -114,10 +113,9 @@ async def user_client(user, client_factory):
         },
     )
     assert res.status_code == 204
-    access_token = res.cookies.get("access_token")
-    assert access_token is not None
+    assert "access_token" in res.cookies
+    assert "refresh_token" in res.cookies
 
-    client.cookies.set("access_token", access_token)
     yield client
     await client.aclose()
 

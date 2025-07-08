@@ -1,3 +1,4 @@
+from src.db.models import AuthProviders
 from tests.asserts import is_utc_isoformat_string
 
 
@@ -7,7 +8,7 @@ async def test_get_me(user, user_client):
         "id": str(user.id),
         "email": user.email,
         "role": user.role,
-        "auth_provider": "password",
+        "auth_provider": AuthProviders.PASSWORD,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
