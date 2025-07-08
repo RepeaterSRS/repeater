@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 
 from src import util
 from src.auth.jwt import (
-    get_current_user,
     create_access_token,
     create_refresh_token,
     decode_jwt,
