@@ -65,9 +65,9 @@ export default function Decks() {
     }
 
     return (
-        <div className="flex flex-col gap-4 px-8 py-4">
-            <div>
-                <h1 className="mb-2 text-2xl">Decks</h1>
+        <div className="flex flex-col items-center gap-4 px-8 py-4">
+            <div className="container">
+                <h1 className="mb-6 text-2xl font-medium">Decks</h1>
 
                 {decksState.loading && <p>Loading decks...</p>}
                 {decksState.error && <p>{decksState.error}</p>}
@@ -77,14 +77,14 @@ export default function Decks() {
                             decksState.data.map((deck) => (
                                 <Card
                                     key={deck.id}
-                                    className="flex aspect-[3/4] w-34 flex-col gap-2"
+                                    className="flex aspect-[3/4] w-34 flex-col gap-2 p-4"
                                 >
-                                    <CardHeader>
+                                    <CardHeader className="p-0">
                                         <h3 className="text-lg font-bold">
                                             {deck.name}
                                         </h3>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="p-0">
                                         <p className="text-sm text-neutral-600">
                                             {deck.description}
                                         </p>
@@ -105,20 +105,20 @@ export default function Decks() {
                 )}
             </div>
 
-            <div>
-                <h1 className="mb-2 text-2xl">Cards</h1>
+            <div className="container">
+                <h1 className="mb-6 text-2xl font-medium">Cards</h1>
 
                 {cardsState.loading && <p>Loading cards...</p>}
                 {cardsState.error && <p>{cardsState.error}</p>}
                 {!cardsState.loading && !cardsState.error && (
-                    <div className="flex flex-row gap-4">
+                    <div className="flex flex-row flex-wrap gap-4">
                         {cardsState.data.length > 0 &&
                             cardsState.data.map((card) => (
                                 <Card
                                     key={card.id}
-                                    className="flex aspect-[3/4] w-34 flex-col gap-2"
+                                    className="flex aspect-[3/4] w-34 flex-col gap-1 p-4"
                                 >
-                                    <CardHeader>
+                                    <CardHeader className="p-0">
                                         <p className="text-xs text-neutral-600">
                                             {decksState.data.find(
                                                 (deck) =>
@@ -126,7 +126,9 @@ export default function Decks() {
                                             )?.name || '-'}
                                         </p>
                                     </CardHeader>
-                                    <CardContent>{card.content}</CardContent>
+                                    <CardContent className="p-0">
+                                        {card.content}
+                                    </CardContent>
                                 </Card>
                             ))}
                         <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
