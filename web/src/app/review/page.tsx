@@ -35,7 +35,6 @@ export default function Review() {
             createReviewReviewsPost({
                 body: {
                     card_id: activeCard!.id,
-                    user_id: 'user_id_placeholder',
                     feedback: feedback,
                 },
             }),
