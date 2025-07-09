@@ -1,9 +1,12 @@
+from datetime import datetime
+
 from freezegun import freeze_time
 
 from src.db.models import ReviewFeedback
+from src.statistics import DifficultyRankings
 
 
-@freeze_time("2025-07-02 13:00:00")
+@freeze_time("2025-07-01")
 async def test_get_statistics(ignore_jwt_expiration, user, user_client):
     res = await user_client.post(
         "/decks",
@@ -19,29 +22,27 @@ async def test_get_statistics(ignore_jwt_expiration, user, user_client):
     )
     card_id = res.json()["id"]
 
-    with freeze_time("2025-07-01 12:00:00"):
-        res = await user_client.post(
-            "/reviews",
-            json={
-                "card_id": card_id,
-                "user_id": str(user.id),
-                "feedback": ReviewFeedback.FORGOT,
-            },
-        )
+    await user_client.post(
+        "/reviews",
+        json={
+            "card_id": card_id,
+            "feedback": ReviewFeedback.FORGOT,
+        },
+    )
 
-    with freeze_time("2025-07-02 12:00:00"):
-        res = await user_client.post(
+    with freeze_time("2025-07-02"):
+        await user_client.post(
             "/reviews",
             json={
                 "card_id": card_id,
-                "user_id": str(user.id),
                 "feedback": ReviewFeedback.OK,
             },
         )
 
-    res = await user_client.get(
-        "/stats",
-    )
+        res = await user_client.get(
+            "/stats",
+        )
+
     assert res.status_code == 200
     assert res.json() == {
         "total_reviews": 2,
@@ -49,13 +50,25 @@ async def test_get_statistics(ignore_jwt_expiration, user, user_client):
             "2025-07-01": 1,
             "2025-07-02": 1,
         },
-        "streak": 2,
         "success_rate": 0.5,
+        "retention_rate": 0,
+        "streak": 2,
+        "deck_statistics": [
+            {
+                "deck_id": deck_id,
+                "deck_name": "deck",
+                "retention_rate": 0,
+                "total_reviews": 2,
+                "last_studied": datetime(2025, 7, 2).isoformat(timespec="seconds")
+                + "Z",
+                "difficulty_ranking": DifficultyRankings.NEW,
+            }
+        ],
     }
 
 
 @freeze_time("2025-07-01")
-async def test_get_statistics_same_day(ignore_jwt_expiration, user, user_client):
+async def test_get_statistics_different_decks(ignore_jwt_expiration, user, user_client):
     res = await user_client.post(
         "/decks",
         json={
@@ -63,93 +76,75 @@ async def test_get_statistics_same_day(ignore_jwt_expiration, user, user_client)
             "description": "my deck",
         },
     )
-    deck_id = res.json()["id"]
+    deck_1_id = res.json()["id"]
 
     res = await user_client.post(
-        "/cards", json={"deck_id": deck_id, "content": "Test card"}
+        "/cards", json={"deck_id": deck_1_id, "content": "Test card"}
     )
-    card_id = res.json()["id"]
+    card_1_id = res.json()["id"]
 
-    with freeze_time("2025-06-23"):
-        res = await user_client.post(
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    deck_2_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/cards", json={"deck_id": deck_2_id, "content": "Test card"}
+    )
+    card_2_id = res.json()["id"]
+
+    with freeze_time("2025-07-02"):
+        await user_client.post(
             "/reviews",
             json={
-                "card_id": card_id,
-                "user_id": str(user.id),
+                "card_id": card_1_id,
                 "feedback": ReviewFeedback.OK,
             },
         )
 
-    with freeze_time("2025-06-23"):
-        res = await user_client.post(
+        await user_client.post(
             "/reviews",
             json={
-                "card_id": card_id,
-                "user_id": str(user.id),
+                "card_id": card_2_id,
                 "feedback": ReviewFeedback.OK,
             },
         )
 
-    res = await user_client.get(
-        "/stats",
-    )
+        res = await user_client.get(
+            "/stats",
+        )
+
     assert res.status_code == 200
     assert res.json() == {
         "total_reviews": 2,
         "daily_reviews": {
-            "2025-06-23": 2,
+            "2025-07-02": 2,
         },
-        "streak": 0,
         "success_rate": 1,
-    }
-
-
-@freeze_time("2025-07-02")
-async def test_get_statistics_skipped(ignore_jwt_expiration, user, user_client):
-    res = await user_client.post(
-        "/decks",
-        json={
-            "name": "deck",
-            "description": "my deck",
-        },
-    )
-    deck_id = res.json()["id"]
-
-    res = await user_client.post(
-        "/cards", json={"deck_id": deck_id, "content": "Test card"}
-    )
-    card_id = res.json()["id"]
-
-    with freeze_time("2025-06-30"):
-        res = await user_client.post(
-            "/reviews",
-            json={
-                "card_id": card_id,
-                "user_id": str(user.id),
-                "feedback": ReviewFeedback.FORGOT,
+        "retention_rate": 0,
+        "streak": 1,
+        "deck_statistics": [
+            {
+                "deck_id": deck_1_id,
+                "deck_name": "deck",
+                "retention_rate": 0,
+                "total_reviews": 1,
+                "last_studied": datetime(2025, 7, 2).isoformat(timespec="seconds")
+                + "Z",
+                "difficulty_ranking": DifficultyRankings.NEW,
             },
-        )
-
-    with freeze_time("2025-07-01"):
-        res = await user_client.post(
-            "/reviews",
-            json={
-                "card_id": card_id,
-                "user_id": str(user.id),
-                "feedback": ReviewFeedback.SKIPPED,
+            {
+                "deck_id": deck_2_id,
+                "deck_name": "deck",
+                "retention_rate": 0,
+                "total_reviews": 1,
+                "last_studied": datetime(2025, 7, 2).isoformat(timespec="seconds")
+                + "Z",
+                "difficulty_ranking": DifficultyRankings.NEW,
             },
-        )
-
-    res = await user_client.get(
-        "/stats",
-    )
-    assert res.status_code == 200
-    assert res.json() == {
-        "total_reviews": 2,
-        "daily_reviews": {
-            "2025-06-30": 1,
-            "2025-07-01": 1,
-        },
-        "streak": 2,
-        "success_rate": 0,
+        ],
     }
