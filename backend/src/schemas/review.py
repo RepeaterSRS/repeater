@@ -8,7 +8,6 @@ from src.db.models import ReviewFeedback
 
 class ReviewCreate(BaseModel):
     card_id: UUID
-    user_id: UUID
     feedback: ReviewFeedback
 
 

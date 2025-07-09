@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime, timedelta
 
 from src.api.reviews import get_scheduler
@@ -32,7 +31,6 @@ async def test_create_review(db_session, user, user_client):
         "/reviews",
         json={
             "card_id": card_id,
-            "user_id": str(user.id),
             "feedback": ReviewFeedback.OK,
         },
     )
@@ -64,7 +62,6 @@ async def test_create_review(db_session, user, user_client):
         "/reviews",
         json={
             "card_id": card_id,
-            "user_id": str(user.id),
             "feedback": ReviewFeedback.OK,
         },
     )
@@ -95,35 +92,7 @@ async def test_create_review(db_session, user, user_client):
     app.dependency_overrides.clear()
 
 
-async def test_create_review_card_wrong_user_returns_403(db_session, user, user_client):
-    res = await user_client.post(
-        "/decks",
-        json={
-            "name": "deck",
-            "description": "my deck",
-        },
-    )
-    assert res.status_code == 201
-    deck_id = res.json()["id"]
-
-    res = await user_client.post(
-        "/cards", json={"deck_id": deck_id, "content": "Test card"}
-    )
-    assert res.status_code == 201
-    card_id = res.json()["id"]
-
-    res = await user_client.post(
-        "/reviews",
-        json={
-            "card_id": card_id,
-            "user_id": str(uuid.uuid4()),
-            "feedback": ReviewFeedback.OK,
-        },
-    )
-    assert res.status_code == 403
-
-
-async def test_create_review_other_user_card(
+async def test_create_review_other_user_card_returns_404(
     db_session, user, admin, admin_client, user_client
 ):
     res = await admin_client.post(
@@ -146,11 +115,10 @@ async def test_create_review_other_user_card(
         "/reviews",
         json={
             "card_id": card_id,
-            "user_id": str(admin.id),
             "feedback": ReviewFeedback.OK,
         },
     )
-    assert res.status_code == 403
+    assert res.status_code == 404
 
 
 async def test_create_review_skipped(db_session, user, user_client):
@@ -176,7 +144,6 @@ async def test_create_review_skipped(db_session, user, user_client):
         "/reviews",
         json={
             "card_id": card_id,
-            "user_id": str(user.id),
             "feedback": ReviewFeedback.SKIPPED,
         },
     )
@@ -229,7 +196,6 @@ async def test_create_review_forgot(db_session, user, user_client):
         "/reviews",
         json={
             "card_id": card_id,
-            "user_id": str(user.id),
             "feedback": ReviewFeedback.FORGOT,
         },
     )
@@ -278,7 +244,6 @@ async def test_get_review_history(user, user_client):
         "/reviews",
         json={
             "card_id": card_id,
-            "user_id": str(user.id),
             "feedback": ReviewFeedback.FORGOT,
         },
     )
@@ -287,7 +252,6 @@ async def test_get_review_history(user, user_client):
         "/reviews",
         json={
             "card_id": card_id,
-            "user_id": str(user.id),
             "feedback": ReviewFeedback.OK,
         },
     )

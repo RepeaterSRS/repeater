@@ -15,6 +15,7 @@ from src.db.models import Card, Review, User
 from src.schedulers import Scheduler
 from src.schedulers.basic import BasicScheduler
 from src.schemas.review import ReviewCreate, ReviewOut
+from src.util import get_user_card
 
 router = APIRouter(prefix="/reviews", tags=["reviews"])
 
@@ -30,15 +31,10 @@ def create_review(
     db_session: Session = Depends(get_db),
     scheduler: Scheduler = Depends(get_scheduler),
 ):
-    if review_req.user_id != user.id:
-        raise HTTPException(status_code=403)
-
-    card = Card.get(db_session, review_req.card_id)
-    if not card:
-        raise HTTPException(status_code=404)
-
-    if card.deck.user_id != user.id:
-        raise HTTPException(status_code=403)
+    try:
+        card = get_user_card(review_req.card_id, user.id, db_session)
+    except ValueError as err:
+        raise HTTPException(status_code=404, detail=str(err))
 
     last_review = (
         Review.filter_by(db_session, card_id=card.id)
@@ -64,7 +60,7 @@ def create_review(
 
     review = Review(
         card_id=review_req.card_id,
-        user_id=review_req.user_id,
+        user_id=user.id,
         feedback=review_req.feedback,
         interval=schedule_result.interval,
         repetitions=schedule_result.repetitions,

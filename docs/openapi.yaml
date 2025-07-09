@@ -721,16 +721,11 @@ components:
           type: string
           format: uuid
           title: Card Id
-        user_id:
-          type: string
-          format: uuid
-          title: User Id
         feedback:
           $ref: '#/components/schemas/ReviewFeedback'
       type: object
       required:
       - card_id
-      - user_id
       - feedback
       title: ReviewCreate
     ReviewFeedback:
