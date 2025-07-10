@@ -692,6 +692,36 @@ components:
       - created_at
       - updated_at
       title: DeckOut
+    DeckStatistics:
+      properties:
+        deck_id:
+          type: string
+          title: Deck Id
+        deck_name:
+          type: string
+          title: Deck Name
+        retention_rate:
+          type: number
+          title: Retention Rate
+        total_reviews:
+          type: integer
+          title: Total Reviews
+        last_studied:
+          type: string
+          format: date-time
+          title: Last Studied
+        difficulty_ranking:
+          type: string
+          title: Difficulty Ranking
+      type: object
+      required:
+      - deck_id
+      - deck_name
+      - retention_rate
+      - total_reviews
+      - last_studied
+      - difficulty_ranking
+      title: DeckStatistics
     DeckUpdate:
       properties:
         name:
@@ -790,18 +820,28 @@ components:
             type: integer
           type: object
           title: Daily Reviews
-        streak:
-          type: integer
-          title: Streak
         success_rate:
           type: number
           title: Success Rate
+        retention_rate:
+          type: number
+          title: Retention Rate
+        streak:
+          type: integer
+          title: Streak
+        deck_statistics:
+          items:
+            $ref: '#/components/schemas/DeckStatistics'
+          type: array
+          title: Deck Statistics
       type: object
       required:
       - total_reviews
       - daily_reviews
-      - streak
       - success_rate
+      - retention_rate
+      - streak
+      - deck_statistics
       title: StatisticsOut
     UserCreate:
       properties:
