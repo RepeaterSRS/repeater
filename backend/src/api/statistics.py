@@ -43,8 +43,8 @@ async def get_user_statistics(
     return StatisticsOut(
         total_reviews=len(user_reviews),
         daily_reviews=dict(daily_reviews),
-        success_rate=overall_success_rate,
-        retention_rate=overall_retention_rate,
+        success_rate="{:.2f}".format(overall_success_rate),
+        retention_rate="{:.2f}".format(overall_retention_rate),
         streak=streak,
         deck_statistics=deck_statistics,
     )

@@ -92,7 +92,7 @@ def get_deck_statistics(deck: Deck, user_reviews: List[Review]) -> DeckStatistic
         return DeckStatistics(
             deck_id=str(deck.id),
             deck_name=deck.name,
-            retention_rate=0.0,
+            retention_rate="{:.2f}".format(0.0),
             total_reviews=0,
             last_studied=deck.created_at,
             difficulty_ranking=DifficultyRankings.NEW,
@@ -106,7 +106,7 @@ def get_deck_statistics(deck: Deck, user_reviews: List[Review]) -> DeckStatistic
     return DeckStatistics(
         deck_id=str(deck.id),
         deck_name=deck.name,
-        retention_rate=retention_rate,
+        retention_rate="{:.2f}".format(retention_rate),
         total_reviews=total_reviews,
         last_studied=last_studied,
         difficulty_ranking=difficulty_ranking,
