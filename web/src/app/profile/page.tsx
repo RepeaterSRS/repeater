@@ -46,7 +46,7 @@ export default function Profile() {
 
     return (
         <div className="min-h-screen p-6">
-            <div className="mx-auto max-w-7xl space-y-6">
+            <div className="mx-auto max-w-4xl space-y-6">
                 {/* Profile Card */}
                 <div className="w-full">
                     {profilePending && !profileError && (
@@ -131,9 +131,8 @@ export default function Profile() {
                                     title={`Decks / ${deck_stat.deck_name}`}
                                     key={deck_stat.deck_id}
                                 >
-                                    {' '}
-                                    {/* TODO use breadcrumbs in title*/}
-                                    <div className="grid grid-cols-2 gap-6">
+                                    {/* TODO use breadcrumbs that point to deck in title */}
+                                    <div className="grid grid-cols-2 place-items-center gap-6">
                                         <div className="min-w-0 flex-1">
                                             <p className="text-sm font-medium text-gray-900">
                                                 Last studied
