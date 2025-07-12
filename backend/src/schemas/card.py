@@ -13,8 +13,10 @@ class CardCreate(BaseModel):
 class CardOut(BaseModel):
     id: UUID
     deck_id: UUID
+    deck_name: str
     content: str
     next_review_date: datetime
+    overdue: bool
     created_at: datetime
     updated_at: datetime
 
