@@ -12,8 +12,14 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
+import {
+    Card,
+    CardHeader,
+    CardContent,
+    CardFooter,
+} from '@/components/ui/card';
 import { getCardsCardsGet, createReviewReviewsPost } from '@/gen';
+import { formatDateForDisplay } from '@/lib/utils';
 
 export default function Review() {
     const {
@@ -44,15 +50,6 @@ export default function Review() {
     const [activeCardIndex, setActiveCardIndex] = useState(0);
 
     const activeCard = dueCards?.data?.[activeCardIndex];
-    const isActiveCardOverdue =
-        activeCard?.next_review_date &&
-        (() => {
-            const reviewDate = new Date(activeCard.next_review_date);
-            const today = new Date();
-            reviewDate.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
-            return reviewDate < today;
-        })();
 
     const nextCard = () => {
         if (dueCards?.data && activeCardIndex < dueCards.data.length - 1) {
@@ -82,9 +79,10 @@ export default function Review() {
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href="/decks?deckid=french-deck-ID">
-                                        {/* TODO: change to deck name */}
-                                        {activeCard.deck_id.substring(0, 2)}
+                                    <BreadcrumbLink
+                                        href={`/decks?deck_id=${activeCard.deck_id}`}
+                                    >
+                                        {activeCard.deck_name}
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
@@ -111,13 +109,13 @@ export default function Review() {
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="flex-1">
-                        {isActiveCardOverdue && (
+                    <CardContent>
+                        {activeCard.overdue && (
                             <p className="text-sm text-red-500">
-                                Overdue. Review date:{' '}
-                                {new Date(
+                                Overdue. Review date:
+                                {formatDateForDisplay(
                                     activeCard.next_review_date
-                                ).toLocaleDateString()}
+                                )}
                             </p>
                         )}
                         <p className="mt-2 text-xl">{activeCard.content}</p>
