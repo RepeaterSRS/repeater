@@ -1,26 +1,33 @@
 import React from 'react';
 
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
+
 interface Props {
     className?: string;
-    title: string;
+    title: React.ReactNode;
     description?: string;
     children: React.ReactNode;
 }
 
-export default function MetricCard(props: Props) {
+export default function MetricCard({
+    className,
+    title,
+    description,
+    children,
+}: Props) {
     return (
-        <div
-            className={`rounded-xl border border-gray-200 bg-white p-6 shadow-sm ${props.className}`}
-        >
-            <div className="flex items-center justify-between">
-                <div>
-                    <h3 className="font-semibold text-gray-900">
-                        {props.title}
-                    </h3>
-                    <p className="text-sm text-gray-500">{props.description}</p>
-                    {props.children}
-                </div>
-            </div>
-        </div>
+        <Card className={className}>
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>{description}</CardDescription>
+            </CardHeader>
+            <CardContent>{children}</CardContent>
+        </Card>
     );
 }

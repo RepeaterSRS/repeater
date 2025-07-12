@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getUserInfoMeGet, getUserStatisticsStatsGet } from '@/gen';
 import MetricCard from '@/components/MetricCard';
 import { ActivityHeatmap, HeatmapData } from '@/components/ActivityHeatmap';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
 
 export default function Profile() {
     const {
@@ -24,8 +26,6 @@ export default function Profile() {
         queryFn: () => getUserStatisticsStatsGet(),
     });
 
-    const queryClient = useQueryClient();
-
     function formatHeatmapData(reviews_by_date: { [key: string]: number }) {
         const heatmapData: HeatmapData = {};
 
@@ -45,49 +45,58 @@ export default function Profile() {
     }
 
     return (
-        <div className="min-h-screen p-6">
-            <div className="mx-auto max-w-4xl space-y-6">
+        <div className="min-h-dvh pt-6">
+            <div className="mx-auto max-w-4xl space-y-4">
                 {/* Profile Card */}
-                <div className="w-full">
-                    {profilePending && !profileError && (
-                        <div className="rounded-lg border bg-white p-6 shadow-sm">
+                {profilePending && !profileError && (
+                    <Card>
+                        <CardContent>
                             <p>Loading profile...</p>
-                        </div>
-                    )}
-                    {!profilePending && profileError && (
-                        <div className="rounded-lg border bg-white p-6 shadow-sm">
-                            <p className="text-red-500">
+                        </CardContent>
+                    </Card>
+                )}
+                {!profilePending && profileError && (
+                    <Card>
+                        <CardContent>
+                            <p className="text-destructive">
                                 Error loading profile!
                             </p>
-                        </div>
-                    )}
-                    {profile?.data && (
-                        <div className="rounded-lg border bg-white p-6 shadow-sm">
-                            <h1 className="mb-4 text-2xl font-bold">Profile</h1>
-                            <div className="space-y-2">
-                                <p className="text-lg">Welcome back!</p>
-                                <p className="text-gray-600">
-                                    Your profile information will go here
-                                </p>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                        </CardContent>
+                    </Card>
+                )}
+                {profile?.data && (
+                    <Card className="w-full">
+                        <CardHeader>
+                            <CardTitle>Welcome back!</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">
+                                Your profile information will go here
+                            </p>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Metrics Grid */}
                 <div className="w-full">
                     {statsPending && !statsError && (
-                        <div className="rounded-lg border bg-white p-6 shadow-sm">
-                            <p>Loading stats...</p>
-                        </div>
+                        <Card>
+                            <CardContent>
+                                <p>Loading stats...</p>
+                            </CardContent>
+                        </Card>
                     )}
                     {!statsPending && statsError && (
-                        <div className="rounded-lg border bg-white p-6 shadow-sm">
-                            <p className="text-red-500">Error loading stats!</p>
-                        </div>
+                        <Card>
+                            <CardContent>
+                                <p className="text-destructive">
+                                    Error loading stats!
+                                </p>
+                            </CardContent>
+                        </Card>
                     )}
                     {stats?.data && (
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div className="grid grid-cols-2 gap-4">
                             <ActivityHeatmap
                                 className="col-span-2"
                                 heatmapData={formatHeatmapData(
@@ -98,7 +107,7 @@ export default function Profile() {
                                 title="Streak"
                                 description="Some explanation"
                             >
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-foreground text-2xl font-bold">
                                     {stats.data.streak}
                                 </p>
                             </MetricCard>
@@ -106,7 +115,7 @@ export default function Profile() {
                                 title="Total Reviews"
                                 description="Some explanation"
                             >
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-foreground text-2xl font-bold">
                                     {stats.data.total_reviews}
                                 </p>
                             </MetricCard>
@@ -114,7 +123,7 @@ export default function Profile() {
                                 title="Success Rate"
                                 description="Some explanation"
                             >
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-foreground text-2xl font-bold">
                                     {stats.data.success_rate}
                                 </p>
                             </MetricCard>
@@ -122,48 +131,56 @@ export default function Profile() {
                                 title="Retention Rate"
                                 description="Some explanation"
                             >
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-foreground text-2xl font-bold">
                                     {stats.data.retention_rate}
                                 </p>
                             </MetricCard>
                             {stats.data.deck_statistics.map((deck_stat) => (
                                 <MetricCard
-                                    title={`Decks / ${deck_stat.deck_name}`}
+                                    title={
+                                        <Link
+                                            href={`test${deck_stat.deck_id}`}
+                                            className="underline"
+                                        >
+                                            {deck_stat.deck_name}
+                                        </Link>
+                                    }
+                                    description="Some explanation"
                                     key={deck_stat.deck_id}
+                                    className="max-md:col-span-2"
                                 >
-                                    {/* TODO use breadcrumbs that point to deck in title */}
-                                    <div className="grid grid-cols-2 place-items-center gap-6">
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-medium text-gray-900">
+                                    <div className="grid grid-cols-2 gap-y-4">
+                                        <div>
+                                            <p className="text-foreground text-sm font-medium">
                                                 Last studied
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-muted-foreground text-sm">
                                                 {new Date(
                                                     deck_stat.last_studied
                                                 ).toLocaleDateString()}
                                             </p>
                                         </div>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-medium text-gray-900">
+                                        <div>
+                                            <p className="text-foreground text-sm font-medium">
                                                 Retention Rate
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-muted-foreground text-sm">
                                                 {deck_stat.retention_rate}
                                             </p>
                                         </div>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-medium text-gray-900">
+                                        <div>
+                                            <p className="text-foreground text-sm font-medium">
                                                 Total Reviews
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-muted-foreground text-sm">
                                                 {deck_stat.total_reviews}
                                             </p>
                                         </div>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-medium text-gray-900">
+                                        <div>
+                                            <p className="text-foreground text-sm font-medium">
                                                 Difficulty
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-muted-foreground text-sm">
                                                 {deck_stat.difficulty_ranking}
                                             </p>
                                         </div>
