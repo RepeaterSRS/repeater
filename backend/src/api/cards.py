@@ -26,8 +26,9 @@ def create_card(
         raise HTTPException(status_code=404, detail=str(err))
 
     card = Card(deck_id=deck.id, content=card_req.content)
+    card.deck = deck
     card.save(db_session)
-    return card
+    return CardOut.from_card(card)
 
 
 @router.get("", response_model=List[CardOut])
@@ -51,18 +52,7 @@ def get_cards(
         query = query.filter(Card.next_review_date <= datetime.now(timezone.utc))
 
     cards = query.all()
-    now = datetime.now()
-    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-
-    for card in cards:
-        card.deck_name = card.deck.name
-
-        next_review_day = card.next_review_date.replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
-        card.overdue = next_review_day < today
-
-    return cards
+    return [CardOut.from_card(card) for card in cards]
 
 
 @router.patch("/{card_id}", response_model=CardOut)
@@ -81,7 +71,7 @@ def update_card(
     for field, value in updates.items():
         setattr(card, field, value)
     card.save(db_session)
-    return card
+    return CardOut.from_card(card)
 
 
 @router.delete("/{card_id}")
