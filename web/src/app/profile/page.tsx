@@ -64,7 +64,7 @@ export default function Profile() {
                         </CardContent>
                     </Card>
                 )}
-                {profile?.data && (
+                {!profilePending && !profileError && profile?.data && (
                     <Card className="w-full">
                         <CardHeader>
                             <CardTitle>Welcome back!</CardTitle>
@@ -95,7 +95,7 @@ export default function Profile() {
                             </CardContent>
                         </Card>
                     )}
-                    {stats?.data && (
+                    {!statsPending && !statsError && stats?.data && (
                         <div className="grid grid-cols-2 gap-4">
                             <ActivityHeatmap
                                 className="col-span-2"
