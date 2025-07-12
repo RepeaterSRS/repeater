@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import Request
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, contains_eager
 
 from src.auth.jwt import decode_jwt
 from src.db.models import Card, Deck, User
@@ -15,7 +15,13 @@ def get_user_deck(deck_id: UUID, user_id: UUID, db_session: Session):
 
 
 def get_user_card(card_id: UUID, user_id: UUID, db_session: Session):
-    card = Card.get(db_session, id=card_id)
+    card = (
+        db_session.query(Card)
+        .join(Deck)
+        .filter(Card.id == card_id, Deck.user_id == user_id)
+        .options(contains_eager(Card.deck))
+        .first()
+    )
     if not card or card.deck.user_id != user_id:
         raise ValueError("Card not found or access denied")
     return card
