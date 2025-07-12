@@ -1,10 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
+
 export type HeatmapData = {
     [key: string]: {
         date: string;
-        nrReviews: number;
-        intensity: number;
+        numberOfReviews: number;
     };
 };
 
@@ -29,7 +34,12 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
             const dateKey = currentDate.toISOString().split('T')[0];
             const activityData = heatmapData[dateKey];
 
-            week.push(activityData || null);
+            week.push(
+                activityData || {
+                    date: dateKey,
+                    numberOfReviews: 0,
+                }
+            );
         }
         weeks.push(week);
     }
@@ -55,6 +65,12 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
         return array.slice(n, array.length).concat(array.slice(0, n));
     }
 
+    function getIntensity(numberOfReviews: number) {
+        return numberOfReviews === 0
+            ? 0
+            : Math.min(Math.floor(numberOfReviews / 10) + 1, 4);
+    }
+
     function getHeatmapColor(intensity: number) {
         const colorClasses = [
             'bg-heatmap-0',
@@ -64,6 +80,14 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
             'bg-heatmap-4',
         ];
         return colorClasses[intensity];
+    }
+
+    function formatDateForDisplay(dateString: string): string {
+        return new Date(dateString).toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        });
     }
 
     return (
@@ -90,26 +114,37 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
                     <div className="min-w-max">
                         <div className="flex justify-evenly">
                             {weeks.map((week, weekIndex) => (
+                                // TODO: fix the alignment between month labels and actual dates
                                 <div
                                     key={weekIndex}
                                     className="flex flex-col gap-1"
                                 >
                                     {week.map((day, dayIndex) => (
-                                        <div
+                                        <Tooltip
                                             key={`${weekIndex}-${dayIndex}`}
-                                            className={`border-border hover:border-foreground h-3 w-3 cursor-pointer rounded-sm border transition-colors ${
-                                                day
-                                                    ? getHeatmapColor(
-                                                          day.intensity
-                                                      )
-                                                    : 'bg-heatmap-0'
-                                            }`}
-                                            title={
-                                                day
-                                                    ? `${day.date}: ${day.nrReviews} reviews`
-                                                    : ''
-                                            }
-                                        />
+                                        >
+                                            <TooltipTrigger asChild>
+                                                <div
+                                                    className={`hover:border-foreground h-3 w-3 rounded-sm border transition-colors ${
+                                                        day
+                                                            ? getHeatmapColor(
+                                                                  getIntensity(
+                                                                      day.numberOfReviews
+                                                                  )
+                                                              )
+                                                            : 'bg-heatmap-0'
+                                                    }`}
+                                                    title={
+                                                        day
+                                                            ? `${formatDateForDisplay(day.date)}: ${day.numberOfReviews} reviews`
+                                                            : ''
+                                                    }
+                                                />
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                {`${day.numberOfReviews || 'No'} reviews on ${formatDateForDisplay(day.date)}`}
+                                            </TooltipContent>
+                                        </Tooltip>
                                     ))}
                                 </div>
                             ))}
