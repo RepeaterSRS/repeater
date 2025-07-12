@@ -25,14 +25,21 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <header className="flex w-screen flex-row justify-center">
-                    <NavigationBar />
-                </header>
-                <AppProviders>{children}</AppProviders>
+                <AppProviders
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <header className="flex w-screen flex-row justify-center">
+                        <NavigationBar />
+                    </header>
+                    {children}
+                </AppProviders>
             </body>
         </html>
     );
