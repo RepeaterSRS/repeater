@@ -1,3 +1,5 @@
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 export type HeatmapData = {
     [key: string]: {
         date: string;
@@ -54,77 +56,79 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
     }
 
     function getHeatmapColor(intensity: number) {
-        const colors = ['#f3f4f6', '#dcfce7', '#86efac', '#22c55e', '#15803d'];
-        return colors[intensity];
+        const colorClasses = [
+            'bg-heatmap-0',
+            'bg-heatmap-1',
+            'bg-heatmap-2',
+            'bg-heatmap-3',
+            'bg-heatmap-4',
+        ];
+        return colorClasses[intensity];
     }
 
     return (
-        <div
-            className={`rounded-xl border border-gray-200 bg-white p-6 shadow-sm ${className}`}
-        >
-            <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-800">
-                    Activity
-                </h3>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <span>Less</span>
-                    <div className="flex gap-1">
-                        {[0, 1, 2, 3, 4].map((level) => (
-                            <div
-                                key={level}
-                                className="h-3 w-3 rounded-sm border border-gray-200"
-                                style={{
-                                    backgroundColor: getHeatmapColor(level),
-                                }}
-                            />
-                        ))}
-                    </div>
-                    <span>More</span>
-                </div>
-            </div>
-
-            <div className="overflow-x-auto rounded-lg bg-gray-50 p-2">
-                <div className="min-w-max">
-                    <div className="flex gap-1">
-                        {weeks.map((week, weekIndex) => (
-                            <div
-                                key={weekIndex}
-                                className="flex flex-col gap-1"
-                            >
-                                {week.map((day, dayIndex) => (
-                                    <div
-                                        key={`${weekIndex}-${dayIndex}`}
-                                        className="h-3 w-3 cursor-pointer rounded-sm border border-gray-200 transition-colors hover:border-gray-400"
-                                        style={{
-                                            backgroundColor: day
-                                                ? getHeatmapColor(day.intensity)
-                                                : '#f3f4f6',
-                                        }}
-                                        title={
-                                            day
-                                                ? `${day.date}: ${day.nrReviews} reviews`
-                                                : ''
-                                        }
-                                    />
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex justify-between">
-                        {rotateArray(months, startMonth).map(
-                            (month, monthIndex) => (
+        <Card className={className}>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle>Activity</CardTitle>
+                    <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                        <span>Less</span>
+                        <div className="flex gap-1">
+                            {[0, 1, 2, 3, 4].map((level) => (
                                 <div
-                                    key={`${month}-${monthIndex}`}
-                                    className="text-sm text-gray-600"
-                                    style={{ width: `40px` }}
-                                >
-                                    {month}
-                                </div>
-                            )
-                        )}
+                                    key={level}
+                                    className={`border-border h-3 w-3 rounded-sm border ${getHeatmapColor(level)}`}
+                                />
+                            ))}
+                        </div>
+                        <span>More</span>
                     </div>
                 </div>
-            </div>
-        </div>
+            </CardHeader>
+            <CardContent>
+                <div className="overflow-x-auto">
+                    <div className="min-w-max">
+                        <div className="flex justify-evenly">
+                            {weeks.map((week, weekIndex) => (
+                                <div
+                                    key={weekIndex}
+                                    className="flex flex-col gap-1"
+                                >
+                                    {week.map((day, dayIndex) => (
+                                        <div
+                                            key={`${weekIndex}-${dayIndex}`}
+                                            className={`border-border hover:border-foreground h-3 w-3 cursor-pointer rounded-sm border transition-colors ${
+                                                day
+                                                    ? getHeatmapColor(
+                                                          day.intensity
+                                                      )
+                                                    : 'bg-heatmap-0'
+                                            }`}
+                                            title={
+                                                day
+                                                    ? `${day.date}: ${day.nrReviews} reviews`
+                                                    : ''
+                                            }
+                                        />
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-between">
+                            {rotateArray(months, startMonth).map(
+                                (month, monthIndex) => (
+                                    <div
+                                        key={`${month}-${monthIndex}`}
+                                        className="text-muted-foreground text-sm"
+                                    >
+                                        {month}
+                                    </div>
+                                )
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
     );
 }
