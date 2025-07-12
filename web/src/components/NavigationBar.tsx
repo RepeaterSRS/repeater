@@ -4,6 +4,8 @@ import { usePathname } from 'next/navigation';
 import { animate, motion, useMotionValue, useTransform } from 'motion/react';
 import Link from 'next/link';
 
+import ThemeChanger from '@/components/ThemeChanger';
+
 export default function NavigationBar() {
     const pathname = usePathname();
     const clipPathContainerRef = useRef<HTMLDivElement>(null);
@@ -67,46 +69,49 @@ export default function NavigationBar() {
     }
 
     return (
-        <nav
-            role="navigation"
-            aria-label="Main navigation"
-            className="bg-background text-foreground relative my-2 flex w-5/6 max-w-md rounded-lg border py-1 shadow-sm"
-        >
-            <div className="flex h-10 w-full justify-evenly px-2">
-                {tabs.map((tab) => {
-                    const isActive = pathname === tab.href;
-                    return (
-                        <Link
-                            key={tab.href}
-                            href={tab.href}
-                            ref={isActive ? activeTabRef : null}
-                            className="hover:bg-accent/50 hover:text-primary flex w-full max-w-48 items-center justify-center rounded-lg px-4"
-                        >
-                            {tab.label}
-                        </Link>
-                    );
-                })}
-            </div>
-
-            <motion.div
-                aria-hidden
-                ref={clipPathContainerRef}
-                className="bg-accent text-foreground absolute inset-0 flex h-10 w-full items-center justify-evenly px-2"
-                style={{ clipPath, inset: '0.25rem 0' }}
+        <div className="my-2 flex w-full max-w-md items-center gap-2 px-4 md:px-0">
+            <nav
+                role="navigation"
+                aria-label="Main navigation"
+                className="bg-background text-foreground relative flex w-full rounded-lg border py-1 shadow-sm"
             >
-                {tabs.map((tab) => {
-                    return (
-                        <Link
-                            key={`active-${tab.href}`}
-                            href={tab.href}
-                            className="flex w-full max-w-48 items-center justify-center px-4"
-                            tabIndex={-1}
-                        >
-                            {tab.label}
-                        </Link>
-                    );
-                })}
-            </motion.div>
-        </nav>
+                <div className="flex h-10 w-full items-center justify-evenly px-2">
+                    {tabs.map((tab) => {
+                        const isActive = pathname === tab.href;
+                        return (
+                            <Link
+                                key={tab.href}
+                                href={tab.href}
+                                ref={isActive ? activeTabRef : null}
+                                className="hover:bg-accent/50 hover:text-primary flex h-10 w-full max-w-48 items-center justify-center rounded-lg px-4"
+                            >
+                                {tab.label}
+                            </Link>
+                        );
+                    })}
+                </div>
+
+                <motion.div
+                    inert
+                    ref={clipPathContainerRef}
+                    className="bg-accent text-foreground absolute inset-0 flex h-10 w-full items-center justify-evenly px-2"
+                    style={{ clipPath, inset: '0.25rem 0' }}
+                >
+                    {tabs.map((tab) => {
+                        return (
+                            <Link
+                                key={`active-${tab.href}`}
+                                href={tab.href}
+                                className="flex w-full max-w-48 items-center justify-center px-4"
+                                tabIndex={-1}
+                            >
+                                {tab.label}
+                            </Link>
+                        );
+                    })}
+                </motion.div>
+            </nav>
+            <ThemeChanger className="h-12 w-12 max-md:hidden" />
+        </div>
     );
 }
