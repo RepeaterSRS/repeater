@@ -125,7 +125,7 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
                                         >
                                             <TooltipTrigger asChild>
                                                 <div
-                                                    className={`hover:border-foreground h-3 w-3 rounded-sm border transition-colors ${
+                                                    className={`hover:border-foreground relative h-3 w-3 rounded-sm border transition-colors before:absolute before:-inset-1 before:content-[''] ${
                                                         day
                                                             ? getHeatmapColor(
                                                                   getIntensity(
