@@ -612,6 +612,9 @@ components:
           type: string
           format: uuid
           title: Deck Id
+        deck_name:
+          type: string
+          title: Deck Name
         content:
           type: string
           title: Content
@@ -619,6 +622,9 @@ components:
           type: string
           format: date-time
           title: Next Review Date
+        overdue:
+          type: boolean
+          title: Overdue
         created_at:
           type: string
           format: date-time
@@ -631,8 +637,10 @@ components:
       required:
       - id
       - deck_id
+      - deck_name
       - content
       - next_review_date
+      - overdue
       - created_at
       - updated_at
       title: CardOut
