@@ -3,6 +3,8 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
+import { formatDateForDisplay } from '@/lib/utils';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -47,15 +49,6 @@ export default function Review() {
     const [activeCardIndex, setActiveCardIndex] = useState(0);
 
     const activeCard = dueCards?.data?.[activeCardIndex];
-    const isActiveCardOverdue =
-        activeCard?.next_review_date &&
-        (() => {
-            const reviewDate = new Date(activeCard.next_review_date);
-            const today = new Date();
-            reviewDate.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
-            return reviewDate < today;
-        })();
 
     const nextCard = () => {
         if (dueCards?.data && activeCardIndex < dueCards.data.length - 1) {
@@ -85,9 +78,10 @@ export default function Review() {
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href="/decks?deckid=french-deck-ID">
-                                        {/* TODO: change to deck name */}
-                                        {activeCard.deck_id.substring(0, 2)}
+                                    <BreadcrumbLink
+                                        href={`/decks?deck_id=${activeCard.deck_id}`}
+                                    >
+                                        {activeCard.deck_name}
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
@@ -115,12 +109,12 @@ export default function Review() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        {isActiveCardOverdue && (
+                        {activeCard.overdue && (
                             <p className="text-sm text-red-500">
-                                Overdue. Review date:{' '}
-                                {new Date(
+                                Overdue. Review date:
+                                {formatDateForDisplay(
                                     activeCard.next_review_date
-                                ).toLocaleDateString()}
+                                )}
                             </p>
                         )}
                         <p className="mt-2 text-xl">{activeCard.content}</p>

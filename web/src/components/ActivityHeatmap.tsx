@@ -6,6 +6,8 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+import { formatDateForDisplay } from '@/lib/utils';
+
 export type HeatmapData = {
     [key: string]: {
         date: string;
@@ -80,14 +82,6 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
             'bg-heatmap-4',
         ];
         return colorClasses[intensity];
-    }
-
-    function formatDateForDisplay(dateString: string): string {
-        return new Date(dateString).toLocaleDateString(undefined, {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-        });
     }
 
     return (

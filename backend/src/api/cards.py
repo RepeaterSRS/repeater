@@ -3,7 +3,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, contains_eager
 
 from src.auth.jwt import get_current_user
 from src.db import get_db
@@ -26,8 +26,9 @@ def create_card(
         raise HTTPException(status_code=404, detail=str(err))
 
     card = Card(deck_id=deck.id, content=card_req.content)
+    card.deck = deck
     card.save(db_session)
-    return card
+    return CardOut.from_card(card)
 
 
 @router.get("", response_model=List[CardOut])
@@ -37,7 +38,12 @@ def get_cards(
     user: User = Depends(get_current_user),
     db_session: Session = Depends(get_db),
 ):
-    query = db_session.query(Card).join(Deck).filter(Deck.user_id == user.id)
+    query = (
+        db_session.query(Card)
+        .join(Deck)
+        .filter(Deck.user_id == user.id)
+        .options(contains_eager(Card.deck))
+    )
 
     if deck_id:
         query = query.filter(Card.deck_id == deck_id)
@@ -45,7 +51,8 @@ def get_cards(
     if only_due:
         query = query.filter(Card.next_review_date <= datetime.now(timezone.utc))
 
-    return query.all()
+    cards = query.all()
+    return [CardOut.from_card(card) for card in cards]
 
 
 @router.patch("/{card_id}", response_model=CardOut)
@@ -64,7 +71,7 @@ def update_card(
     for field, value in updates.items():
         setattr(card, field, value)
     card.save(db_session)
-    return card
+    return CardOut.from_card(card)
 
 
 @router.delete("/{card_id}")
