@@ -41,7 +41,7 @@ export default function Profile() {
     }
 
     return (
-        <div className="min-h-dvh pt-6">
+        <div className="min-h-dvh px-4 pt-6 md:px-0">
             <div className="mx-auto max-w-4xl space-y-4">
                 {/* Profile Card */}
                 {profilePending && !profileError && (

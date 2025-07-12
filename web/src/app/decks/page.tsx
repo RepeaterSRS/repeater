@@ -65,19 +65,29 @@ export default function Decks() {
     }
 
     return (
-        <div className="flex flex-col items-center gap-4 px-8 py-4">
+        <div className="flex flex-col items-center gap-4 px-4 py-4 md:px-0">
             <div className="container">
                 <h1 className="mb-6 text-2xl font-medium">Decks</h1>
 
                 {decksState.loading && <p>Loading decks...</p>}
                 {decksState.error && <p>{decksState.error}</p>}
                 {!decksState.loading && !decksState.error && (
-                    <div className="flex flex-row flex-wrap gap-4">
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-[repeat(auto-fill,minmax(8rem,1fr))]">
+                        <Card className="flex aspect-[3/4] flex-col items-center justify-center border-2 border-dashed shadow-none">
+                            <DeckCreationDialog
+                                onSuccess={fetchDecks}
+                                trigger={
+                                    <Button variant="outline">
+                                        <Plus /> New
+                                    </Button>
+                                }
+                            ></DeckCreationDialog>
+                        </Card>
                         {decksState.data.length > 0 &&
                             decksState.data.map((deck) => (
                                 <Card
                                     key={deck.id}
-                                    className="flex aspect-[3/4] w-34 flex-col gap-2 p-4"
+                                    className="flex aspect-[3/4] flex-col gap-2 p-4"
                                 >
                                     <CardHeader className="p-0">
                                         <h3 className="text-lg font-bold">
@@ -91,16 +101,6 @@ export default function Decks() {
                                     </CardContent>
                                 </Card>
                             ))}
-                        <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
-                            <DeckCreationDialog
-                                onSuccess={fetchDecks}
-                                trigger={
-                                    <Button variant="outline">
-                                        <Plus /> New
-                                    </Button>
-                                }
-                            ></DeckCreationDialog>
-                        </Card>
                     </div>
                 )}
             </div>
@@ -111,12 +111,23 @@ export default function Decks() {
                 {cardsState.loading && <p>Loading cards...</p>}
                 {cardsState.error && <p>{cardsState.error}</p>}
                 {!cardsState.loading && !cardsState.error && (
-                    <div className="flex flex-row flex-wrap gap-4">
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-[repeat(auto-fill,minmax(8rem,1fr))]">
+                        <Card className="flex aspect-[3/4] flex-col items-center justify-center border-2 border-dashed shadow-none">
+                            <CardCreationDialog
+                                decks={decksState.data}
+                                onSuccess={fetchCards}
+                                trigger={
+                                    <Button variant="outline">
+                                        <Plus /> New
+                                    </Button>
+                                }
+                            ></CardCreationDialog>
+                        </Card>
                         {cardsState.data.length > 0 &&
                             cardsState.data.map((card) => (
                                 <Card
                                     key={card.id}
-                                    className="flex aspect-[3/4] w-34 flex-col gap-1 p-4"
+                                    className="flex aspect-[3/4] flex-col gap-1 p-4"
                                 >
                                     <CardHeader className="p-0">
                                         <p className="text-xs text-neutral-600">
@@ -131,17 +142,6 @@ export default function Decks() {
                                     </CardContent>
                                 </Card>
                             ))}
-                        <Card className="flex aspect-[3/4] w-34 flex-col items-center justify-center border-2 border-dashed shadow-none">
-                            <CardCreationDialog
-                                decks={decksState.data}
-                                onSuccess={fetchCards}
-                                trigger={
-                                    <Button variant="outline">
-                                        <Plus /> Add
-                                    </Button>
-                                }
-                            ></CardCreationDialog>
-                        </Card>
                     </div>
                 )}
             </div>
