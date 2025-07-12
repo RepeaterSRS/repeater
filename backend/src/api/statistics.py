@@ -9,9 +9,9 @@ from src.db.models import User
 from src.schemas.statistics import StatisticsOut
 from src.statistics import (
     calculate_daily_reviews,
-    calculate_overall_success_rate,
     calculate_retention_rate,
     calculate_streak,
+    calculate_success_rate,
     get_deck_statistics,
 )
 
@@ -31,7 +31,7 @@ async def get_user_statistics(
     streak = calculate_streak(today, review_dates)
     daily_reviews = calculate_daily_reviews(review_dates)
     overall_retention_rate = calculate_retention_rate(user_reviews)
-    overall_success_rate = calculate_overall_success_rate(user_reviews)
+    overall_success_rate = calculate_success_rate(user_reviews)
 
     deck_statistics = []
     for deck in user_decks:
