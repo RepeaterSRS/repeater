@@ -55,7 +55,7 @@ def calculate_retention_rate(
     return correct_mature_reviews / len(mature_reviews)
 
 
-def calculate_overall_success_rate(reviews: List[Review]) -> float:
+def calculate_success_rate(reviews: List[Review]) -> float:
     if not reviews:
         return 0.0
 
@@ -71,11 +71,11 @@ def classify_deck_difficulty(reviews: List[Review]) -> str:
     if len(reviews) < 5:
         return DifficultyRankings.NEW
 
-    success_rate = calculate_overall_success_rate(reviews)
+    success_rate = calculate_success_rate(reviews)
     retention_rate = calculate_retention_rate(reviews)
 
     recent_reviews = reviews[-10:] if len(reviews) >= 10 else reviews
-    recent_success_rate = calculate_overall_success_rate(recent_reviews)
+    recent_success_rate = calculate_success_rate(recent_reviews)
 
     if success_rate >= 0.85 and retention_rate >= 0.80 and recent_success_rate >= 0.80:
         return DifficultyRankings.MASTERED

@@ -7,9 +7,9 @@ from src.db.models import Review, ReviewFeedback
 from src.statistics import (
     DifficultyRankings,
     calculate_daily_reviews,
-    calculate_overall_success_rate,
     calculate_retention_rate,
     calculate_streak,
+    calculate_success_rate,
     classify_deck_difficulty,
 )
 
@@ -137,8 +137,8 @@ def test_calculate_retention_rate(reviews, expected_retention_rate):
         ),
     ],
 )
-def test_calculate_overall_success_rate(reviews, expected_success_rate):
-    assert calculate_overall_success_rate(reviews) == expected_success_rate
+def test_calculate_success_rate(reviews, expected_success_rate):
+    assert calculate_success_rate(reviews) == expected_success_rate
 
 
 @pytest.mark.parametrize(
