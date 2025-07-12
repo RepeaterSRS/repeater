@@ -23,7 +23,7 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
     const endDate = new Date();
     const startDate = new Date();
     const startMonth = startDate.getMonth();
-    startDate.setDate(endDate.getDate() - 364);
+    startDate.setDate(endDate.getDate() - 363);
 
     for (let i = 0; i < 52; i++) {
         const week = [];
