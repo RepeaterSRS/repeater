@@ -30,14 +30,10 @@ export default function Profile() {
         const heatmapData: HeatmapData = {};
 
         for (let date in reviews_by_date) {
-            const nrReviews = reviews_by_date[date];
+            const numberOfReviews = reviews_by_date[date];
             heatmapData[date] = {
                 date: date,
-                nrReviews: nrReviews,
-                intensity:
-                    nrReviews === 0
-                        ? 0
-                        : Math.min(Math.floor(nrReviews / 10) + 1, 4),
+                numberOfReviews: numberOfReviews,
             };
         }
 
