@@ -30,14 +30,9 @@ class CardOut(BaseModel):
         )
 
         return cls(
-            id=card.id,
-            deck_id=card.deck_id,
+            **card.__dict__,
             deck_name=card.deck.name,
-            content=card.content,
-            next_review_date=card.next_review_date,
             overdue=next_review_day < today,
-            created_at=card.created_at,
-            updated_at=card.updated_at,
         )
 
 
