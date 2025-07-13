@@ -10,6 +10,7 @@ DB_EXEC=docker exec $(DB_CONTAINER)
 format:
 	$(BACKEND_EXEC) uvx ruff check --select I --fix
 	$(BACKEND_EXEC) uvx ruff format
+	$(FRONTEND_EXEC) pnpm run lint:fix
 	$(FRONTEND_EXEC) pnpm exec prettier --write .
 
 
