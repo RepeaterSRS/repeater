@@ -23,8 +23,8 @@ export default function Register() {
                     password: password,
                 },
             });
-        } catch (err: any) {
-            setError(err.detail ?? 'Failed to register');
+        } catch (err: unknown) {
+            setError((err as Error)?.message ?? 'Failed to register');
         }
     };
 

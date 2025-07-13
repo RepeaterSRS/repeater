@@ -63,8 +63,8 @@ export default function DeckCreationDialog({
             setIsDeckDialogOpen(false);
 
             onSuccess?.();
-        } catch (err: any) {
-            const errorMessage = `There was an error creating deck: ${err.detail ?? 'no details found'}`;
+        } catch (err: unknown) {
+            const errorMessage = `There was an error creating deck: ${(err as Error)?.message ?? 'no details found'}`;
             onError?.(errorMessage);
         }
     }

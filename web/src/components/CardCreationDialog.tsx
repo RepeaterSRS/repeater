@@ -73,8 +73,8 @@ export default function CardCreationDialog({
             setIsCardDialogOpen(false);
 
             onSuccess?.();
-        } catch (err: any) {
-            const errorMessage = `There was an error creating card: ${err.detail ?? 'no details found'}`;
+        } catch (err: unknown) {
+            const errorMessage = `There was an error creating card: ${(err as Error)?.message ?? 'no details found'}`;
             onError?.(errorMessage);
         }
     }

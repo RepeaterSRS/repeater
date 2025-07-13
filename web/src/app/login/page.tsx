@@ -23,8 +23,8 @@ export default function Login() {
                     password: password,
                 },
             });
-        } catch (err: any) {
-            setError(err.detail ?? 'Failed to log in');
+        } catch (err: unknown) {
+            setError((err as Error)?.message ?? 'Failed to log in');
         }
     };
 
