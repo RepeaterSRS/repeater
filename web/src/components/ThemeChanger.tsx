@@ -1,5 +1,5 @@
 'use client';
-import { LaptopMinimal, Moon, Sun } from 'lucide-react';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 
@@ -33,7 +33,7 @@ export default function ThemeChanger({ className }: { className?: string }) {
                     className={cn('cursor-pointer', className)}
                 >
                     {theme === 'light' && <Sun />}
-                    {theme === 'system' && <LaptopMinimal />}
+                    {theme === 'system' && <Monitor />}
                     {theme === 'dark' && <Moon />}
                 </Button>
             </DropdownMenuTrigger>
@@ -43,7 +43,7 @@ export default function ThemeChanger({ className }: { className?: string }) {
                     <Sun /> Light
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('system')}>
-                    <LaptopMinimal /> System
+                    <Monitor /> System
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('dark')}>
                     <Moon /> Dark
