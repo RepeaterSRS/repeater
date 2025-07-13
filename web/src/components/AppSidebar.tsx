@@ -1,6 +1,9 @@
 'use client';
-import ThemeChanger from '@/components/ThemeChanger';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
+import ThemeChanger from '@/components/ThemeChanger';
+import { Button } from '@/components/ui/button';
 import {
     Sidebar,
     SidebarContent,
@@ -11,11 +14,6 @@ import {
     SidebarMenuItem,
     SidebarMenuButton,
 } from '@/components/ui/sidebar';
-
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
-import { Button } from '@/components/ui/button';
 
 const pages = [
     { href: '/review', label: 'Review' },

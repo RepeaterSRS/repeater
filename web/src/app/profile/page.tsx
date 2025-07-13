@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 
 import { ActivityHeatmap, HeatmapData } from '@/components/ActivityHeatmap';
 import MetricCard from '@/components/MetricCard';
