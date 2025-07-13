@@ -41,8 +41,8 @@ export default function Profile() {
     }
 
     return (
-        <div className="min-h-dvh px-4 pt-6 md:px-0">
-            <div className="mx-auto max-w-4xl space-y-4">
+        <div className="flex min-h-dvh w-full flex-col items-center p-4">
+            <div className="max-w-4xl space-y-4">
                 {/* Profile Card */}
                 {profilePending && !profileError && (
                     <Card>
