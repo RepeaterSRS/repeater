@@ -38,6 +38,7 @@
     "devDependencies": {
         "@eslint/eslintrc": "^3",
         "@hey-api/openapi-ts": "^0.74.0",
+        "@next/eslint-plugin-next": "^15.3.5",
         "@tailwindcss/postcss": "^4",
         "@tanstack/eslint-plugin-query": "^5.81.2",
         "@types/node": "^20",
@@ -47,6 +48,7 @@
         "eslint-config-next": "15.3.4",
         "eslint-plugin-better-tailwindcss": "^3.5.2",
         "eslint-plugin-perfectionist": "^4.15.0",
+        "eslint-plugin-react-hooks": "^5.2.0",
         "prettier": "^3.4.2",
         "prettier-plugin-tailwindcss": "^0.6.13",
         "tailwindcss": "^4",
