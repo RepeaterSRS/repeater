@@ -1,10 +1,10 @@
 'use client';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getUserInfoMeGet, getUserStatisticsStatsGet } from '@/gen';
 import MetricCard from '@/components/MetricCard';
 import { ActivityHeatmap, HeatmapData } from '@/components/ActivityHeatmap';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 
 export default function Profile() {
@@ -41,8 +41,8 @@ export default function Profile() {
     }
 
     return (
-        <div className="flex min-h-dvh w-full flex-col items-center p-4">
-            <div className="max-w-4xl space-y-4">
+        <div className="container mx-auto px-6 py-6">
+            <div className="space-y-6">
                 {/* Profile Card */}
                 {profilePending && !profileError && (
                     <Card>
@@ -61,16 +61,12 @@ export default function Profile() {
                     </Card>
                 )}
                 {!profilePending && !profileError && profile?.data && (
-                    <Card className="w-full">
-                        <CardHeader>
-                            <CardTitle>Welcome back!</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">
-                                Your profile information will go here
-                            </p>
-                        </CardContent>
-                    </Card>
+                    <div className="w-full">
+                        <p className="mb-4 text-4xl">Welcome back!</p>
+                        <p className="text-muted-foreground">
+                            Your profile information will go here
+                        </p>
+                    </div>
                 )}
 
                 {/* Metrics Grid */}
@@ -92,7 +88,7 @@ export default function Profile() {
                         </Card>
                     )}
                     {!statsPending && !statsError && stats?.data && (
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                             <ActivityHeatmap
                                 className="col-span-2"
                                 heatmapData={formatHeatmapData(

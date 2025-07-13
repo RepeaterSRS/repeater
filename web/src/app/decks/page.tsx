@@ -65,8 +65,8 @@ export default function Decks() {
     }
 
     return (
-        <div className="flex flex-col items-center gap-4 p-4">
-            <div className="container">
+        <div className="container mx-auto px-6 py-6 space-y-8">
+            <div>
                 <h1 className="mb-6 text-2xl font-medium">Decks</h1>
 
                 {decksState.loading && <p>Loading decks...</p>}
@@ -105,7 +105,7 @@ export default function Decks() {
                 )}
             </div>
 
-            <div className="container">
+            <div>
                 <h1 className="mb-6 text-2xl font-medium">Cards</h1>
 
                 {cardsState.loading && <p>Loading cards...</p>}
