@@ -76,7 +76,10 @@ export default function Decks() {
                             <DeckCreationDialog
                                 onSuccess={fetchDecks}
                                 trigger={
-                                    <Button variant="outline">
+                                    <Button
+                                        variant="outline"
+                                        className="cursor-pointer"
+                                    >
                                         <Plus /> New
                                     </Button>
                                 }
@@ -116,7 +119,10 @@ export default function Decks() {
                                 decks={decksState.data}
                                 onSuccess={fetchCards}
                                 trigger={
-                                    <Button variant="outline">
+                                    <Button
+                                        variant="outline"
+                                        className="cursor-pointer"
+                                    >
                                         <Plus /> New
                                     </Button>
                                 }

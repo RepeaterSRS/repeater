@@ -45,30 +45,26 @@ export default function Profile() {
         <div className="container mx-auto px-6 py-6">
             <div className="space-y-6">
                 {/* Profile Card */}
-                {profilePending && !profileError && (
-                    <Card>
-                        <CardContent>
-                            <p>Loading profile...</p>
-                        </CardContent>
-                    </Card>
-                )}
-                {!profilePending && profileError && (
-                    <Card>
-                        <CardContent>
-                            <p className="text-destructive">
-                                Error loading profile!
-                            </p>
-                        </CardContent>
-                    </Card>
-                )}
-                {!profilePending && !profileError && profile?.data && (
-                    <div className="w-full">
-                        <p className="mb-4 text-4xl">Welcome back!</p>
+                <div className="w-full">
+                    <p className="mb-4 text-4xl">Welcome back!</p>
+                    {profilePending && !profileError && (
                         <p className="text-muted-foreground">
                             Your profile information will go here
                         </p>
-                    </div>
-                )}
+                    )}
+                    {!profilePending && profileError && (
+                        <Card>
+                            <CardContent>
+                                <p className="text-destructive">
+                                    Error loading profile!
+                                </p>
+                            </CardContent>
+                        </Card>
+                    )}
+                    {!profilePending && !profileError && profile?.data && (
+                        <p>{profile.data.email}</p>
+                    )}
+                </div>
 
                 {/* Metrics Grid */}
                 <div className="w-full">
