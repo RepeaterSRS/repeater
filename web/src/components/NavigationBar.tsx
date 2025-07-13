@@ -3,10 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { animate, motion, useMotionValue, useTransform } from 'motion/react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 import ThemeChanger from '@/components/ThemeChanger';
 
-export default function NavigationBar() {
+export default function NavigationBar({
+    className,
+}: React.ComponentProps<'div'>) {
     const pathname = usePathname();
     const clipPathContainerRef = useRef<HTMLDivElement>(null);
     const activeTabRef = useRef<HTMLAnchorElement>(null);
@@ -69,7 +72,12 @@ export default function NavigationBar() {
     }
 
     return (
-        <div className="my-2 flex w-full max-w-md items-center gap-2 px-4 md:px-0">
+        <div
+            className={cn(
+                'my-2 flex w-full max-w-md items-center gap-2 px-4 md:px-0',
+                className
+            )}
+        >
             <nav
                 role="navigation"
                 aria-label="Main navigation"

@@ -1,7 +1,13 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import {
+    Card,
+    CardHeader,
+    CardContent,
+    CardFooter,
+    CardAction,
+} from '@/components/ui/card';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -70,11 +76,11 @@ export default function Review() {
     };
 
     return (
-        <div className="flex h-[calc(100dvh-4rem)] w-full flex-col items-center justify-between gap-4 py-4">
+        <div className="flex h-[calc(100dvh-4rem)] w-full flex-col items-center gap-4 py-4">
             {isPending && !isError && <p>loading</p>}
             {!isPending && isError && <p>error!</p>}
             {activeCard && (
-                <Card className="aspect-[3/4] w-4/6 max-w-sm">
+                <Card className="flex aspect-[3/4] w-4/6 max-w-sm flex-col">
                     <CardHeader className="flex flex-row items-center justify-between text-xs">
                         <Breadcrumb>
                             <BreadcrumbList>
@@ -114,7 +120,7 @@ export default function Review() {
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="flex-1">
                         {isActiveCardOverdue && (
                             <p className="text-sm text-red-500">
                                 Overdue. Review date:{' '}
@@ -125,23 +131,24 @@ export default function Review() {
                         )}
                         <p className="mt-2 text-xl">{activeCard.content}</p>
                     </CardContent>
+                    <CardFooter className="flex flex-row justify-center gap-4">
+                        <Button
+                            variant="secondary"
+                            className="h-12 w-30"
+                            onClick={() => reviewCard.mutate('forgot')}
+                        >
+                            Forgor
+                        </Button>
+                        <Button
+                            className="h-12 w-30"
+                            onClick={() => reviewCard.mutate('ok')}
+                        >
+                            I got it :)
+                        </Button>
+                    </CardFooter>
                 </Card>
             )}
-            <div className="flex w-full flex-row justify-center gap-4">
-                <Button
-                    variant="secondary"
-                    className="h-12 w-30"
-                    onClick={() => reviewCard.mutate('forgot')}
-                >
-                    Forgor
-                </Button>
-                <Button
-                    className="h-12 w-30"
-                    onClick={() => reviewCard.mutate('ok')}
-                >
-                    I got it :)
-                </Button>
-            </div>
+            <div className="flex w-full flex-row gap-4"></div>
         </div>
     );
 }

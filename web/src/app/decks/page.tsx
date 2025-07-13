@@ -65,7 +65,7 @@ export default function Decks() {
     }
 
     return (
-        <div className="flex flex-col items-center gap-4 px-4 py-4 md:px-0">
+        <div className="flex flex-col items-center gap-4 p-4">
             <div className="container">
                 <h1 className="mb-6 text-2xl font-medium">Decks</h1>
 
