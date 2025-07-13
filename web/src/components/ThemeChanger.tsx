@@ -1,5 +1,7 @@
+'use client';
 import { LaptopMinimal, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { useState, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -12,8 +14,16 @@ import {
 import { cn } from '@/lib/utils';
 
 export default function ThemeChanger({ className }: { className?: string }) {
+    const [mounted, setMounted] = useState(false);
     const { theme, setTheme } = useTheme();
 
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return null;
+    }
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
