@@ -2,6 +2,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { FlatCompat } from '@eslint/eslintrc';
 import perfectionist from 'eslint-plugin-perfectionist';
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,9 +19,22 @@ const eslintConfig = [
     {
         plugins: {
             perfectionist,
+            'better-tailwindcss': betterTailwindcss,
+        },
+        settings: {
+            'better-tailwindcss': {
+                entryPoint: 'src/app/globals.css',
+            },
         },
         rules: {
             'perfectionist/sort-imports': 'error',
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                },
+            ],
         },
     },
 ];
