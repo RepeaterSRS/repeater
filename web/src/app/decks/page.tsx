@@ -64,7 +64,7 @@ export default function Decks() {
     }
 
     return (
-        <div className="container mx-auto px-6 py-6 space-y-8">
+        <div className="container mx-auto space-y-8 px-6 py-6">
             <div>
                 <h1 className="mb-6 text-2xl font-medium">Decks</h1>
 

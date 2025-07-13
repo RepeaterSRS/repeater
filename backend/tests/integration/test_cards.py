@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, timedelta, timezone
+
 from freezegun import freeze_time
 
 from src.db.models import Card
