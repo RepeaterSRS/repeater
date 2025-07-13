@@ -112,7 +112,7 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
             <CardContent>
                 <div className="overflow-x-auto">
                     <div className="min-w-max">
-                        <div className="flex justify-evenly">
+                        <div className="flex max-lg:gap-1 lg:justify-evenly">
                             {weeks.map((week, weekIndex) => (
                                 // TODO: fix the alignment between month labels and actual dates
                                 <div
