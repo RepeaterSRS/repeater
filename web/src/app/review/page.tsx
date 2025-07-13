@@ -1,15 +1,8 @@
 'use client';
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import {
-    Card,
-    CardHeader,
-    CardContent,
-    CardFooter,
-    CardAction,
-} from '@/components/ui/card';
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 
 import {
     Breadcrumb,
@@ -18,11 +11,9 @@ import {
     BreadcrumbLink,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-
 import { Button } from '@/components/ui/button';
-
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { getCardsCardsGet, createReviewReviewsPost } from '@/gen';
-import { useState } from 'react';
 
 export default function Review() {
     const {

@@ -1,5 +1,7 @@
 import { LaptopMinimal, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
+
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -7,7 +9,6 @@ import {
     DropdownMenuTrigger,
     DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export default function ThemeChanger({ className }: { className?: string }) {

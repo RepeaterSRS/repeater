@@ -1,5 +1,6 @@
-import { CreateClientConfig } from '@/gen/client';
 import { getCookie } from 'cookies-next/client';
+
+import { CreateClientConfig } from '@/gen/client';
 
 export const createClientConfig: CreateClientConfig = (config) => ({
     ...config,

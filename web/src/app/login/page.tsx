@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { loginAuthLoginPost } from '@/gen';
-import { Button } from '@/components/ui/button';
+
 import GoogleLogin from '@/components/GoogleLogin';
+import { Button } from '@/components/ui/button';
+import { loginAuthLoginPost } from '@/gen';
 
 export default function Login() {
     const [email, setEmail] = useState('');

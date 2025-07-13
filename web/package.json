@@ -6,7 +6,9 @@
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint",
+        "lint": "next lint && pnpm run lint:typescript",
+        "lint:fix": "next lint --fix && pnpm run lint:typescript",
+        "lint:typescript": "tsc --noEmit",
         "openapi-ts": "openapi-ts"
     },
     "dependencies": {
@@ -43,6 +45,7 @@
         "@types/react-dom": "^19",
         "eslint": "^9",
         "eslint-config-next": "15.3.4",
+        "eslint-plugin-perfectionist": "^4.15.0",
         "prettier": "^3.4.2",
         "prettier-plugin-tailwindcss": "^0.6.13",
         "tailwindcss": "^4",

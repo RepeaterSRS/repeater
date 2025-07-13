@@ -1,8 +1,9 @@
 'use client';
 
+import { deleteCookie } from 'cookies-next/client';
+
 import { refreshTokenAuthRefreshPost } from '@/gen';
 import { client } from '@/gen/client.gen';
-import { deleteCookie } from 'cookies-next/client';
 
 let isRefreshing = false;
 

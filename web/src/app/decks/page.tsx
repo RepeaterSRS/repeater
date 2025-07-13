@@ -1,14 +1,13 @@
 'use client';
 
-import { getDecksDecksGet, DeckOut, getCardsCardsGet, CardOut } from '@/gen';
-import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
+import CardCreationDialog from '@/components/CardCreationDialog';
+import DeckCreationDialog from '@/components/DeckCreationDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-
-import DeckCreationDialog from '@/components/DeckCreationDialog';
-import CardCreationDialog from '@/components/CardCreationDialog';
+import { getDecksDecksGet, DeckOut, getCardsCardsGet, CardOut } from '@/gen';
 
 export default function Decks() {
     const [decksState, setDecksState] = useState({

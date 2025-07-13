@@ -1,11 +1,11 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { getUserInfoMeGet, getUserStatisticsStatsGet } from '@/gen';
-import MetricCard from '@/components/MetricCard';
+
 import { ActivityHeatmap, HeatmapData } from '@/components/ActivityHeatmap';
+import MetricCard from '@/components/MetricCard';
 import { Card, CardContent } from '@/components/ui/card';
-import Link from 'next/link';
+import { getUserInfoMeGet, getUserStatisticsStatsGet } from '@/gen';
 
 export default function Profile() {
     const {
@@ -29,7 +29,7 @@ export default function Profile() {
     function formatHeatmapData(reviews_by_date: { [key: string]: number }) {
         const heatmapData: HeatmapData = {};
 
-        for (let date in reviews_by_date) {
+        for (const date in reviews_by_date) {
             const numberOfReviews = reviews_by_date[date];
             heatmapData[date] = {
                 date: date,

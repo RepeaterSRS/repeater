@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { registerAuthRegisterPost } from '@/gen';
-import { Button } from '@/components/ui/button';
+
 import GoogleLogin from '@/components/GoogleLogin';
+import { Button } from '@/components/ui/button';
+import { registerAuthRegisterPost } from '@/gen';
 
 export default function Register() {
     const [email, setEmail] = useState('');

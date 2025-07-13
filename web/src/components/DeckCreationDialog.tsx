@@ -1,6 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { createDeckDecksPost, DeckCreate } from '@/gen';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -10,7 +13,6 @@ import {
     DialogTrigger,
     DialogClose,
 } from '@/components/ui/dialog';
-
 import {
     Form,
     FormControl,
@@ -19,14 +21,9 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
-
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { createDeckDecksPost, DeckCreate } from '@/gen';
 
 interface DeckCreationDialogProps {
     trigger: React.ReactNode;

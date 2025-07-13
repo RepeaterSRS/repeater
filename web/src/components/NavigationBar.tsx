@@ -1,9 +1,9 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
-import { usePathname } from 'next/navigation';
 import { animate, motion, useMotionValue, useTransform } from 'motion/react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 import ThemeChanger from '@/components/ThemeChanger';
 
