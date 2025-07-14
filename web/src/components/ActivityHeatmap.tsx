@@ -20,28 +20,34 @@ interface Props {
 
 export function ActivityHeatmap({ className, heatmapData }: Props) {
     const weeks = [];
-    const endDate = new Date();
-    const startDate = new Date();
-    const startMonth = startDate.getMonth();
-    startDate.setDate(endDate.getDate() - 363);
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setFullYear(today.getFullYear() - 1);
 
-    for (let i = 0; i < 52; i++) {
-        const week = [];
-        for (let j = 0; j < 7; j++) {
-            const currentDate = new Date(startDate);
-            currentDate.setDate(startDate.getDate() + (i * 7 + j));
+    const currentDate = new Date(startDate);
+    let currentWeek = [];
 
-            const dateKey = currentDate.toISOString().split('T')[0];
-            const activityData = heatmapData[dateKey];
+    while (currentDate <= today) {
+        const dateKey = currentDate.toISOString().split('T')[0];
+        const activityData = heatmapData[dateKey];
 
-            week.push(
-                activityData || {
-                    date: dateKey,
-                    numberOfReviews: 0,
-                }
-            );
+        currentWeek.push(
+            activityData || {
+                date: dateKey,
+                numberOfReviews: 0,
+            }
+        );
+
+        if (currentWeek.length === 7) {
+            weeks.push(currentWeek);
+            currentWeek = [];
         }
-        weeks.push(week);
+
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    if (currentWeek.length > 0) {
+        weeks.push(currentWeek);
     }
 
     const months = [
@@ -59,10 +65,20 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
         'Dec',
     ];
 
-    // Rotating the months array to make the current month the first in the array
-    function rotateArray(array: string[], n: number) {
-        n = n % array.length;
-        return array.slice(n, array.length).concat(array.slice(0, n));
+    const monthLabels = [];
+    let prevMonth = -1;
+    for (let i = 0; i < weeks.length; i++) {
+        for (let j = 0; j < weeks[i].length; j++) {
+            const date = new Date(weeks[i][j].date);
+            const month = date.getMonth();
+            if (month !== prevMonth) {
+                prevMonth = month;
+                monthLabels.push({
+                    month: months[date.getMonth()],
+                    offset: i * weeks[i].length + j,
+                });
+            }
+        }
     }
 
     function getIntensity(numberOfReviews: number) {
@@ -93,7 +109,7 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
                             {[0, 1, 2, 3, 4].map((level) => (
                                 <div
                                     key={level}
-                                    className={`border-border h-3 w-3 rounded-sm border ${getHeatmapColor(level)}`}
+                                    className={`h-3 w-3 rounded-sm ${getHeatmapColor(level)}`}
                                 />
                             ))}
                         </div>
@@ -104,9 +120,9 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
             <CardContent>
                 <div className="overflow-x-auto">
                     <div className="min-w-max">
+                        {/* Heatmap grid */}
                         <div className="flex max-lg:gap-1 lg:justify-evenly">
                             {weeks.map((week, weekIndex) => (
-                                // TODO: fix the alignment between month labels and actual dates
                                 <div
                                     key={weekIndex}
                                     className="flex flex-col gap-1"
@@ -117,7 +133,7 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
                                         >
                                             <TooltipTrigger asChild>
                                                 <div
-                                                    className={`hover:border-foreground relative h-3 w-3 rounded-sm border transition-colors before:absolute before:-inset-1 before:content-[''] ${
+                                                    className={`hover:border-foreground relative h-3 w-3 rounded-sm border border-transparent transition-colors before:absolute before:-inset-1 before:content-[''] ${
                                                         day
                                                             ? getHeatmapColor(
                                                                   getIntensity(
@@ -141,17 +157,18 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
                                 </div>
                             ))}
                         </div>
-                        <div className="flex justify-between">
-                            {rotateArray(months, startMonth).map(
-                                (month, monthIndex) => (
-                                    <div
-                                        key={`${month}-${monthIndex}`}
-                                        className="text-muted-foreground text-sm"
-                                    >
-                                        {month}
-                                    </div>
-                                )
-                            )}
+
+                        {/* Month labels */}
+                        <div className="relative mb-4 h-4">
+                            {monthLabels.map((label, index) => (
+                                <div
+                                    key={`${label.month}-${index}`}
+                                    className="text-muted-foreground absolute text-sm"
+                                    style={{ left: `${label.offset / 3.65}%` }}
+                                >
+                                    {label.month}
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
