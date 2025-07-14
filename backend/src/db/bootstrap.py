@@ -10,7 +10,7 @@ CHINESE_DECK_JSON_PATH = "data/chinese.json"
 
 
 def add_user(email: str, password: str, role: UserRole, db_session: Session) -> User:
-    user = User(email=email, role=UserRole.ADMIN)
+    user = User(email=email, role=role)
     user.set_password(password)
     user = user.save(db_session)
     return user
