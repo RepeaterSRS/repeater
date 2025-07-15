@@ -9,7 +9,7 @@ export default function GoogleLogin({ href, children }: Props) {
     return (
         <a
             href={href}
-            className="inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium shadow-sm"
         >
             <svg
                 className="mr-2 h-5 w-5"
