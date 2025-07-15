@@ -54,6 +54,8 @@ jobs:
           DATABASE_URL: postgresql://user:password@db:5432/repeater
           SECRET_KEY: abc123
           FRONTEND_URL: .
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         working-directory: ./backend
 
   frontend-check:
@@ -70,6 +72,11 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
         working-directory: ./web
+
+      - name: Copy OpenAPI spec
+        run: |
+          mkdir -p web/docs
+          cp docs/openapi.yaml web/docs/openapi.yaml
 
       - name: Generate frontend client
         run: pnpm run openapi-ts
