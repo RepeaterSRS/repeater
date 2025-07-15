@@ -40,11 +40,13 @@ jobs:
       
       - name: Install dependencies
         run: uv sync
+        working-directory: ./backend
       
       - name: Run backend formatting check
         run: |
           uv run ruff check --select I .
           uv run ruff format --check .
+        working-directory: ./backend
       
       - name: Run tests
         run: uv run pytest
@@ -52,6 +54,7 @@ jobs:
           DATABASE_URL: postgresql://user:password@db:5432/repeater
           SECRET_KEY: abc123
           FRONTEND_URL: .
+        working-directory: ./backend
 
   frontend-check:
     runs-on: ubuntu-latest
