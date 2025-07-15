@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: repeater
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install UV
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+      
+      - name: Install dependencies
+        run: uv sync
+      
+      - name: Run backend formatting check
+        run: |
+          uv run ruff check --select I .
+          uv run ruff format --check .
+      
+      - name: Run tests
+        run: uv run pytest
+        env:
+          DATABASE_URL: postgresql://user:password@db:5432/repeater
+          SECRET_KEY: abc123
+          FRONTEND_URL: .
+
+  frontend-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: './web/pnpm-lock.yaml'
+      
+      - name: Install pnpm
+        run: npm install -g pnpm
+      
+      - name: Install frontend dependencies
+        run: pnpm install
+        working-directory: ./web
+      
+      - name: Run frontend formatting check
+        run: |
+          pnpm run lint
+          pnpm exec prettier --check .
+        working-directory: ./web
