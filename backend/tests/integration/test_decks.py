@@ -142,12 +142,12 @@ async def test_delete_deck_doesnt_exist_returns_404(db_session, user_client):
 
 
 async def test_import_deck_custom_importer(db_session, user_client):
-    with open("data/deck.json", "rb") as file:
+    with open("data/french.json", "rb") as file:
         file_bytes = file.read()
         file.seek(0)
         deck_json = json.load(file)
 
-    files = {"file": ("deck.json", file_bytes, "application/json")}
+    files = {"file": ("french.json", file_bytes, "application/json")}
     res = await user_client.post(
         "decks/import", params={"format": "repeater"}, files=files
     )
@@ -190,10 +190,10 @@ async def test_export_deck(db_session, user_client):
 
 
 async def test_guest_user_import_deck_returns_403(client):
-    with open("data/deck.json", "rb") as file:
+    with open("data/french.json", "rb") as file:
         file_bytes = file.read()
 
-    files = {"file": ("deck.json", file_bytes, "application/json")}
+    files = {"file": ("french.json", file_bytes, "application/json")}
     res = await client.post("decks/import", params={"format": "repeater"}, files=files)
     assert res.status_code == 403
 
