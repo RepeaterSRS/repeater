@@ -81,12 +81,6 @@ jobs:
       - name: Generate frontend client
         run: pnpm run openapi-ts
         working-directory: ./web
-
-      - name: Run frontend formatting check
-        run:
-          pnpm exec prettier --find-config-path tsconfig.json
-          pnpm exec prettier --show-config tsconfig.json
-        working-directory: ./web
       
       - name: Run frontend formatting check
         run: |
