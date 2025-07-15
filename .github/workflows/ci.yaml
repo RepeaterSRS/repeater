@@ -44,8 +44,8 @@ jobs:
       
       - name: Run backend formatting check
         run: |
-          uvx run ruff check --select I .
-          uvx run ruff format --check .
+          uvx ruff check --select I .
+          uvx ruff format --check .
         working-directory: ./backend
       
       - name: Run tests
@@ -64,6 +64,8 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
 
       - name: Install frontend dependencies
         run: pnpm install
