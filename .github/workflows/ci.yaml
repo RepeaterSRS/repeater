@@ -44,8 +44,8 @@ jobs:
       
       - name: Run backend formatting check
         run: |
-          uv run ruff check --select I .
-          uv run ruff format --check .
+          uvx run ruff check --select I .
+          uvx run ruff format --check .
         working-directory: ./backend
       
       - name: Run tests
@@ -61,17 +61,10 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-          cache-dependency-path: './web/pnpm-lock.yaml'
-      
+
       - name: Install pnpm
-        run: npm install -g pnpm
-      
+        uses: pnpm/action-setup@v4
+
       - name: Install frontend dependencies
         run: pnpm install
         working-directory: ./web
