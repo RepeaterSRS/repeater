@@ -1,0 +1,25 @@
+import { getShortcut } from '@/lib/shortcuts';
+
+interface KbdProps {
+    action: string;
+    scope: string;
+    className?: string;
+}
+
+export default function Kbd({ action, scope, className = '' }: KbdProps) {
+    const shortcutKey = getShortcut(action, scope).key;
+
+    if (!shortcutKey) return null;
+
+    function formatKey(key: string) {
+        return key.replace('ctrl+', '⌃').replace('escape', 'Esc');
+    }
+
+    return (
+        <kbd
+            className={`bg-kbd text-primary inline-flex items-center justify-center rounded p-1 font-mono font-medium ${className}`}
+        >
+            {formatKey(shortcutKey)}
+        </kbd>
+    );
+}

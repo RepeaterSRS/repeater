@@ -142,11 +142,6 @@ export function ActivityHeatmap({ className, heatmapData }: Props) {
                                                               )
                                                             : 'bg-heatmap-0'
                                                     }`}
-                                                    title={
-                                                        day
-                                                            ? `${formatDateForDisplay(day.date)}: ${day.numberOfReviews} reviews`
-                                                            : ''
-                                                    }
                                                 />
                                             </TooltipTrigger>
                                             <TooltipContent>
