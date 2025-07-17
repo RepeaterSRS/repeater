@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { UserPlus, UserRoundX, User, LogIn, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { toast } from 'sonner';
 
 import ThemeChanger from '@/components/ThemeChanger';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -26,7 +27,7 @@ import {
     SidebarMenuButton,
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getUserInfoMeGet } from '@/gen';
+import { getUserInfoMeGet, logoutAuthLogoutPost } from '@/gen';
 
 const pages = [
     { href: '/review', label: 'Review' },
@@ -76,6 +77,7 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarMenu>
                         <SidebarMenuItem className="flex flex-row justify-between">
+                            {/* TODO: decompose into component(s) */}
                             {userPending && !userError && (
                                 <div className="flex gap-2">
                                     <Skeleton className="size-9 rounded-md" />
@@ -138,16 +140,23 @@ export function AppSidebar() {
                                             )}
                                             {user.data.role !== 'guest' && (
                                                 <>
-                                                    <DropdownMenuItem>
-                                                        <LogOut className="mr-2 h-4 w-4" />
-                                                        <Button
-                                                            onClick={() => {
-                                                                return;
-                                                            }}
-                                                            className="text-destructive"
-                                                        >
+                                                    <DropdownMenuItem
+                                                        onClick={async () => {
+                                                            try {
+                                                                await logoutAuthLogoutPost();
+                                                                window.location.href =
+                                                                    '/login';
+                                                            } catch {
+                                                                toast.error(
+                                                                    'There was an error when logging out. Try again.'
+                                                                );
+                                                            }
+                                                        }}
+                                                    >
+                                                        <LogOut className="text-destructive" />
+                                                        <span className="text-destructive">
                                                             Logout
-                                                        </Button>
+                                                        </span>
                                                     </DropdownMenuItem>
                                                 </>
                                             )}

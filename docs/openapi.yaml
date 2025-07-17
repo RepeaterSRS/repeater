@@ -31,11 +31,8 @@ paths:
       summary: Logout
       operationId: logout_auth_logout_post
       responses:
-        '302':
+        '204':
           description: Successful Response
-          content:
-            application/json:
-              schema: {}
   /auth/register:
     post:
       tags:
