@@ -56,15 +56,11 @@ def login(
     return
 
 
-@router.post("/logout", status_code=302)
+@router.post("/logout", status_code=204)
 def logout(response: Response):
-    frontend_url = getenv("FRONTEND_URL")
-    assert frontend_url, "FRONTEND_URL must be set"
-
-    response = RedirectResponse(f"{frontend_url}/login", status_code=302)
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
-    return response
+    return
 
 
 @router.post("/register", response_model=UserOut, status_code=201)

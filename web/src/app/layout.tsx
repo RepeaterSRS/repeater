@@ -6,6 +6,7 @@ import './globals.css';
 import { AppSidebar } from '@/components/AppSidebar';
 import NavigationBar from '@/components/NavigationBar';
 import { SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
+import { Toaster } from '@/components/ui/sonner';
 
 import { AppProviders } from './providers';
 
@@ -48,6 +49,7 @@ export default function RootLayout({
                         </header>
                         {children}
                     </SidebarInset>
+                    <Toaster />
                 </AppProviders>
             </body>
         </html>
