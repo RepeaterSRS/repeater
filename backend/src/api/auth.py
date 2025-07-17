@@ -17,6 +17,7 @@ from src.auth.jwt import (
 )
 from src.db import get_db
 from src.db.models import User, UserRole
+from src.exceptions import AuthenticationError
 from src.schemas.user import UserCreate, UserLogin, UserOut
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -32,9 +33,9 @@ def login(
 
     if user.password_hash is None:
         auth_provider = user.auth_provider
-        assert auth_provider is not None, (
-            "Missing auth_provider with null password_hash"
-        )
+        assert (
+            auth_provider is not None
+        ), "Missing auth_provider with null password_hash"
         raise HTTPException(
             status_code=403,
             detail=f"This account was created via {auth_provider.title()}. Please use that provider to sign in.",
@@ -104,19 +105,14 @@ def refresh_token(
         user_id = payload.get("sub")
         token_version = payload.get("token_version")
         if user_id is None or token_version is None:
-            raise HTTPException(status_code=401, detail="Invalid refresh token")
+            raise AuthenticationError("Invalid refresh token")
         user = User.get(db_session, user_id)
         if not user or user.token_version != token_version:
-            raise HTTPException(status_code=401, detail="Invalid refresh token")
+            raise AuthenticationError("Invalid refresh token")
     except jwt.ExpiredSignatureError:
-        frontend_url = getenv("FRONTEND_URL")
-        assert frontend_url, "FRONTEND_URL must be set"
-        redirect_response = RedirectResponse(
-            url=f"{frontend_url}/login", status_code=302
-        )
-        return redirect_response
+        raise AuthenticationError("Expired refresh token")
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid refresh token")
+        raise AuthenticationError("Invalid refresh token")
 
     access_token = create_access_token(user)
     response.set_cookie(**get_access_token_cookie_kwargs(access_token))
