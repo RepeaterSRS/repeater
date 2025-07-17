@@ -164,11 +164,11 @@ export function AppSidebar() {
                                     </DropdownMenu>
                                     <div className="grid max-w-28 leading-tight">
                                         <span className="truncate text-sm">
-                                            {user.data.email || 'Guest'}
+                                            {user.data.email?.split('@')[0] ||
+                                                'Guest'}
                                         </span>
                                         <span className="text-muted-foreground truncate text-xs">
-                                            {user.data.email ||
-                                                'example@domain.com'}
+                                            {user.data.email || '-'}
                                         </span>
                                     </div>
                                 </div>
