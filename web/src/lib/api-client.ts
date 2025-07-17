@@ -1,7 +1,5 @@
 'use client';
 
-import { deleteCookie } from 'cookies-next/client';
-
 import { refreshTokenAuthRefreshPost } from '@/gen';
 import { client } from '@/gen/client.gen';
 
@@ -16,8 +14,6 @@ client.interceptors.response.use(
                 await refreshTokenAuthRefreshPost();
                 return await fetch(request.clone());
             } catch (refreshError) {
-                deleteCookie('access_token');
-                deleteCookie('refresh_token');
                 window.location.href = '/login';
                 throw refreshError;
             } finally {

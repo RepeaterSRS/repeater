@@ -1,5 +1,3 @@
-import { getCookie } from 'cookies-next/client';
-
 import { CreateClientConfig } from '@/gen/client';
 
 export const createClientConfig: CreateClientConfig = (config) => ({
@@ -7,5 +5,4 @@ export const createClientConfig: CreateClientConfig = (config) => ({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
     credentials: 'include',
     throwOnError: true,
-    auth: () => getCookie('access_token'),
 });

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import Request
+from fastapi import Request, Response, HTTPException
 from sqlalchemy.orm import Session, contains_eager
 
 from src.auth.jwt import decode_jwt
@@ -40,3 +40,8 @@ def get_user_from_token(request: Request, db_session: Session) -> User | None:
         return user
     except Exception:
         return None
+
+
+class AuthenticationError(Exception):
+    def __init__(self, detail: str):
+        self.detail = detail

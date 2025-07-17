@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 from src.api import auth, cards, decks, me, oauth, reviews, statistics
+from src.exceptions import AuthenticationError
 from src.log import set_up_logger
 
 load_dotenv()
@@ -18,6 +19,14 @@ assert frontend_url, "FRONTEND_URL must be set"
 origins = [frontend_url]
 
 app = FastAPI()
+
+
+@app.exception_handler(AuthenticationError)
+async def authentication_error_handler(request: Request, exc: AuthenticationError):
+    response = JSONResponse(status_code=401, content={"detail": exc.detail})
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
+    return response
 
 
 @app.exception_handler(RequestValidationError)
