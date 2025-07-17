@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import Request, Response, HTTPException
+from fastapi import HTTPException, Request, Response
 from sqlalchemy.orm import Session, contains_eager
 
 from src.auth.jwt import decode_jwt
