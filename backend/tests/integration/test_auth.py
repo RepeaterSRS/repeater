@@ -118,8 +118,7 @@ async def test_refresh_token(client, frontend_url):
     # Refresh token has expired
     with freeze_time("2025-07-17 12:01:00"):
         res = await client.post("/auth/refresh")
-        assert res.status_code == 302
-        assert res.headers["location"] == f"{frontend_url}/login"
+        assert res.status_code == 401
 
 
 async def test_token_version_mismatch_returns_401(client, db_session):
@@ -196,8 +195,7 @@ async def test_guest_user_promotion_register(client):
 
 async def test_logout(user_client, frontend_url):
     res = await user_client.post("/auth/logout")
-    assert res.status_code == 302
-    assert res.headers["location"] == f"{frontend_url}/login"
+    assert res.status_code == 204
     assert "access_token" not in res.cookies
     assert "refresh_token" not in res.cookies
     assert "access_token" not in user_client.cookies
