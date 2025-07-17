@@ -42,6 +42,7 @@ export default function Login() {
             }),
         onSuccess: () => {
             loginForm.reset();
+            window.location.href = '/review';
         },
     });
 
