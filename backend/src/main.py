@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 from src.api import auth, cards, decks, me, oauth, reviews, statistics
-from src.exceptions import AuthenticationError
+from src.exceptions import RefreshTokenAuthenticationError
 from src.log import set_up_logger
 
 load_dotenv()
@@ -21,8 +21,10 @@ origins = [frontend_url]
 app = FastAPI()
 
 
-@app.exception_handler(AuthenticationError)
-async def authentication_error_handler(request: Request, exc: AuthenticationError):
+@app.exception_handler(RefreshTokenAuthenticationError)
+async def authentication_error_handler(
+    request: Request, exc: RefreshTokenAuthenticationError
+):
     response = JSONResponse(status_code=401, content={"detail": exc.detail})
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
