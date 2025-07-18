@@ -200,3 +200,27 @@ async def test_logout(user_client, frontend_url):
     assert "refresh_token" not in res.cookies
     assert "access_token" not in user_client.cookies
     assert "refresh_token" not in user_client.cookies
+
+
+async def test_register_user_email_is_case_insensitive(db_session, client):
+    res = await client.post(
+        "/auth/register", json={"email": "USER@domain.com", "password": "123"}
+    )
+    assert res.status_code == 201
+
+    res = await client.post(
+        "/auth/register", json={"email": "user@domain.com", "password": "123"}
+    )
+    assert res.status_code == 400
+
+
+async def test_login_user_email_is_case_insensitive(db_session, client):
+    res = await client.post(
+        "/auth/register", json={"email": "USER@domain.com", "password": "123"}
+    )
+    assert res.status_code == 201
+
+    res = await client.post(
+        "/auth/login", json={"email": "user@domain.com", "password": "123"}
+    )
+    assert res.status_code == 204
