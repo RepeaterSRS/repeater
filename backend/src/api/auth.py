@@ -1,10 +1,9 @@
 import logging
-from os import getenv
 
 import bcrypt
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import RedirectResponse, Response
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
 from src import util
@@ -17,7 +16,7 @@ from src.auth.jwt import (
 )
 from src.db import get_db
 from src.db.models import User, UserRole
-from src.exceptions import AuthenticationError
+from src.exceptions import RefreshTokenAuthenticationError
 from src.schemas.user import UserCreate, UserLogin, UserOut
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -101,14 +100,14 @@ def refresh_token(
         user_id = payload.get("sub")
         token_version = payload.get("token_version")
         if user_id is None or token_version is None:
-            raise AuthenticationError("Invalid refresh token")
+            raise RefreshTokenAuthenticationError("Invalid refresh token")
         user = User.get(db_session, user_id)
         if not user or user.token_version != token_version:
-            raise AuthenticationError("Invalid refresh token")
+            raise RefreshTokenAuthenticationError("Invalid refresh token")
     except jwt.ExpiredSignatureError:
-        raise AuthenticationError("Expired refresh token")
+        raise RefreshTokenAuthenticationError("Expired refresh token")
     except jwt.InvalidTokenError:
-        raise AuthenticationError("Invalid refresh token")
+        raise RefreshTokenAuthenticationError("Invalid refresh token")
 
     access_token = create_access_token(user)
     response.set_cookie(**get_access_token_cookie_kwargs(access_token))
