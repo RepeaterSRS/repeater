@@ -58,3 +58,23 @@ migrate-and-bootstrap: reset-db
 
 .PHONY: dev
 dev: reset-db build-and-start-local generate-web-client migrate-and-bootstrap
+
+
+.PHONY: down
+down:
+	docker compose down
+
+
+.PHONY: stop
+stop:
+	docker compose stop
+
+
+.PHONY: start
+start:
+	docker compose start
+
+
+.PHONY: restart
+restart:
+	docker compose restart
