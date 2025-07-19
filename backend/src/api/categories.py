@@ -60,13 +60,13 @@ def get_categories_tree(
 
     category_map = {cat.id: cat for cat in categories}
     root_categories = []
-    max_depth = 0
+    tree_depth = 0
 
     def build_node(category: Category) -> CategoryNode:
         decks = [DeckSummary(id=deck.id, name=deck.name) for deck in category.decks]
         node_depth = get_depth_to_root(category) + 1
-        nonlocal max_depth
-        max_depth = max(max_depth, node_depth)
+        nonlocal tree_depth
+        tree_depth = max(tree_depth, node_depth)
         children = [
             build_node(category_map[child.id])
             for child in categories
@@ -93,7 +93,7 @@ def get_categories_tree(
         ],
         total_categories=len(categories),
         total_decks=sum([len(c.decks) for c in categories]) + len(uncategorized_decks),
-        max_depth=max_depth,
+        tree_depth=tree_depth,
     )
 
 

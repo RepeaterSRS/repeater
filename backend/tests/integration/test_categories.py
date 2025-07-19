@@ -136,7 +136,7 @@ async def test_get_category_tree(user_client):
         "uncategorized_decks": [],
         "total_categories": 3,
         "total_decks": 0,
-        "max_depth": 3,
+        "tree_depth": 3,
     }
 
 
@@ -402,7 +402,7 @@ async def test_get_category_tree_with_decks(user_client):
         ],
         "total_categories": 4,
         "total_decks": 5,
-        "max_depth": 3,
+        "tree_depth": 3,
     }
 
 
@@ -466,5 +466,5 @@ async def test_get_category_tree_shallow(user_client):
         "uncategorized_decks": [],
         "total_categories": 1,
         "total_decks": 0,
-        "max_depth": 1,
+        "tree_depth": 1,
     }
