@@ -63,7 +63,7 @@ def would_create_cycle(category_id: UUID, new_parent_category: Category) -> bool
 def calculate_depth(category: Category):
     parent_depth = get_depth_to_root(category)
     category_subtree_depth = get_max_depth_below(category)
-    return parent_depth + category_subtree_depth + 1
+    return parent_depth + category_subtree_depth
 
 
 def get_depth_to_root(category: Category) -> int:

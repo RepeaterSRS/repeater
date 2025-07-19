@@ -15,7 +15,7 @@ from src.schemas.category import (
     CategoryUpdate,
     DeckSummary,
 )
-from src.util import get_max_depth_below, get_user_category, would_create_cycle
+from src.util import get_depth_to_root, get_user_category, would_create_cycle
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -60,9 +60,13 @@ def get_categories_tree(
 
     category_map = {cat.id: cat for cat in categories}
     root_categories = []
+    max_depth = 0
 
     def build_node(category: Category) -> CategoryNode:
         decks = [DeckSummary(id=deck.id, name=deck.name) for deck in category.decks]
+        node_depth = get_depth_to_root(category) + 1
+        nonlocal max_depth
+        max_depth = max(max_depth, node_depth)
         children = [
             build_node(category_map[child.id])
             for child in categories
@@ -75,7 +79,7 @@ def get_categories_tree(
             decks=decks,
             children=children,
             deck_count=len(decks),
-            depth=get_max_depth_below(category),
+            depth=node_depth,
         )
 
     for category in categories:
@@ -89,7 +93,7 @@ def get_categories_tree(
         ],
         total_categories=len(categories),
         total_decks=sum([len(c.decks) for c in categories]) + len(uncategorized_decks),
-        max_depth=max((cat.depth for cat in root_categories), default=0),
+        max_depth=max_depth,
     )
 
 

@@ -122,21 +122,21 @@ async def test_get_category_tree(user_client):
                                 "decks": [],
                                 "children": [],
                                 "deck_count": 0,
-                                "depth": 0,
+                                "depth": 3,
                             }
                         ],
                         "deck_count": 0,
-                        "depth": 1,
+                        "depth": 2,
                     }
                 ],
                 "deck_count": 0,
-                "depth": 2,
+                "depth": 1,
             }
         ],
         "uncategorized_decks": [],
         "total_categories": 3,
         "total_decks": 0,
-        "max_depth": 2,
+        "max_depth": 3,
     }
 
 
@@ -376,7 +376,7 @@ async def test_get_category_tree_with_decks(user_client):
                                 ],
                                 "children": [],
                                 "deck_count": 1,
-                                "depth": 0,
+                                "depth": 3,
                             },
                             {
                                 "id": child2_id,
@@ -386,15 +386,15 @@ async def test_get_category_tree_with_decks(user_client):
                                 ],
                                 "children": [],
                                 "deck_count": 1,
-                                "depth": 0,
+                                "depth": 3,
                             },
                         ],
                         "deck_count": 1,
-                        "depth": 1,
+                        "depth": 2,
                     }
                 ],
                 "deck_count": 1,
-                "depth": 2,
+                "depth": 1,
             }
         ],
         "uncategorized_decks": [
@@ -402,7 +402,7 @@ async def test_get_category_tree_with_decks(user_client):
         ],
         "total_categories": 4,
         "total_decks": 5,
-        "max_depth": 2,
+        "max_depth": 3,
     }
 
 
@@ -444,3 +444,27 @@ async def test_delete_category_with_decks_make_uncategorized(user_client, db_ses
 
     deck = Deck.get(db_session, deck_id)
     assert deck.category_id is None
+
+
+async def test_get_category_tree_shallow(user_client):
+    res = await create_category(user_client, name="parent")
+    assert res.status_code == 201
+    parent_id = res.json()["id"]
+
+    res = await user_client.get("/categories/tree")
+    assert res.json() == {
+        "categories": [
+            {
+                "id": parent_id,
+                "name": "parent",
+                "decks": [],
+                "children": [],
+                "deck_count": 0,
+                "depth": 1,
+            }
+        ],
+        "uncategorized_decks": [],
+        "total_categories": 1,
+        "total_decks": 0,
+        "max_depth": 1,
+    }
