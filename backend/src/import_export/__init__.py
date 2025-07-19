@@ -36,10 +36,13 @@ def deck_to_deck_data(deck: Deck) -> DeckData:
     )
 
 
-def store_imported_deck(deck_data: DeckData, user_id: UUID, db_session: Session):
+def store_imported_deck(
+    deck_data: DeckData, user_id: UUID, db_session: Session, category_id: UUID = None
+):
     try:
         deck = Deck(
             user_id=user_id,
+            category_id=category_id,
             name=deck_data.name,
             description=deck_data.description,
         )
