@@ -4,11 +4,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, contains_eager
 
 from src.auth.jwt import get_current_user
 from src.db import get_db
-from src.db.models import Deck, User
+from src.db.models import Category, Deck, User
 from src.import_export import (
     BaseImporter,
     deck_to_deck_data,
@@ -17,7 +17,7 @@ from src.import_export import (
 )
 from src.import_export.custom import CustomImporter
 from src.schemas.deck import DeckCreate, DeckOut, DeckUpdate
-from src.util import get_user_deck
+from src.util import get_user_category, get_user_deck
 
 router = APIRouter(prefix="/decks", tags=["decks"])
 
@@ -28,16 +28,34 @@ def create_deck(
     user: User = Depends(get_current_user),
     db_session: Session = Depends(get_db),
 ):
-    deck = Deck(user_id=user.id, name=deck_req.name, description=deck_req.description)
+    if deck_req.category_id:
+        try:
+            get_user_category(deck_req.category_id, user.id, db_session)
+        except ValueError as err:
+            raise HTTPException(status_code=404, detail=str(err))
+
+    deck = Deck(
+        user_id=user.id,
+        category_id=deck_req.category_id,
+        name=deck_req.name,
+        description=deck_req.description,
+    )
     deck.save(db_session)
     return deck
 
 
 @router.get("", response_model=List[DeckOut])
 def get_decks(
-    user: User = Depends(get_current_user), db_session: Session = Depends(get_db)
+    category_id: UUID = None,
+    user: User = Depends(get_current_user),
+    db_session: Session = Depends(get_db),
 ):
-    return user.decks
+    query = db_session.query(Deck).filter(Deck.user_id == user.id)
+
+    if category_id:
+        query = query.filter(Deck.category_id == category_id)
+
+    return query.all()
 
 
 @router.patch("/{deck_id}", response_model=DeckOut)
@@ -51,6 +69,12 @@ def update_deck(
         deck = get_user_deck(deck_id, user.id, db_session)
     except ValueError as err:
         raise HTTPException(status_code=404, detail=str(err))
+
+    if deck_req.category_id:
+        try:
+            get_user_category(deck_req.category_id, user.id, db_session)
+        except ValueError as err:
+            raise HTTPException(status_code=404, detail=str(err))
 
     updates = deck_req.model_dump(exclude_unset=True)
     for field, value in updates.items():
