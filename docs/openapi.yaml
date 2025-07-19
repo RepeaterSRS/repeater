@@ -955,9 +955,9 @@ components:
           type: integer
           title: Total Decks
           default: 0
-        max_depth:
+        tree_depth:
           type: integer
-          title: Max Depth
+          title: Tree Depth
           default: 0
       type: object
       title: CategoryTree

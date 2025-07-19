@@ -50,4 +50,4 @@ class CategoryTree(BaseModel):
 
     total_categories: int = 0
     total_decks: int = 0
-    max_depth: int = 0
+    tree_depth: int = 0
