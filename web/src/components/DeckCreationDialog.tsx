@@ -25,19 +25,24 @@ import { Input } from '@/components/ui/input';
 import { createDeckDecksPost, DeckCreate } from '@/gen';
 
 interface DeckCreationDialogProps {
-    trigger: React.ReactNode;
+    trigger?: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
     onSuccess?: () => void;
     onError?: (error: string) => void;
-    onOpenChange?: (open: boolean) => void;
 }
 
 export default function DeckCreationDialog({
     trigger,
+    open,
+    onOpenChange,
     onSuccess,
     onError,
-    onOpenChange,
 }: DeckCreationDialogProps) {
-    const [isDeckDialogOpen, setIsDeckDialogOpen] = useState(false);
+    const [internalOpen, setInternalOpen] = useState(false);
+
+    const isOpen = open ?? internalOpen;
+    const setIsOpen = onOpenChange ?? setInternalOpen;
 
     const deckFormSchema = z.object({
         name: z.string().min(1, 'Deck name required').max(50),
@@ -61,7 +66,7 @@ export default function DeckCreationDialog({
                 },
             });
             deckForm.reset();
-            setIsDeckDialogOpen(false);
+            setIsOpen(false);
 
             onSuccess?.();
         } catch (err: unknown) {
@@ -70,14 +75,8 @@ export default function DeckCreationDialog({
         }
     }
     return (
-        <Dialog
-            open={isDeckDialogOpen}
-            onOpenChange={(open) => {
-                setIsDeckDialogOpen(open);
-                onOpenChange?.(open);
-            }}
-        >
-            <DialogTrigger asChild>{trigger}</DialogTrigger>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Create deck</DialogTitle>
