@@ -14,11 +14,6 @@ format:
 	$(FRONTEND_EXEC) pnpm exec prettier --write .
 
 
-.PHONY: build-and-start-local
-build-and-start-local:
-	docker compose up --build -d
-
-
 .PHONY: reset-db
 reset-db:
 	docker compose up -d db
@@ -50,14 +45,24 @@ generate-web-client: export-openapi
 	$(FRONTEND_EXEC) pnpm run openapi-ts
 
 
-.PHONY: migrate-and-bootstrap
-migrate-and-bootstrap: reset-db
+.PHONY: bootstrap
+bootstrap:
 	$(BACKEND_EXEC) alembic upgrade head
 	$(BACKEND_EXEC) python -m src.db.bootstrap
 
 
+.PHONY: migrate
+migrate:
+	$(BACKEND_EXEC) alembic upgrade head
+
+
+.PHONY: init
+init: reset-db dev generate-web-client bootstrap
+
+
 .PHONY: dev
-dev: reset-db build-and-start-local generate-web-client migrate-and-bootstrap
+dev:
+	docker compose up --build -d
 
 
 .PHONY: down
