@@ -17,6 +17,7 @@ async def test_create_deck_returns_deck(db_session, user, user_client):
     assert res.json() == {
         "id": is_uuid_string(),
         "user_id": str(user.id),
+        "category_id": None,
         "name": "deck",
         "description": "my deck",
         "created_at": is_utc_isoformat_string(),
@@ -45,6 +46,7 @@ async def test_get_decks(user, user_client):
         {
             "id": is_uuid_string(),
             "user_id": str(user.id),
+            "category_id": None,
             "name": "deck",
             "description": "my deck",
             "created_at": is_utc_isoformat_string(),
@@ -71,6 +73,7 @@ async def test_update_deck(user, user_client):
     assert res.json() == {
         "id": is_uuid_string(),
         "user_id": str(user.id),
+        "category_id": None,
         "name": "test",
         "description": "test",
         "created_at": is_utc_isoformat_string(),
@@ -217,3 +220,181 @@ async def test_guest_user_export_deck_returns_403(client):
 
     res = await client.get(f"/decks/{deck_id}/export")
     assert res.status_code == 403
+
+
+async def test_move_deck_to_existing_category(user_client):
+    res = await user_client.post(
+        "/categories",
+        json={"name": "c1"},
+    )
+    assert res.status_code == 201
+    c1_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/categories",
+        json={"name": "c2"},
+    )
+    assert res.status_code == 201
+    c2_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+            "category_id": c1_id,
+        },
+    )
+    assert res.status_code == 201
+    assert res.json() == {
+        "id": is_uuid_string(),
+        "user_id": is_uuid_string(),
+        "category_id": c1_id,
+        "name": "deck",
+        "description": "my deck",
+        "created_at": is_utc_isoformat_string(),
+        "updated_at": is_utc_isoformat_string(),
+    }
+    deck_id = res.json()["id"]
+
+    res = await user_client.patch(
+        f"/decks/{deck_id}",
+        json={
+            "category_id": c2_id,
+        },
+    )
+    assert res.status_code == 200
+    assert res.json() == {
+        "id": is_uuid_string(),
+        "user_id": is_uuid_string(),
+        "category_id": c2_id,
+        "name": "deck",
+        "description": "my deck",
+        "created_at": is_utc_isoformat_string(),
+        "updated_at": is_utc_isoformat_string(),
+    }
+
+
+async def test_move_deck_to_uncategorized(user_client):
+    res = await user_client.post(
+        "/categories",
+        json={"name": "category"},
+    )
+    assert res.status_code == 201
+    category_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+            "category_id": category_id,
+        },
+    )
+    assert res.status_code == 201
+    deck_id = res.json()["id"]
+
+    res = await user_client.patch(
+        f"/decks/{deck_id}",
+        json={
+            "category_id": None,
+        },
+    )
+    assert res.status_code == 200
+    assert res.json() == {
+        "id": is_uuid_string(),
+        "user_id": is_uuid_string(),
+        "category_id": None,
+        "name": "deck",
+        "description": "my deck",
+        "created_at": is_utc_isoformat_string(),
+        "updated_at": is_utc_isoformat_string(),
+    }
+
+
+async def test_move_deck_to_nonexistent_category(user_client):
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    assert res.status_code == 201
+    deck_id = res.json()["id"]
+
+    res = await user_client.patch(
+        f"/decks/{deck_id}",
+        json={
+            "category_id": str(uuid.uuid4()),
+        },
+    )
+    assert res.status_code == 404
+
+
+async def test_move_deck_to_other_users_category(user_client, admin_client):
+    res = await admin_client.post(
+        "/categories",
+        json={"name": "category"},
+    )
+    assert res.status_code == 201
+    category_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    assert res.status_code == 201
+    deck_id = res.json()["id"]
+
+    res = await user_client.patch(
+        f"/decks/{deck_id}",
+        json={
+            "category_id": category_id,
+        },
+    )
+    assert res.status_code == 404
+
+
+async def test_get_decks_by_category(user, user_client):
+    res = await user_client.post(
+        "/categories",
+        json={"name": "category"},
+    )
+    assert res.status_code == 201
+    category_id = res.json()["id"]
+
+    await user_client.post(
+        "/decks",
+        json={
+            "name": "deck inside category",
+            "description": "my deck",
+            "category_id": category_id,
+        },
+    )
+    assert res.status_code == 201
+
+    await user_client.post(
+        "/decks",
+        json={
+            "name": "deck outside category",
+            "description": "my deck",
+        },
+    )
+    assert res.status_code == 201
+
+    res = await user_client.get("/decks", params={"category_id": category_id})
+    assert res.json() == [
+        {
+            "id": is_uuid_string(),
+            "user_id": str(user.id),
+            "category_id": category_id,
+            "name": "deck inside category",
+            "description": "my deck",
+            "created_at": is_utc_isoformat_string(),
+            "updated_at": is_utc_isoformat_string(),
+        }
+    ]

@@ -78,6 +78,7 @@ class User(Base, BaseMixin):
 
     decks = relationship("Deck", back_populates="user")
     reviews = relationship("Review", back_populates="user")
+    categories = relationship("Category", back_populates="user")
 
     def set_password(self, password: str):
         pw_bytes = password.encode("utf-8")
@@ -111,6 +112,9 @@ class Deck(Base, BaseMixin):
     user_id = mapped_column(
         (UUID(as_uuid=True)), ForeignKey("users.id"), nullable=False
     )
+    category_id = mapped_column(
+        (UUID(as_uuid=True)), ForeignKey("categories.id"), nullable=True
+    )
     name = mapped_column(String, nullable=False)
     description = mapped_column(String)
     created_at = mapped_column(
@@ -126,6 +130,7 @@ class Deck(Base, BaseMixin):
     )
 
     user = relationship("User", back_populates="decks")
+    category = relationship("Category", back_populates="decks")
     cards = relationship("Card", back_populates="deck", cascade="all, delete-orphan")
 
 
@@ -193,3 +198,36 @@ class Review(Base, BaseMixin):
     @property
     def failed(self):
         return self.feedback in {ReviewFeedback.FORGOT}
+
+
+class Category(Base, BaseMixin):
+    __tablename__ = "categories"
+    id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
+    user_id = mapped_column(
+        (UUID(as_uuid=True)), ForeignKey("users.id"), nullable=False
+    )
+    name = mapped_column(String, nullable=False)
+    description = mapped_column(String)
+    parent_id = mapped_column(
+        (UUID(as_uuid=True)), ForeignKey("categories.id"), nullable=True
+    )
+    created_at = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    user = relationship("User", back_populates="categories")
+    parent = relationship("Category", remote_side=[id], back_populates="children")
+    children = relationship("Category", back_populates="parent")
+    decks = relationship("Deck", back_populates="category")
+
+    @property
+    def is_root(self):
+        return self.parent_id is None

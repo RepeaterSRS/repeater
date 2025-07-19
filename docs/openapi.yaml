@@ -107,6 +107,13 @@ paths:
       summary: Get Decks
       operationId: get_decks_decks_get
       parameters:
+      - name: category_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
       - name: access_token
         in: cookie
         required: false
@@ -585,6 +592,172 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /categories:
+    post:
+      tags:
+      - categories
+      summary: Create Category
+      operationId: create_category_categories_post
+      parameters:
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - categories
+      summary: Get Categories
+      operationId: get_categories_categories_get
+      parameters:
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryOut'
+                title: Response Get Categories Categories Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /categories/tree:
+    get:
+      tags:
+      - categories
+      summary: Get Categories Tree
+      operationId: get_categories_tree_categories_tree_get
+      parameters:
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryTree'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /categories/{category_id}:
+    patch:
+      tags:
+      - categories
+      summary: Update Category
+      operationId: update_category_categories__category_id__patch
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - categories
+      summary: Delete Category
+      operationId: delete_category_categories__category_id__delete
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     Body_import_deck_decks_import_post:
@@ -662,6 +835,152 @@ components:
           title: Content
       type: object
       title: CardUpdate
+    CategoryCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        parent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Parent Id
+      type: object
+      required:
+      - name
+      title: CategoryCreate
+    CategoryNode:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        decks:
+          items:
+            $ref: '#/components/schemas/DeckSummary'
+          type: array
+          title: Decks
+          default: []
+        children:
+          items:
+            $ref: '#/components/schemas/CategoryNode'
+          type: array
+          title: Children
+          default: []
+        deck_count:
+          type: integer
+          title: Deck Count
+          default: 0
+        depth:
+          type: integer
+          title: Depth
+          default: 0
+      type: object
+      required:
+      - id
+      - name
+      title: CategoryNode
+    CategoryOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        parent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Parent Id
+        is_root:
+          type: boolean
+          title: Is Root
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - user_id
+      - name
+      - is_root
+      - created_at
+      - updated_at
+      title: CategoryOut
+    CategoryTree:
+      properties:
+        categories:
+          items:
+            $ref: '#/components/schemas/CategoryNode'
+          type: array
+          title: Categories
+          default: []
+        uncategorized_decks:
+          items:
+            $ref: '#/components/schemas/DeckSummary'
+          type: array
+          title: Uncategorized Decks
+          default: []
+        total_categories:
+          type: integer
+          title: Total Categories
+          default: 0
+        total_decks:
+          type: integer
+          title: Total Decks
+          default: 0
+        max_depth:
+          type: integer
+          title: Max Depth
+          default: 0
+      type: object
+      title: CategoryTree
+    CategoryUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        parent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Parent Id
+      type: object
+      title: CategoryUpdate
     DeckCreate:
       properties:
         name:
@@ -672,6 +991,13 @@ components:
           - type: string
           - type: 'null'
           title: Description
+          default: ''
+        category_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Category Id
       type: object
       required:
       - name
@@ -686,6 +1012,12 @@ components:
           type: string
           format: uuid
           title: User Id
+        category_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Category Id
         name:
           type: string
           title: Name
@@ -739,6 +1071,20 @@ components:
       - last_studied
       - difficulty_ranking
       title: DeckStatistics
+    DeckSummary:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - id
+      - name
+      title: DeckSummary
     DeckUpdate:
       properties:
         name:
@@ -751,6 +1097,13 @@ components:
           - type: string
           - type: 'null'
           title: Description
+          default: ''
+        category_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Category Id
       type: object
       title: DeckUpdate
     HTTPValidationError:
