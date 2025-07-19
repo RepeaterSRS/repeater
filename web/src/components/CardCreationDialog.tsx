@@ -35,19 +35,24 @@ import { Textarea } from '@/components/ui/textarea';
 import { createCardCardsPost, CardCreate, getDecksDecksGet } from '@/gen';
 
 interface CardCreationDialogProps {
-    trigger: React.ReactNode;
+    trigger?: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
     onSuccess?: () => void;
     onError?: (error: string) => void;
-    onOpenChange?: (open: boolean) => void;
 }
 
 export default function CardCreationDialog({
     trigger,
+    open,
+    onOpenChange,
     onSuccess,
     onError,
-    onOpenChange,
 }: CardCreationDialogProps) {
-    const [isCardDialogOpen, setIsCardDialogOpen] = useState(false);
+    const [internalOpen, setInternalOpen] = useState(false);
+
+    const isOpen = open ?? internalOpen;
+    const setIsOpen = onOpenChange ?? setInternalOpen;
     const { data: decks } = useQuery({
         queryKey: ['decks'],
         queryFn: () => getDecksDecksGet(),
@@ -75,7 +80,7 @@ export default function CardCreationDialog({
                 },
             });
             cardForm.reset();
-            setIsCardDialogOpen(false);
+            setIsOpen(false);
 
             onSuccess?.();
         } catch (err: unknown) {
@@ -84,14 +89,8 @@ export default function CardCreationDialog({
         }
     }
     return (
-        <Dialog
-            open={isCardDialogOpen}
-            onOpenChange={(open) => {
-                setIsCardDialogOpen(open);
-                onOpenChange?.(open);
-            }}
-        >
-            <DialogTrigger asChild>{trigger}</DialogTrigger>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Create card</DialogTitle>

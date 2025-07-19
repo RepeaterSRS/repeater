@@ -40,7 +40,8 @@ const pages = [
 export function AppSidebar() {
     const pathname = usePathname();
     const queryClient = useQueryClient();
-    const [creationDropdownOpen, setCreationDropdownOpen] = useState(false);
+    const [cardDialogOpen, setCardDialogOpen] = useState(false);
+    const [deckDialogOpen, setDeckDialogOpen] = useState(false);
 
     const {
         data: user,
@@ -56,48 +57,44 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <DropdownMenu
-                            open={creationDropdownOpen}
-                            onOpenChange={setCreationDropdownOpen}
-                        >
+                        <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button className="w-full">Create</Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
-                                <CardCreationDialog
-                                    onSuccess={() => {
-                                        queryClient.invalidateQueries({
-                                            queryKey: ['cards'],
-                                        });
-                                        setCreationDropdownOpen(false);
-                                    }}
-                                    onOpenChange={setCreationDropdownOpen}
-                                    trigger={
-                                        <DropdownMenuItem
-                                            onSelect={(e) => e.preventDefault()}
-                                        >
-                                            Create card
-                                        </DropdownMenuItem>
-                                    }
-                                />
-                                <DeckCreationDialog
-                                    onSuccess={() => {
-                                        queryClient.invalidateQueries({
-                                            queryKey: ['decks'],
-                                        });
-                                        setCreationDropdownOpen(false);
-                                    }}
-                                    onOpenChange={setCreationDropdownOpen}
-                                    trigger={
-                                        <DropdownMenuItem
-                                            onSelect={(e) => e.preventDefault()}
-                                        >
-                                            Create deck
-                                        </DropdownMenuItem>
-                                    }
-                                />
+                                <DropdownMenuItem
+                                    onClick={() => setCardDialogOpen(true)}
+                                >
+                                    Create card
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setDeckDialogOpen(true)}
+                                >
+                                    Create deck
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
+
+                        <CardCreationDialog
+                            open={cardDialogOpen}
+                            onOpenChange={setCardDialogOpen}
+                            onSuccess={() => {
+                                queryClient.invalidateQueries({
+                                    queryKey: ['cards'],
+                                });
+                                setCardDialogOpen(false);
+                            }}
+                        />
+                        <DeckCreationDialog
+                            open={deckDialogOpen}
+                            onOpenChange={setDeckDialogOpen}
+                            onSuccess={() => {
+                                queryClient.invalidateQueries({
+                                    queryKey: ['decks'],
+                                });
+                                setDeckDialogOpen(false);
+                            }}
+                        />
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
