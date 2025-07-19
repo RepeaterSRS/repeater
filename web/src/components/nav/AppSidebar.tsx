@@ -99,9 +99,7 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
-                <SidebarGroup>
-                    <NavProfile />
-                </SidebarGroup>
+                <NavProfile />
             </SidebarFooter>
         </Sidebar>
     );
