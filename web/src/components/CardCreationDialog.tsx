@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -31,22 +32,26 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { createCardCardsPost, CardCreate, DeckOut } from '@/gen';
+import { createCardCardsPost, CardCreate, getDecksDecksGet } from '@/gen';
 
 interface CardCreationDialogProps {
-    decks: DeckOut[];
     trigger: React.ReactNode;
     onSuccess?: () => void;
     onError?: (error: string) => void;
+    onOpenChange?: (open: boolean) => void;
 }
 
 export default function CardCreationDialog({
-    decks,
     trigger,
     onSuccess,
     onError,
+    onOpenChange,
 }: CardCreationDialogProps) {
     const [isCardDialogOpen, setIsCardDialogOpen] = useState(false);
+    const { data: decks } = useQuery({
+        queryKey: ['decks'],
+        queryFn: () => getDecksDecksGet(),
+    });
 
     const cardFormSchema = z.object({
         content: z.string().min(1, 'Card must have contents'),
@@ -79,7 +84,13 @@ export default function CardCreationDialog({
         }
     }
     return (
-        <Dialog open={isCardDialogOpen} onOpenChange={setIsCardDialogOpen}>
+        <Dialog
+            open={isCardDialogOpen}
+            onOpenChange={(open) => {
+                setIsCardDialogOpen(open);
+                onOpenChange?.(open);
+            }}
+        >
             <DialogTrigger asChild>{trigger}</DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -112,7 +123,7 @@ export default function CardCreationDialog({
                                                         Deck
                                                     </SelectLabel>
                                                 </SelectGroup>
-                                                {decks.map((deck) => (
+                                                {decks?.data?.map((deck) => (
                                                     <SelectItem
                                                         value={deck.id}
                                                         key={deck.id}
@@ -137,6 +148,7 @@ export default function CardCreationDialog({
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea
+                                            className="h-32"
                                             placeholder={`How are you?
 ---
 Ça va?`}
