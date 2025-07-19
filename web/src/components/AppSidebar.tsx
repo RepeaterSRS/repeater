@@ -1,10 +1,13 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserPlus, UserRoundX, User, LogIn, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
+import CardCreationDialog from '@/components/CardCreationDialog';
+import DeckCreationDialog from '@/components/DeckCreationDialog';
 import ThemeChanger from '@/components/ThemeChanger';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -36,6 +39,8 @@ const pages = [
 
 export function AppSidebar() {
     const pathname = usePathname();
+    const queryClient = useQueryClient();
+    const [creationDropdownOpen, setCreationDropdownOpen] = useState(false);
 
     const {
         data: user,
@@ -51,9 +56,48 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <Button disabled className="w-full">
-                            Create
-                        </Button>
+                        <DropdownMenu
+                            open={creationDropdownOpen}
+                            onOpenChange={setCreationDropdownOpen}
+                        >
+                            <DropdownMenuTrigger asChild>
+                                <Button className="w-full">Create</Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
+                                <CardCreationDialog
+                                    onSuccess={() => {
+                                        queryClient.invalidateQueries({
+                                            queryKey: ['cards'],
+                                        });
+                                        setCreationDropdownOpen(false);
+                                    }}
+                                    onOpenChange={setCreationDropdownOpen}
+                                    trigger={
+                                        <DropdownMenuItem
+                                            onSelect={(e) => e.preventDefault()}
+                                        >
+                                            Create card
+                                        </DropdownMenuItem>
+                                    }
+                                />
+                                <DeckCreationDialog
+                                    onSuccess={() => {
+                                        queryClient.invalidateQueries({
+                                            queryKey: ['decks'],
+                                        });
+                                        setCreationDropdownOpen(false);
+                                    }}
+                                    onOpenChange={setCreationDropdownOpen}
+                                    trigger={
+                                        <DropdownMenuItem
+                                            onSelect={(e) => e.preventDefault()}
+                                        >
+                                            Create deck
+                                        </DropdownMenuItem>
+                                    }
+                                />
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>

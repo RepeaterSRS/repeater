@@ -56,7 +56,7 @@ export default function Decks() {
                                         <Plus /> New
                                     </Button>
                                 }
-                            ></DeckCreationDialog>
+                            />
                         </Card>
                         {decks?.data &&
                             decks.data.length > 0 &&
@@ -90,7 +90,6 @@ export default function Decks() {
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-[repeat(auto-fill,minmax(8rem,1fr))]">
                         <Card className="flex aspect-[3/4] flex-col items-center justify-center border-2 border-dashed shadow-none">
                             <CardCreationDialog
-                                decks={decks?.data || []}
                                 onSuccess={() =>
                                     queryClient.invalidateQueries({
                                         queryKey: ['cards'],
@@ -104,7 +103,7 @@ export default function Decks() {
                                         <Plus /> New
                                     </Button>
                                 }
-                            ></CardCreationDialog>
+                            />
                         </Card>
                         {cards?.data &&
                             cards.data.length > 0 &&

@@ -22,19 +22,20 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { createDeckDecksPost, DeckCreate } from '@/gen';
 
 interface DeckCreationDialogProps {
     trigger: React.ReactNode;
     onSuccess?: () => void;
     onError?: (error: string) => void;
+    onOpenChange?: (open: boolean) => void;
 }
 
 export default function DeckCreationDialog({
     trigger,
     onSuccess,
     onError,
+    onOpenChange,
 }: DeckCreationDialogProps) {
     const [isDeckDialogOpen, setIsDeckDialogOpen] = useState(false);
 
@@ -69,7 +70,13 @@ export default function DeckCreationDialog({
         }
     }
     return (
-        <Dialog open={isDeckDialogOpen} onOpenChange={setIsDeckDialogOpen}>
+        <Dialog
+            open={isDeckDialogOpen}
+            onOpenChange={(open) => {
+                setIsDeckDialogOpen(open);
+                onOpenChange?.(open);
+            }}
+        >
             <DialogTrigger asChild>{trigger}</DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -92,7 +99,7 @@ export default function DeckCreationDialog({
                                         <Input
                                             type="text"
                                             placeholder="Deck name"
-                                            className="w-32"
+                                            className="w-40"
                                             {...field}
                                         />
                                     </FormControl>
@@ -109,7 +116,8 @@ export default function DeckCreationDialog({
                                         Description
                                     </FormLabel>
                                     <FormControl>
-                                        <Textarea
+                                        <Input
+                                            type="text"
                                             placeholder="Description"
                                             {...field}
                                         />
