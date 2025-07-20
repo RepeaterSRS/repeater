@@ -828,6 +828,12 @@ components:
       title: CardOut
     CardUpdate:
       properties:
+        deck_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Deck Id
         content:
           anyOf:
           - type: string
@@ -1168,6 +1174,12 @@ components:
           type: string
           format: date-time
           title: Created At
+        succeeded:
+          type: boolean
+          title: Succeeded
+        failed:
+          type: boolean
+          title: Failed
       type: object
       required:
       - id
@@ -1179,6 +1191,8 @@ components:
       - repetitions
       - ease_factor
       - created_at
+      - succeeded
+      - failed
       title: ReviewOut
     StatisticsOut:
       properties:

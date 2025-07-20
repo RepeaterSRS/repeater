@@ -38,4 +38,5 @@ class CardOut(BaseModel):
 
 
 class CardUpdate(BaseModel):
+    deck_id: Optional[UUID] = None
     content: Optional[str] = None

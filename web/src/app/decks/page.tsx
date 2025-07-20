@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 
 import CardCreationDialog from '@/components/CardCreationDialog';
+import CardInspectDialog from '@/components/CardInspectDialog';
 import DeckCreationDialog from '@/components/DeckCreationDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
@@ -27,6 +28,7 @@ export default function Decks() {
         isLoading: isCardsLoading,
         isError: isCardsError,
         error: cardsError,
+        refetch: refetchCards,
     } = useQuery({
         queryKey: ['cards'],
         queryFn: () => getCardsCardsGet(),
@@ -108,22 +110,41 @@ export default function Decks() {
                         {cards?.data &&
                             cards.data.length > 0 &&
                             cards.data.map((card) => (
-                                <Card
-                                    key={card.id}
-                                    className="flex aspect-[3/4] flex-col gap-1 p-4"
-                                >
-                                    <CardHeader className="p-0">
-                                        <p className="text-xs text-neutral-600">
-                                            {decks?.data?.find(
-                                                (deck) =>
-                                                    deck.id === card.deck_id
-                                            )?.name || '-'}
-                                        </p>
-                                    </CardHeader>
-                                    <CardContent className="p-0">
-                                        {card.content}
-                                    </CardContent>
-                                </Card>
+                                <CardInspectDialog
+                                    key={`${card.id}-dialog`}
+                                    card={card}
+                                    onUpdateSuccess={() => {
+                                        queryClient.invalidateQueries({
+                                            queryKey: ['cards'],
+                                        });
+                                        refetchCards(); }
+                                    }
+                                    onDeleteSuccess={() => {
+                                        queryClient.invalidateQueries({
+                                            queryKey: ['cards'],
+                                        });
+                                        refetchCards(); }
+                                    }
+                                    trigger={
+                                        <Card
+                                            key={card.id}
+                                            className="flex aspect-[3/4] flex-col gap-1 p-4 cursor-pointer"
+                                        >
+                                            <CardHeader className="p-0">
+                                                <p className="text-xs text-neutral-600">
+                                                    {decks?.data?.find(
+                                                        (deck) =>
+                                                            deck.id ===
+                                                            card.deck_id
+                                                    )?.name || '-'}
+                                                </p>
+                                            </CardHeader>
+                                            <CardContent className="p-0">
+                                                {card.content}
+                                            </CardContent>
+                                        </Card>
+                                    }
+                                />
                             ))}
                     </div>
                 )}

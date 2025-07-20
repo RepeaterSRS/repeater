@@ -24,3 +24,5 @@ class ReviewOut(BaseModel):
     repetitions: int
     ease_factor: float
     created_at: datetime
+    succeeded: bool
+    failed: bool
