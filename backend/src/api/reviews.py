@@ -59,8 +59,11 @@ def create_review(
     card.save(db_session)
 
     review = Review(
-        card_id=review_req.card_id,
+        card_id=card.id,
+        deck_id=card.deck.id,
         user_id=user.id,
+        card_content=card.content,
+        deck_name=card.deck.name,
         feedback=review_req.feedback,
         interval=schedule_result.interval,
         repetitions=schedule_result.repetitions,
@@ -76,11 +79,13 @@ def get_review_history(
     user: User = Depends(get_current_user),
     db_session: Session = Depends(get_db),
 ):
-    card = Card.get(db_session, card_id)
-    if not card:
-        raise HTTPException(status_code=404)
+    try:
+        card = get_user_card(card_id, user.id, db_session)
+    except ValueError as err:
+        raise HTTPException(status_code=404, detail=str(err))
 
-    if card.deck.user_id != user.id:
-        raise HTTPException(status_code=403)
-
-    return sorted(card.reviews, key=lambda r: r.reviewed_at, reverse=True)
+    return (
+        Review.filter_by(db_session, card_id=card.id)
+        .order_by(Review.reviewed_at.desc())
+        .all()
+    )

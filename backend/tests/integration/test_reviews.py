@@ -37,9 +37,12 @@ async def test_create_review(db_session, user, user_client):
     assert res.status_code == 201
     assert res.json() == {
         "id": is_uuid_string(),
-        "card_id": is_uuid_string(),
+        "card_id": card_id,
+        "deck_id": deck_id,
         "user_id": is_uuid_string(),
         "reviewed_at": is_utc_isoformat_string(),
+        "card_content": "Test card",
+        "deck_name": "deck",
         "feedback": ReviewFeedback.OK,
         "interval": 1,
         "repetitions": 1,
@@ -68,9 +71,12 @@ async def test_create_review(db_session, user, user_client):
     assert res.status_code == 201
     assert res.json() == {
         "id": is_uuid_string(),
-        "card_id": is_uuid_string(),
+        "card_id": card_id,
+        "deck_id": deck_id,
         "user_id": is_uuid_string(),
         "reviewed_at": is_utc_isoformat_string(),
+        "card_content": "Test card",
+        "deck_name": "deck",
         "feedback": ReviewFeedback.OK,
         "interval": 5,
         "repetitions": 2,
@@ -150,9 +156,12 @@ async def test_create_review_skipped(db_session, user, user_client):
     assert res.status_code == 201
     assert res.json() == {
         "id": is_uuid_string(),
-        "card_id": is_uuid_string(),
+        "card_id": card_id,
+        "deck_id": deck_id,
         "user_id": is_uuid_string(),
         "reviewed_at": is_utc_isoformat_string(),
+        "card_content": "Test card",
+        "deck_name": "deck",
         "feedback": ReviewFeedback.SKIPPED,
         "interval": 1,
         "repetitions": 0,
@@ -202,9 +211,12 @@ async def test_create_review_forgot(db_session, user, user_client):
     assert res.status_code == 201
     assert res.json() == {
         "id": is_uuid_string(),
-        "card_id": is_uuid_string(),
+        "card_id": card_id,
+        "deck_id": deck_id,
         "user_id": is_uuid_string(),
         "reviewed_at": is_utc_isoformat_string(),
+        "card_content": "Test card",
+        "deck_name": "deck",
         "feedback": ReviewFeedback.FORGOT,
         "interval": 1,
         "repetitions": 0,
@@ -261,9 +273,12 @@ async def test_get_review_history(user, user_client):
     assert res.json() == [
         {
             "id": is_uuid_string(),
-            "card_id": is_uuid_string(),
+            "card_id": card_id,
+            "deck_id": deck_id,
             "user_id": is_uuid_string(),
             "reviewed_at": is_utc_isoformat_string(),
+            "card_content": "Test card",
+            "deck_name": "deck",
             "feedback": ReviewFeedback.OK,
             "interval": 1,
             "repetitions": 1,
@@ -272,9 +287,12 @@ async def test_get_review_history(user, user_client):
         },
         {
             "id": is_uuid_string(),
-            "card_id": is_uuid_string(),
+            "card_id": card_id,
+            "deck_id": deck_id,
             "user_id": is_uuid_string(),
             "reviewed_at": is_utc_isoformat_string(),
+            "card_content": "Test card",
+            "deck_name": "deck",
             "feedback": ReviewFeedback.FORGOT,
             "interval": 1,
             "repetitions": 0,

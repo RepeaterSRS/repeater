@@ -4,7 +4,7 @@ from enum import StrEnum
 
 import bcrypt
 from sqlalchemy import UUID, DateTime, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Session, mapped_column, relationship
 
 from src.const import SCHEDULE_DEFAULT_EASE_FACTOR
 
@@ -14,26 +14,39 @@ class Base(DeclarativeBase):
 
 
 class BaseMixin:
-    def save(self, db):
+    id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
+    created_at = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def save(self, db: Session):
         db.add(self)
         db.commit()
         db.refresh(self)
         return self
 
-    def delete(self, db):
+    def delete(self, db: Session):
         db.delete(self)
         db.commit()
 
     @classmethod
-    def get(cls, db, id):
+    def get(cls, db: Session, id: UUID):
         return db.get(cls, id)
 
     @classmethod
-    def all(cls, db):
+    def all(cls, db: Session):
         return db.query(cls).all()
 
     @classmethod
-    def filter_by(cls, db, **kwargs):
+    def filter_by(cls, db: Session, **kwargs):
         return db.query(cls).filter_by(**kwargs)
 
 
@@ -56,20 +69,9 @@ class AuthProviders(StrEnum):
 
 class User(Base, BaseMixin):
     __tablename__ = "users"
-    id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
+
     email = mapped_column(String, unique=True)
     password_hash = mapped_column(String)
-    created_at = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-    updated_at = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
     role = mapped_column(String, nullable=False)
     auth_provider = mapped_column(
         String, default=AuthProviders.PASSWORD, nullable=False
@@ -108,7 +110,7 @@ class User(Base, BaseMixin):
 
 class Deck(Base, BaseMixin):
     __tablename__ = "decks"
-    id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
+
     user_id = mapped_column(
         (UUID(as_uuid=True)), ForeignKey("users.id"), nullable=False
     )
@@ -117,17 +119,6 @@ class Deck(Base, BaseMixin):
     )
     name = mapped_column(String, nullable=False)
     description = mapped_column(String)
-    created_at = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-    updated_at = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
 
     user = relationship("User", back_populates="decks")
     category = relationship("Category", back_populates="decks")
@@ -136,7 +127,7 @@ class Deck(Base, BaseMixin):
 
 class Card(Base, BaseMixin):
     __tablename__ = "cards"
-    id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
+
     deck_id = mapped_column(
         (UUID(as_uuid=True)), ForeignKey("decks.id"), nullable=False
     )
@@ -146,28 +137,15 @@ class Card(Base, BaseMixin):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-    created_at = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-    updated_at = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
 
     deck = relationship("Deck", back_populates="cards")
-    reviews = relationship("Review", back_populates="card")
 
 
 class Review(Base, BaseMixin):
     __tablename__ = "reviews"
-    id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
-    card_id = mapped_column(
-        (UUID(as_uuid=True)), ForeignKey("cards.id"), nullable=False
-    )
+
+    card_id = mapped_column((UUID(as_uuid=True)), nullable=False)
+    deck_id = mapped_column((UUID(as_uuid=True)), nullable=False)
     user_id = mapped_column(
         (UUID(as_uuid=True)), ForeignKey("users.id"), nullable=False
     )
@@ -176,19 +154,15 @@ class Review(Base, BaseMixin):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+    card_content = mapped_column(String)
+    deck_name = mapped_column(String, nullable=False)
     feedback = mapped_column(String, nullable=False)
     interval = mapped_column(Integer, nullable=False)
     repetitions = mapped_column(Integer, nullable=False)
     ease_factor = mapped_column(
         Float, default=SCHEDULE_DEFAULT_EASE_FACTOR, nullable=False
     )
-    created_at = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
 
-    card = relationship("Card", back_populates="reviews")
     user = relationship("User", back_populates="reviews")
 
     @property
@@ -202,7 +176,7 @@ class Review(Base, BaseMixin):
 
 class Category(Base, BaseMixin):
     __tablename__ = "categories"
-    id = mapped_column((UUID(as_uuid=True)), primary_key=True, default=uuid.uuid4)
+
     user_id = mapped_column(
         (UUID(as_uuid=True)), ForeignKey("users.id"), nullable=False
     )
@@ -211,20 +185,11 @@ class Category(Base, BaseMixin):
     parent_id = mapped_column(
         (UUID(as_uuid=True)), ForeignKey("categories.id"), nullable=True
     )
-    created_at = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-    updated_at = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
 
     user = relationship("User", back_populates="categories")
-    parent = relationship("Category", remote_side=[id], back_populates="children")
+    parent = relationship(
+        "Category", remote_side=lambda: [Category.id], back_populates="children"
+    )
     children = relationship("Category", back_populates="parent")
     decks = relationship("Deck", back_populates="category")
 

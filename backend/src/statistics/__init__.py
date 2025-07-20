@@ -86,7 +86,7 @@ def classify_deck_difficulty(reviews: List[Review]) -> str:
 
 
 def get_deck_statistics(deck: Deck, user_reviews: List[Review]) -> DeckStatistics:
-    deck_reviews = [review for review in user_reviews if review.card.deck_id == deck.id]
+    deck_reviews = [review for review in user_reviews if review.deck_id == deck.id]
 
     if not deck_reviews:
         return DeckStatistics(

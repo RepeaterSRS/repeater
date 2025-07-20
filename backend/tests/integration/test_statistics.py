@@ -148,3 +148,130 @@ async def test_get_statistics_different_decks(ignore_jwt_expiration, user, user_
             },
         ],
     }
+
+
+@freeze_time("2025-07-01")
+async def test_get_statistics_deleted_card(ignore_jwt_expiration, user_client):
+    """Deleting a card that has reviews should not impact the statistics"""
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    deck_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/cards", json={"deck_id": deck_id, "content": "Test card"}
+    )
+    card_id = res.json()["id"]
+
+    await user_client.post(
+        "/reviews",
+        json={
+            "card_id": card_id,
+            "feedback": ReviewFeedback.OK,
+        },
+    )
+
+    res = await user_client.get(
+        "/stats",
+    )
+    stats = res.json()
+    assert stats == {
+        "total_reviews": 1,
+        "daily_reviews": {
+            "2025-07-01": 1,
+        },
+        "success_rate": 1,
+        "retention_rate": 0,
+        "streak": 1,
+        "deck_statistics": [
+            {
+                "deck_id": deck_id,
+                "deck_name": "deck",
+                "retention_rate": 0,
+                "total_reviews": 1,
+                "last_studied": datetime(2025, 7, 1).isoformat(timespec="seconds")
+                + "Z",
+                "difficulty_ranking": DifficultyRankings.NEW,
+            },
+        ],
+    }
+
+    res = await user_client.delete(f"/cards/{card_id}")
+    assert res.status_code == 200
+
+    res = await user_client.get(
+        "/stats",
+    )
+    assert res.json() == stats
+
+
+@freeze_time("2025-07-01")
+async def test_get_statistics_deleted_deck(ignore_jwt_expiration, user_client):
+    """Deleting a deck that has reviews should preserve the overall statistics but remove the statistics for that deck"""
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    deck_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/cards", json={"deck_id": deck_id, "content": "Test card"}
+    )
+    card_id = res.json()["id"]
+
+    await user_client.post(
+        "/reviews",
+        json={
+            "card_id": card_id,
+            "feedback": ReviewFeedback.OK,
+        },
+    )
+
+    res = await user_client.get(
+        "/stats",
+    )
+    stats = res.json()
+    assert stats == {
+        "total_reviews": 1,
+        "daily_reviews": {
+            "2025-07-01": 1,
+        },
+        "success_rate": 1,
+        "retention_rate": 0,
+        "streak": 1,
+        "deck_statistics": [
+            {
+                "deck_id": deck_id,
+                "deck_name": "deck",
+                "retention_rate": 0,
+                "total_reviews": 1,
+                "last_studied": datetime(2025, 7, 1).isoformat(timespec="seconds")
+                + "Z",
+                "difficulty_ranking": DifficultyRankings.NEW,
+            },
+        ],
+    }
+
+    res = await user_client.delete(f"/decks/{deck_id}")
+    assert res.status_code == 200
+
+    res = await user_client.get(
+        "/stats",
+    )
+    assert res.json() == {
+        "total_reviews": 1,
+        "daily_reviews": {
+            "2025-07-01": 1,
+        },
+        "success_rate": 1,
+        "retention_rate": 0,
+        "streak": 1,
+        "deck_statistics": [],
+    }
