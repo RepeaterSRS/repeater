@@ -38,15 +38,15 @@ export function ThemeChangerItems() {
             <DropdownMenuSubContent>
                 <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
                     <DropdownMenuRadioItem value="light">
-                        <Sun className="h-4 w-4 mr-2" />
+                        <Sun className="mr-2 h-4 w-4" />
                         Light
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="system">
-                        <Monitor className="h-4 w-4 mr-2" />
+                        <Monitor className="mr-2 h-4 w-4" />
                         System
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="dark">
-                        <Moon className="h-4 w-4 mr-2" />
+                        <Moon className="mr-2 h-4 w-4" />
                         Dark
                     </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
