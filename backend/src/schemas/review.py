@@ -14,8 +14,11 @@ class ReviewCreate(BaseModel):
 class ReviewOut(BaseModel):
     id: UUID
     card_id: UUID
+    deck_id: UUID
     user_id: UUID
     reviewed_at: datetime
+    card_content: str
+    deck_name: str
     feedback: ReviewFeedback
     interval: int
     repetitions: int

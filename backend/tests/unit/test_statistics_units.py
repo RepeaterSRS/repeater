@@ -17,8 +17,11 @@ from src.statistics import (
 def create_review(feedback: ReviewFeedback, interval: int):
     return Review(
         card_id=uuid4(),
+        deck_id=uuid4(),
         user_id=uuid4(),
         reviewed_at=datetime.now(timezone.utc),
+        card_content="",
+        deck_name="",
         feedback=feedback,
         interval=interval,
         repetitions=0,

@@ -7,14 +7,14 @@ from src.auth.jwt import decode_jwt
 from src.db.models import Card, Category, Deck, User
 
 
-def get_user_deck(deck_id: UUID, user_id: UUID, db_session: Session):
+def get_user_deck(deck_id: UUID, user_id: UUID, db_session: Session) -> Deck:
     deck = Deck.filter_by(db_session, id=deck_id, user_id=user_id).first()
     if not deck:
         raise ValueError("Deck not found or access denied")
     return deck
 
 
-def get_user_card(card_id: UUID, user_id: UUID, db_session: Session):
+def get_user_card(card_id: UUID, user_id: UUID, db_session: Session) -> Card:
     card = (
         db_session.query(Card)
         .join(Deck)
