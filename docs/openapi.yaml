@@ -1151,6 +1151,10 @@ components:
           type: string
           format: uuid
           title: Card Id
+        deck_id:
+          type: string
+          format: uuid
+          title: Deck Id
         user_id:
           type: string
           format: uuid
@@ -1159,6 +1163,12 @@ components:
           type: string
           format: date-time
           title: Reviewed At
+        card_content:
+          type: string
+          title: Card Content
+        deck_name:
+          type: string
+          title: Deck Name
         feedback:
           $ref: '#/components/schemas/ReviewFeedback'
         interval:
@@ -1184,8 +1194,11 @@ components:
       required:
       - id
       - card_id
+      - deck_id
       - user_id
       - reviewed_at
+      - card_content
+      - deck_name
       - feedback
       - interval
       - repetitions

@@ -18,4 +18,16 @@ export const SHORTCUT_CONFIG: ShortcutConfig[] = [
         description: 'Mark card as remembered',
         scope: 'review',
     },
+    {
+        key: 'ArrowLeft',
+        action: 'card-prev',
+        description: 'Go to the previous card',
+        scope: 'decks',
+    },
+    {
+        key: 'ArrowRight',
+        action: 'card-next',
+        description: 'Go to the next card',
+        scope: 'decks',
+    },
 ];
