@@ -48,6 +48,8 @@ async def test_create_review(db_session, user, user_client):
         "repetitions": 1,
         "ease_factor": 2.65,
         "created_at": is_utc_isoformat_string(),
+        "succeeded": True,
+        "failed": False,
     }
 
     reviewed_at = res.json()["reviewed_at"]
@@ -82,6 +84,8 @@ async def test_create_review(db_session, user, user_client):
         "repetitions": 2,
         "ease_factor": 2.80,
         "created_at": is_utc_isoformat_string(),
+        "succeeded": True,
+        "failed": False,
     }
 
     reviewed_at = res.json()["reviewed_at"]
@@ -167,6 +171,8 @@ async def test_create_review_skipped(db_session, user, user_client):
         "repetitions": 0,
         "ease_factor": 2.5,
         "created_at": is_utc_isoformat_string(),
+        "succeeded": False,
+        "failed": False,
     }
 
     reviewed_at = res.json()["reviewed_at"]
@@ -222,6 +228,8 @@ async def test_create_review_forgot(db_session, user, user_client):
         "repetitions": 0,
         "ease_factor": 2.3,
         "created_at": is_utc_isoformat_string(),
+        "succeeded": False,
+        "failed": True,
     }
 
     reviewed_at = res.json()["reviewed_at"]
@@ -284,6 +292,8 @@ async def test_get_review_history(user, user_client):
             "repetitions": 1,
             "ease_factor": 2.45,
             "created_at": is_utc_isoformat_string(),
+            "succeeded": True,
+            "failed": False,
         },
         {
             "id": is_uuid_string(),
@@ -298,5 +308,7 @@ async def test_get_review_history(user, user_client):
             "repetitions": 0,
             "ease_factor": 2.3,
             "created_at": is_utc_isoformat_string(),
+            "succeeded": False,
+            "failed": True,
         },
     ]
