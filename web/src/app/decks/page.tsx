@@ -2,13 +2,18 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
 
 import CardCreationDialog from '@/components/CardCreationDialog';
 import CardInspectDialog from '@/components/CardInspectDialog';
 import DeckCreationDialog from '@/components/DeckCreationDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { getDecksDecksGet, getCardsCardsGet } from '@/gen';
+import {
+    getDecksDecksGet,
+    getCardsCardsGet,
+    getReviewHistoryReviewsCardIdGet,
+} from '@/gen';
 
 export default function Decks() {
     const queryClient = useQueryClient();
@@ -28,12 +33,35 @@ export default function Decks() {
         isLoading: isCardsLoading,
         isError: isCardsError,
         error: cardsError,
-        refetch: refetchCards,
     } = useQuery({
         queryKey: ['cards'],
         queryFn: () => getCardsCardsGet(),
     });
 
+    function prefetchCardHistory(cardId: string) {
+        queryClient.prefetchQuery({
+            queryKey: ['reviews', cardId],
+            queryFn: () =>
+                getReviewHistoryReviewsCardIdGet({ path: { card_id: cardId } }),
+            staleTime: 5 * 60 * 1000,
+        });
+    }
+
+    const [cardInspectDialogOpen, setCardInspectDialogOpen] = useState(false);
+    const [activeCardIndex, setActiveCardIndex] = useState(-1);
+    const activeCard = cards?.data?.[activeCardIndex];
+
+    function nextCard() {
+        if (cards?.data && activeCardIndex < cards.data.length - 1) {
+            setActiveCardIndex((prev) => prev + 1);
+        }
+    }
+
+    function prevCard() {
+        if (activeCardIndex > 0) {
+            setActiveCardIndex((prev) => prev - 1);
+        }
+    }
     return (
         <div className="container mx-auto space-y-8 px-6 py-6">
             <div>
@@ -109,46 +137,57 @@ export default function Decks() {
                         </Card>
                         {cards?.data &&
                             cards.data.length > 0 &&
-                            cards.data.map((card) => (
-                                <CardInspectDialog
-                                    key={`${card.id}-dialog`}
-                                    card={card}
-                                    onUpdateSuccess={() => {
-                                        queryClient.invalidateQueries({
-                                            queryKey: ['cards'],
-                                        });
-                                        refetchCards(); }
+                            cards.data.map((card, cardIndex) => (
+                                <Card
+                                    key={card.id}
+                                    className="flex aspect-[3/4] cursor-pointer flex-col gap-1 p-4"
+                                    onMouseEnter={() =>
+                                        prefetchCardHistory(card.id)
                                     }
-                                    onDeleteSuccess={() => {
-                                        queryClient.invalidateQueries({
-                                            queryKey: ['cards'],
-                                        });
-                                        refetchCards(); }
-                                    }
-                                    trigger={
-                                        <Card
-                                            key={card.id}
-                                            className="flex aspect-[3/4] flex-col gap-1 p-4 cursor-pointer"
-                                        >
-                                            <CardHeader className="p-0">
-                                                <p className="text-xs text-neutral-600">
-                                                    {decks?.data?.find(
-                                                        (deck) =>
-                                                            deck.id ===
-                                                            card.deck_id
-                                                    )?.name || '-'}
-                                                </p>
-                                            </CardHeader>
-                                            <CardContent className="p-0">
-                                                {card.content}
-                                            </CardContent>
-                                        </Card>
-                                    }
-                                />
+                                    onClick={() => {
+                                        setActiveCardIndex(cardIndex);
+                                        setCardInspectDialogOpen(true);
+                                    }}
+                                >
+                                    <CardHeader className="p-0">
+                                        <p className="text-xs text-neutral-600">
+                                            {decks?.data?.find(
+                                                (deck) =>
+                                                    deck.id === card.deck_id
+                                            )?.name || '-'}
+                                        </p>
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        {card.content}
+                                    </CardContent>
+                                </Card>
                             ))}
                     </div>
                 )}
             </div>
+            {activeCard && (
+                <CardInspectDialog
+                    card={activeCard}
+                    open={cardInspectDialogOpen}
+                    onOpenChange={setCardInspectDialogOpen}
+                    onUpdateSuccess={() => {
+                        queryClient.invalidateQueries({
+                            queryKey: ['cards'],
+                        });
+                    }}
+                    onDeleteSuccess={() => {
+                        queryClient.invalidateQueries({
+                            queryKey: ['cards'],
+                        });
+                    }}
+                    onNext={nextCard}
+                    onPrev={prevCard}
+                    hasNext={
+                        cards.data && activeCardIndex < cards.data.length - 1
+                    }
+                    hasPrev={activeCardIndex !== 0}
+                />
+            )}
         </div>
     );
 }

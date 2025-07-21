@@ -1,9 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import Kbd from '@/components/Kbd';
+import { useShortcutActions } from '@/components/ShortcutProvider';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -32,9 +35,23 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import ReviewHistory from './ReviewHistory';
-import { getDecksDecksGet, getReviewHistoryReviewsCardIdGet, CardOut, deleteCardCardsCardIdDelete, updateCardCardsCardIdPatch } from '@/gen';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
+    getDecksDecksGet,
+    getReviewHistoryReviewsCardIdGet,
+    CardOut,
+    deleteCardCardsCardIdDelete,
+    updateCardCardsCardIdPatch,
+} from '@/gen';
+import { usePageShortcuts } from '@/hooks/use-shortcuts';
+import { createActions, getShortcut } from '@/lib/shortcuts';
 import { formatDateForDisplay } from '@/lib/utils';
+
+import ReviewHistory from './ReviewHistory';
 
 interface CardInspectDialogProps {
     card: CardOut;
@@ -45,6 +62,10 @@ interface CardInspectDialogProps {
     onDeleteSuccess?: () => void;
     onUpdateError?: (error: string) => void;
     onDeleteError?: (error: string) => void;
+    onNext?: () => void;
+    onPrev?: () => void;
+    hasNext?: boolean;
+    hasPrev?: boolean;
 }
 
 export default function CardInspectDialog({
@@ -56,9 +77,15 @@ export default function CardInspectDialog({
     onDeleteSuccess,
     onUpdateError,
     onDeleteError,
+    onNext,
+    onPrev,
+    hasNext,
+    hasPrev,
 }: CardInspectDialogProps) {
-    const [internalOpen, setInternalOpen] = useState(false);
+    usePageShortcuts('decks');
+    const { registerAction, unregisterAction } = useShortcutActions();
 
+    const [internalOpen, setInternalOpen] = useState(false);
     const isOpen = open ?? internalOpen;
     const setIsOpen = onOpenChange ?? setInternalOpen;
 
@@ -73,12 +100,14 @@ export default function CardInspectDialog({
         isError: reviewHistoryError,
     } = useQuery({
         queryKey: ['reviews', card.id],
-        queryFn: () => getReviewHistoryReviewsCardIdGet({path: {card_id: card.id}}),
+        queryFn: () =>
+            getReviewHistoryReviewsCardIdGet({ path: { card_id: card.id } }),
+        staleTime: 5 * 60 * 1000,
     });
 
     const deleteCardMutation = useMutation({
         mutationFn: () =>
-            deleteCardCardsCardIdDelete({path: {card_id: card.id}}),
+            deleteCardCardsCardIdDelete({ path: { card_id: card.id } }),
         onSuccess: () => {
             cardForm.reset();
             setIsOpen(false);
@@ -88,18 +117,20 @@ export default function CardInspectDialog({
         onError: (err: unknown) => {
             const errorMessage = `There was an error deleting card: ${(err as Error)?.message ?? 'no details found'}`;
             onDeleteError?.(errorMessage);
-        }
+        },
     });
-
 
     const updateCardMutation = useMutation({
         mutationFn: (values: z.infer<typeof cardFormSchema>) =>
             updateCardCardsCardIdPatch({
-                path: {card_id: card.id},
+                path: { card_id: card.id },
                 body: values,
             }),
         onSuccess: () => {
-            cardForm.reset();
+            cardForm.reset({
+                content: card.content,
+                deck_id: card.deck_id,
+            });
             setIsOpen(false);
             onUpdateSuccess?.();
             // TODO toast?
@@ -107,9 +138,8 @@ export default function CardInspectDialog({
         onError: (err: unknown) => {
             const errorMessage = `There was an error updating card: ${(err as Error)?.message ?? 'no details found'}`;
             onUpdateError?.(errorMessage);
-        }
+        },
     });
-
 
     const cardFormSchema = z.object({
         content: z.string().min(1, 'Card must have contents'),
@@ -124,25 +154,105 @@ export default function CardInspectDialog({
         },
     });
 
+    useEffect(() => {
+        cardForm.reset({
+            content: card.content,
+            deck_id: card.deck_id,
+        });
+    }, [card, cardForm]);
+
     const {
         formState: { isDirty },
     } = cardForm;
 
+    useEffect(() => {
+        const actions = createActions({
+            'card-prev': () => onPrev?.(),
+            'card-next': () => onNext?.(),
+        });
+
+        Object.entries(actions).forEach(([action, handler]) => {
+            registerAction(action, handler);
+        });
+
+        return () => {
+            Object.keys(actions).forEach((action) => {
+                unregisterAction(action);
+            });
+        };
+    }, [onNext, onPrev, registerAction, unregisterAction]);
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className='min-w-2xl max-h-[90vh]'>
+            <DialogContent
+                className="max-h-[90vh] min-w-2xl"
+                showCloseButton={false}
+            >
                 <DialogHeader>
-                    <DialogTitle>Inspect Card</DialogTitle>
+                    <div className="flex items-center justify-between">
+                        <DialogTitle>Inspect Card</DialogTitle>
+                        <div className="flex gap-1">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={onPrev}
+                                        disabled={!hasPrev}
+                                    >
+                                        <ChevronLeft />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <div>
+                                        {
+                                            getShortcut('card-prev', 'decks')
+                                                .description
+                                        }
+                                        <Kbd
+                                            action="card-prev"
+                                            scope="decks"
+                                            className="ml-2"
+                                        />
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={onNext}
+                                        disabled={!hasNext}
+                                    >
+                                        <ChevronRight />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <div>
+                                        {
+                                            getShortcut('card-next', 'decks')
+                                                .description
+                                        }
+                                        <Kbd
+                                            action="card-next"
+                                            scope="decks"
+                                            className="ml-2"
+                                        />
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
+                    </div>
                 </DialogHeader>
-
                 <div className="grid grid-cols-1 gap-6 overflow-hidden lg:grid-cols-3">
                     {/* Left side - Content */}
                     <div className="lg:col-span-2">
                         <Form {...cardForm}>
                             <form
                                 className="flex h-full flex-col gap-4"
-                                onSubmit={cardForm.handleSubmit((data) => 
+                                onSubmit={cardForm.handleSubmit((data) =>
                                     updateCardMutation.mutate(data)
                                 )}
                             >
@@ -155,6 +265,7 @@ export default function CardInspectDialog({
                                                 <Textarea
                                                     className="h-96 resize-none"
                                                     placeholder={`How are you? --- Ça va?`}
+                                                    autoFocus={true}
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -181,10 +292,10 @@ export default function CardInspectDialog({
                                             </FormLabel>
                                             <FormControl>
                                                 <Select
+                                                    value={field.value}
                                                     onValueChange={
                                                         field.onChange
                                                     }
-                                                    defaultValue={field.value}
                                                 >
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a deck" />
@@ -229,7 +340,9 @@ export default function CardInspectDialog({
                                     <span className="font-medium">
                                         Next review:
                                     </span>{' '}
-                                    {formatDateForDisplay(card.next_review_date)}
+                                    {formatDateForDisplay(
+                                        card.next_review_date
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -240,27 +353,30 @@ export default function CardInspectDialog({
                                 Review History
                             </h4>
                             {reviewHistoryLoading && (
-                                <div>
-                                    Loading reviews...
-                                </div>
+                                <div>Loading reviews...</div>
                             )}
                             {reviewHistoryError && (
-                                <div>
-                                    Failed to load reviews
-                                </div>
+                                <div>Failed to load reviews</div>
                             )}
-                            {!reviewHistoryLoading && !reviewHistoryError && reviewHistory?.data && 
-                                <ReviewHistory reviews={reviewHistory.data} />}
+                            {!reviewHistoryLoading &&
+                                !reviewHistoryError &&
+                                reviewHistory?.data && (
+                                    <ReviewHistory
+                                        reviews={reviewHistory.data}
+                                    />
+                                )}
                         </div>
                     </div>
                 </div>
 
                 <DialogFooter className="mt-6">
-                    <Button onClick={() => {
-                            deleteCardMutation.mutate()
-                            }}
-                            type="button"
-                            variant="destructive">
+                    <Button
+                        onClick={() => {
+                            deleteCardMutation.mutate();
+                        }}
+                        type="button"
+                        variant="destructive"
+                    >
                         Delete
                     </Button>
                     <DialogClose asChild>
@@ -272,7 +388,8 @@ export default function CardInspectDialog({
                         onClick={cardForm.handleSubmit((data) =>
                             updateCardMutation.mutate(data)
                         )}
-                        disabled={!isDirty}>
+                        disabled={!isDirty}
+                    >
                         Save Changes
                     </Button>
                 </DialogFooter>
