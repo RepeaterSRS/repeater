@@ -186,7 +186,7 @@ export default function CardInspectDialog({
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
             <DialogContent
-                className="max-h-[90vh] min-w-2xl"
+                className="flex max-h-[90vh] min-w-2xl flex-col"
                 showCloseButton={false}
             >
                 <DialogHeader>
@@ -246,125 +246,129 @@ export default function CardInspectDialog({
                         </div>
                     </div>
                 </DialogHeader>
-                <div className="grid grid-cols-1 gap-6 overflow-hidden lg:grid-cols-3">
-                    {/* Left side - Content */}
-                    <div className="lg:col-span-2">
-                        <Form {...cardForm}>
-                            <form
-                                className="flex h-full flex-col gap-4"
-                                onSubmit={cardForm.handleSubmit((data) =>
-                                    updateCardMutation.mutate(data)
-                                )}
-                            >
-                                <FormField
-                                    control={cardForm.control}
-                                    name="content"
-                                    render={({ field }) => (
-                                        <FormItem className="flex-1">
-                                            <FormControl>
-                                                <Textarea
-                                                    className="h-96 resize-none"
-                                                    placeholder={`How are you? --- Ça va?`}
-                                                    autoFocus={true}
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </form>
-                        </Form>
-                    </div>
-
-                    {/* Right side - Metadata and History */}
-                    <div className="flex flex-col gap-6">
-                        {/* Metadata */}
-                        <div className="space-y-4">
+                <div className="flex-1 overflow-y-auto">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                        {/* Left side - Content */}
+                        <div className="lg:col-span-2">
                             <Form {...cardForm}>
-                                <FormField
-                                    control={cardForm.control}
-                                    name="deck_id"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="font-semibold">
-                                                Deck
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Select
-                                                    value={field.value}
-                                                    onValueChange={
-                                                        field.onChange
-                                                    }
-                                                >
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select a deck" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            <SelectLabel>
-                                                                Deck
-                                                            </SelectLabel>
-                                                        </SelectGroup>
-                                                        {decks?.data?.map(
-                                                            (deck) => (
-                                                                <SelectItem
-                                                                    value={
-                                                                        deck.id
-                                                                    }
-                                                                    key={
-                                                                        deck.id
-                                                                    }
-                                                                >
-                                                                    {deck.name}
-                                                                </SelectItem>
-                                                            )
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                <form
+                                    className="flex h-full flex-col gap-4"
+                                    onSubmit={cardForm.handleSubmit((data) =>
+                                        updateCardMutation.mutate(data)
                                     )}
-                                />
+                                >
+                                    <FormField
+                                        control={cardForm.control}
+                                        name="content"
+                                        render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                                <FormControl>
+                                                    <Textarea
+                                                        className="h-96 resize-none"
+                                                        placeholder={`How are you? --- Ça va?`}
+                                                        autoFocus={true}
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </form>
                             </Form>
-
-                            <div className="text-muted-foreground space-y-1 text-sm">
-                                <p>
-                                    <span className="font-medium">
-                                        Created:
-                                    </span>{' '}
-                                    {formatDateForDisplay(card.created_at)}
-                                </p>
-                                <p>
-                                    <span className="font-medium">
-                                        Next review:
-                                    </span>{' '}
-                                    {formatDateForDisplay(
-                                        card.next_review_date
-                                    )}
-                                </p>
-                            </div>
                         </div>
 
-                        {/* Review History */}
-                        <div className="min-h-0 flex-1">
-                            <h4 className="mb-2 font-semibold">
-                                Review History
-                            </h4>
-                            {reviewHistoryLoading && (
-                                <div>Loading reviews...</div>
-                            )}
-                            {reviewHistoryError && (
-                                <div>Failed to load reviews</div>
-                            )}
-                            {!reviewHistoryLoading &&
-                                !reviewHistoryError &&
-                                reviewHistory?.data && (
-                                    <ReviewHistory
-                                        reviews={reviewHistory.data}
+                        {/* Right side - Metadata and History */}
+                        <div className="flex flex-col gap-6">
+                            {/* Metadata */}
+                            <div className="space-y-4">
+                                <Form {...cardForm}>
+                                    <FormField
+                                        control={cardForm.control}
+                                        name="deck_id"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="font-semibold">
+                                                    Deck
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Select
+                                                        value={field.value}
+                                                        onValueChange={
+                                                            field.onChange
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select a deck" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectGroup>
+                                                                <SelectLabel>
+                                                                    Deck
+                                                                </SelectLabel>
+                                                            </SelectGroup>
+                                                            {decks?.data?.map(
+                                                                (deck) => (
+                                                                    <SelectItem
+                                                                        value={
+                                                                            deck.id
+                                                                        }
+                                                                        key={
+                                                                            deck.id
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            deck.name
+                                                                        }
+                                                                    </SelectItem>
+                                                                )
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
+                                </Form>
+
+                                <div className="text-muted-foreground space-y-1 text-sm">
+                                    <p>
+                                        <span className="font-medium">
+                                            Created:
+                                        </span>{' '}
+                                        {formatDateForDisplay(card.created_at)}
+                                    </p>
+                                    <p>
+                                        <span className="font-medium">
+                                            Next review:
+                                        </span>{' '}
+                                        {formatDateForDisplay(
+                                            card.next_review_date
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Review History */}
+                            <div className="min-h-0 flex-1">
+                                <h4 className="mb-2 font-semibold">
+                                    Review History
+                                </h4>
+                                {reviewHistoryLoading && (
+                                    <div>Loading reviews...</div>
                                 )}
+                                {reviewHistoryError && (
+                                    <div>Failed to load reviews</div>
+                                )}
+                                {!reviewHistoryLoading &&
+                                    !reviewHistoryError &&
+                                    reviewHistory?.data && (
+                                        <ReviewHistory
+                                            reviews={reviewHistory.data}
+                                        />
+                                    )}
+                            </div>
                         </div>
                     </div>
                 </div>
