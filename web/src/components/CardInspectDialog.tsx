@@ -44,6 +44,7 @@ import {
     getDecksDecksGet,
     getReviewHistoryReviewsCardIdGet,
     CardOut,
+    CardUpdate,
     deleteCardCardsCardIdDelete,
     updateCardCardsCardIdPatch,
 } from '@/gen';
@@ -144,7 +145,7 @@ export default function CardInspectDialog({
     const cardFormSchema = z.object({
         content: z.string().min(1, 'Card must have contents'),
         deck_id: z.string().min(1, 'Card must have a parent deck'),
-    });
+    }) satisfies z.ZodType<CardUpdate>;
 
     const cardForm = useForm<z.infer<typeof cardFormSchema>>({
         resolver: zodResolver(cardFormSchema),
