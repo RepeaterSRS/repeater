@@ -152,14 +152,14 @@ jobs:
       - name: Build and push frontend image for test
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
+          context: ./web
           target: production
           build-args: |
             API_URL=test-url-goes-here
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:test
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:main-test
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:test
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:main-test
           labels: ${{ steps.frontend-meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -167,14 +167,14 @@ jobs:
       - name: Build and push frontend image for production
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
+          context: ./web
           target: production
           build-args: |
             API_URL=prod-url-goes-here
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:prod
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:prod
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:latest
           labels: ${{ steps.frontend-meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -183,5 +183,5 @@ jobs:
         run: |
           echo "Backend image tags:"
           echo "${{ steps.backend-meta.outputs.tags }}"
-          echo "Frontend test image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:test"
-          echo "Frontend prod image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:prod"
+          echo "Frontend test image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:test"
+          echo "Frontend prod image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:prod"
