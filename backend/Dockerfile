@@ -1,5 +1,5 @@
 # https://github.com/astral-sh/uv-docker-example/blob/main/Dockerfile
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim as base
 
 WORKDIR /app
 
@@ -21,6 +21,17 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-ENTRYPOINT []
+FROM base as development
 
+EXPOSE 8000
 CMD ["fastapi", "dev", "--host", "0.0.0.0", "src/main.py"]
+
+FROM base as production
+
+RUN groupadd --gid 1001 appgroup && \
+    useradd --uid 1001 --gid appgroup --shell /bin/bash --create-home appuser
+RUN chown -R appuser:appgroup /app
+USER appuser
+
+EXPOSE 8000
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
