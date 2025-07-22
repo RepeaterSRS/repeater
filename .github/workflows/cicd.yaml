@@ -79,15 +79,6 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: ./web
 
-      - name: Copy OpenAPI spec
-        run: |
-          mkdir -p web/docs
-          cp docs/openapi.yaml web/docs/openapi.yaml
-
-      - name: Generate frontend client
-        run: pnpm run openapi-ts
-        working-directory: ./web
-      
       - name: Run frontend formatting check
         run: |
           pnpm run lint
