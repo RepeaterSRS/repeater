@@ -94,8 +94,15 @@ jobs:
           pnpm exec prettier --check .
         working-directory: ./web
 
+      - name: Upload generated client
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-client
+          path: web/src/gen/
+
 
   build-and-push:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs:
       - backend-test
       - frontend-check
@@ -107,6 +114,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Download generated client
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-client
+          path: web/src/gen/
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
