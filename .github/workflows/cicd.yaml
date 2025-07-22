@@ -125,7 +125,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend
           tags: |
             type=ref,event=branch
-            type=sha,prefix={{branch}}-
+            type=sha
             type=raw,value=latest
 
       - name: Extract metadata for frontend
@@ -135,7 +135,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend
           tags: |
             type=ref,event=branch
-            type=sha,prefix={{branch}}-
+            type=sha
             type=raw,value=latest
 
       - name: Build and push backend image
