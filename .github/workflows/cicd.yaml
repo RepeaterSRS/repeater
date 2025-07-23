@@ -150,6 +150,8 @@ jobs:
             type=ref,event=branch
             type=sha
             type=raw,value=latest
+            type=raw,value=test
+            type=raw,value=main-test
 
       - name: Build and push backend image
         uses: docker/build-push-action@v5
@@ -170,9 +172,7 @@ jobs:
           build-args: |
             API_URL=test-url-goes-here
           push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:test
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:main-test
+          tags: ${{ steps.frontend-meta.outputs.tags }}
           labels: ${{ steps.frontend-meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -185,9 +185,7 @@ jobs:
           build-args: |
             API_URL=prod-url-goes-here
           push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:prod
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:latest
+          tags: ${{ steps.frontend-meta.outputs.tags }}
           labels: ${{ steps.frontend-meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
