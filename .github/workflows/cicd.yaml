@@ -145,7 +145,7 @@ jobs:
         id: frontend-meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web
           tags: |
             type=ref,event=branch
             type=sha
@@ -189,10 +189,3 @@ jobs:
           labels: ${{ steps.frontend-meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Output image tags
-        run: |
-          echo "Backend image tags:"
-          echo "${{ steps.backend-meta.outputs.tags }}"
-          echo "Frontend test image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:test"
-          echo "Frontend prod image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:prod"
