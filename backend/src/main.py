@@ -7,7 +7,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 
-from src.api import auth, cards, categories, decks, me, oauth, reviews, statistics
+from src.api import (
+    auth,
+    cards,
+    categories,
+    decks,
+    healthcheck,
+    me,
+    oauth,
+    reviews,
+    statistics,
+)
 from src.exceptions import RefreshTokenAuthenticationError
 from src.log import set_up_logger
 
@@ -60,3 +70,4 @@ app.include_router(me.router)
 app.include_router(reviews.router)
 app.include_router(statistics.router)
 app.include_router(categories.router)
+app.include_router(healthcheck.router)
