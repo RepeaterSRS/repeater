@@ -1,0 +1,21 @@
+name: Cleanup
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    name: Delete old Docker images
+    steps:
+      - uses: snok/container-retention-policy@v3.0.0
+        with:
+          account: repeatersrs
+          token: ${{ secrets.GHCR_PAT }}
+          image-names: "repeater-*"
+          image-tags: "*"
+          cut-off: 1w
+          dry-run: false
+          keep-n-most-recent: 5
