@@ -3,8 +3,6 @@ FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim as base
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
 
@@ -18,6 +16,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-install-project --no-dev
 
 COPY . /app
+RUN chmod +x scripts/entrypoint.sh
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
@@ -30,10 +29,14 @@ CMD ["fastapi", "dev", "--host", "0.0.0.0", "src/main.py"]
 
 FROM base as production
 
+RUN apt-get update && \
+    apt-get install -y curl postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN groupadd --gid 1001 appgroup && \
     useradd --uid 1001 --gid appgroup --shell /bin/bash --create-home appuser
 RUN chown -R appuser:appgroup /app
 USER appuser
 
 EXPOSE 8000
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
