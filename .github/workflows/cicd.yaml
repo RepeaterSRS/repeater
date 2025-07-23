@@ -140,7 +140,17 @@ jobs:
             type=sha
             type=raw,value=latest
 
-      - name: Extract metadata for frontend
+      - name: Extract metadata for frontend test
+        id: frontend-meta-test
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web-test
+          tags: |
+            type=ref,event=branch
+            type=sha
+            type=raw,value=latest
+
+      - name: Extract metadata for frontend prod
         id: frontend-meta
         uses: docker/metadata-action@v5
         with:
@@ -149,8 +159,6 @@ jobs:
             type=ref,event=branch
             type=sha
             type=raw,value=latest
-            type=raw,value=test
-            type=raw,value=main-test
 
       - name: Build and push backend image
         uses: docker/build-push-action@v5
@@ -163,7 +171,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build and push frontend image for test
+      - name: Build and push frontend test image
         uses: docker/build-push-action@v5
         with:
           context: ./web
@@ -171,12 +179,12 @@ jobs:
           build-args: |
             API_URL=http://xkg0ks0gcwssww8occoc4844.188.149.141.104.sslip.io
           push: true
-          tags: ${{ steps.frontend-meta.outputs.tags }}
+          tags: ${{ steps.frontend-meta-test.outputs.tags }}
           labels: ${{ steps.frontend-meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build and push frontend image for production
+      - name: Build and push frontend production image
         uses: docker/build-push-action@v5
         with:
           context: ./web
@@ -218,7 +226,7 @@ jobs:
             "docker_registry_image_tag": "${{ steps.short-sha.outputs.short-sha }}"
             }
 
-      - name: Update frontend Docker image name and tag in Coolify
+      - name: Update frontend test Docker image name and tag in Coolify
         uses: fjogeleit/http-request-action@v1
         with:
           url: ${{secrets.COOLIFY_URL}}/api/v1/applications/${{secrets.COOLIFY_FRONTEND_ID}}
@@ -226,7 +234,7 @@ jobs:
           bearerToken: ${{secrets.COOLIFY_API_TOKEN}}
           data: >-
             {
-            "docker_registry_image_name": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web",
+            "docker_registry_image_name": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web-test",
             "docker_registry_image_tag": "${{ steps.short-sha.outputs.short-sha }}"
             }
 
