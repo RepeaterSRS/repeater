@@ -169,7 +169,7 @@ jobs:
           context: ./web
           target: production
           build-args: |
-            API_URL=test-url-goes-here
+            API_URL=http://xkg0ks0gcwssww8occoc4844.188.149.141.104.sslip.io
           push: true
           tags: ${{ steps.frontend-meta.outputs.tags }}
           labels: ${{ steps.frontend-meta.outputs.labels }}
