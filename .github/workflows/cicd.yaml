@@ -214,7 +214,7 @@ jobs:
           data: >-
             {
             "docker_registry_image_name": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend",
-            "docker_registry_image_tag": "${{ steps.short-sha.outputs.short-sha }}",
+            "docker_registry_image_tag": "${{ steps.short-sha.outputs.short-sha }}"
             }
 
       - name: Update frontend Docker image name and tag in Coolify
@@ -226,7 +226,7 @@ jobs:
           data: >-
             {
             "docker_registry_image_name": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web",
-            "docker_registry_image_tag": "${{ steps.short-sha.outputs.short-sha }}",
+            "docker_registry_image_tag": "${{ steps.short-sha.outputs.short-sha }}"
             }
 
       - name: Trigger Coolify backend deployment via webhook
