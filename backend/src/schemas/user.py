@@ -20,6 +20,7 @@ class UserOut(BaseModel):
     auth_provider: str
     created_at: datetime
     updated_at: datetime
+    is_guest: bool
 
 
 class UserLogin(BaseModel):
