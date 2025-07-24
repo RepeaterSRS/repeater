@@ -29,6 +29,9 @@ def bootstrap():
         add_user("admin@domain.com", "password", UserRole.ADMIN, db_session)
         user = add_user("user@domain.com", "password", UserRole.USER, db_session)
 
+        #        for i in range(10):
+        #            add_user(f"user{i}@domain.com", "password", UserRole.USER, db_session)
+
         language_category = add_category(user.id, "Languages", db_session)
 
         for deck_path in {FRENCH_DECK_JSON_PATH, CHINESE_DECK_JSON_PATH}:
