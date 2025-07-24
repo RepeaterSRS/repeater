@@ -1,5 +1,5 @@
 # https://github.com/astral-sh/uv-docker-example/blob/main/Dockerfile
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim as base
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS base
 
 WORKDIR /app
 
@@ -22,12 +22,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-FROM base as development
+FROM base AS development
 
 EXPOSE 8000
 CMD ["fastapi", "dev", "--host", "0.0.0.0", "src/main.py"]
 
-FROM base as production
+FROM base AS production
 
 RUN apt-get update && \
     apt-get install -y curl postgresql-client && \

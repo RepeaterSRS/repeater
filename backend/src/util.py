@@ -4,7 +4,14 @@ from fastapi import Request
 from sqlalchemy.orm import Session, contains_eager
 
 from src.auth.jwt import decode_jwt
-from src.db.models import Card, Category, Deck, User
+from src.db.models import Card, Category, Deck, User, UserRole
+
+
+def add_user(email: str, password: str, role: UserRole, db_session: Session) -> User:
+    user = User(email=email, role=role)
+    user.set_password(password)
+    user = user.save(db_session)
+    return user
 
 
 def get_user_deck(deck_id: UUID, user_id: UUID, db_session: Session) -> Deck:
