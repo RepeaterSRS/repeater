@@ -1,4 +1,23 @@
 services:
+  migrate:
+    build:
+      context: backend
+      target: development
+    container_name: repeater-migration
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/repeater
+
+    command: alembic upgrade head
+    healthcheck:
+      test: ["CMD", "echo", "migration complete"]
+      interval: 1s
+      retries: 1
+
   backend:
     build:
       context: backend
@@ -18,6 +37,7 @@ services:
       - DATABASE_URL=postgresql://user:password@db:5432/repeater
       - SECRET_KEY=abc123
       - FRONTEND_URL=http://localhost:3000
+      - ADMIN_PASSWORD=password
 
     develop:
       watch:
@@ -33,6 +53,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
   web:
     build:
