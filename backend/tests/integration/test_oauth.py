@@ -78,6 +78,7 @@ async def test_guest_user_promotion_oauth(mock_token, client):
         "auth_provider": AuthProviders.PASSWORD,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
+        "is_guest": True,
     }
     user_id = res.json()["id"]
 
@@ -93,4 +94,5 @@ async def test_guest_user_promotion_oauth(mock_token, client):
         "auth_provider": AuthProviders.GOOGLE,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
+        "is_guest": False,
     }
