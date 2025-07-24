@@ -62,7 +62,7 @@ async def client(client_factory):
 
 @pytest.fixture
 def admin(db_session):
-    email = "admin@domain.com"
+    email = "test_admin@domain.com"
     password = "password"
 
     pw_bytes = password.encode("utf-8")
@@ -78,7 +78,7 @@ async def admin_client(admin, client_factory):
     res = await client.post(
         "/auth/login",
         json={
-            "email": "admin@domain.com",
+            "email": "test_admin@domain.com",
             "password": "password",
         },
     )

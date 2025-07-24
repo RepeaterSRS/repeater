@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 from os import getenv
 
@@ -21,7 +22,7 @@ from src.api import (
     statistics,
 )
 from src.db import get_db
-from src.db.models import UserRole
+from src.db.models import User, UserRole
 from src.exceptions import RefreshTokenAuthenticationError
 from src.log import set_up_logger
 from src.util import add_user
@@ -34,12 +35,19 @@ assert frontend_url, "FRONTEND_URL must be set"
 origins = [frontend_url]
 
 
+# Add an admin user on startup
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     with next(get_db()) as db_session:
+        admin_email = "admin@domain.com"
         admin_password = getenv("ADMIN_PASSWORD")
+
         assert admin_password, "ADMIN_PASSWORD must be set"
-        add_user("admin@domain.com", admin_password, UserRole.ADMIN, db_session)
+
+        if User.filter_by(db_session, email=admin_email).first():
+            logging.info("Admin user already exists")
+        else:
+            add_user(admin_email, admin_password, UserRole.ADMIN, db_session)
 
     yield
 
