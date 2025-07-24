@@ -11,4 +11,5 @@ async def test_get_me(user, user_client):
         "auth_provider": AuthProviders.PASSWORD,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
+        "is_guest": False,
     }

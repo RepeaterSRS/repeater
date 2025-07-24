@@ -17,6 +17,7 @@ async def test_register_user(db_session, client):
         "auth_provider": AuthProviders.PASSWORD,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
+        "is_guest": False,
     }
 
     user = User.filter_by(db_session, email="user@domain.com").first()
@@ -35,6 +36,7 @@ async def test_cant_register_user_with_existing_email(db_session, client):
         "auth_provider": AuthProviders.PASSWORD,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
+        "is_guest": False,
     }
 
     res = await client.post(
@@ -154,6 +156,7 @@ async def test_guest_user_is_created(client):
         "auth_provider": AuthProviders.PASSWORD,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
+        "is_guest": True,
     }
 
     res2 = await client.get("/me")
@@ -175,6 +178,7 @@ async def test_guest_user_promotion_register(client):
         "auth_provider": AuthProviders.PASSWORD,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
+        "is_guest": True,
     }
     user_id = res.json()["id"]
 
@@ -190,6 +194,7 @@ async def test_guest_user_promotion_register(client):
         "auth_provider": AuthProviders.PASSWORD,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
+        "is_guest": False,
     }
 
 
