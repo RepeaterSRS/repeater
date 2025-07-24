@@ -38,8 +38,6 @@ services:
     build:
       context: web
       target: development
-      args:
-        API_URL: http://localhost:8000
     container_name: repeater-web
 
     ports:
@@ -67,6 +65,7 @@ services:
 
     environment:
       - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
 
   db:
     image: postgres:17

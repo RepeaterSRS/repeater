@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { Geist, Geist_Mono } from 'next/font/google';
+import { PublicEnvScript } from 'next-runtime-env';
 
 import './globals.css';
 import { AppSidebar } from '@/components/nav/AppSidebar';
@@ -32,6 +33,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
+            <head>
+                <PublicEnvScript />
+            </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
