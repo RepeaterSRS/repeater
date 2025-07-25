@@ -340,6 +340,13 @@ paths:
           type: boolean
           default: false
           title: Only Due
+      - name: exclude_archived
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Exclude Archived
       - name: access_token
         in: cookie
         required: false
@@ -1042,6 +1049,9 @@ components:
         description:
           type: string
           title: Description
+        is_archived:
+          type: boolean
+          title: Is Archived
         created_at:
           type: string
           format: date-time
@@ -1056,6 +1066,7 @@ components:
       - user_id
       - name
       - description
+      - is_archived
       - created_at
       - updated_at
       title: DeckOut
@@ -1122,6 +1133,11 @@ components:
             format: uuid
           - type: 'null'
           title: Category Id
+        is_archived:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Archived
       type: object
       title: DeckUpdate
     HTTPValidationError:
