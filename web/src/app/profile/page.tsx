@@ -6,17 +6,15 @@ import Link from 'next/link';
 import { ActivityHeatmap, HeatmapData } from '@/components/ActivityHeatmap';
 import MetricCard from '@/components/MetricCard';
 import { Card, CardContent } from '@/components/ui/card';
-import { getUserInfoMeGet, getUserStatisticsStatsGet } from '@/gen';
+import { useMe } from '@/hooks/use-me';
+import { getUserStatisticsStatsGet } from '@/gen';
 
 export default function Profile() {
     const {
         data: profile,
         isLoading: profilePending,
         isError: profileError,
-    } = useQuery({
-        queryKey: ['profile'],
-        queryFn: () => getUserInfoMeGet(),
-    });
+    } = useMe();
 
     const {
         data: stats,
