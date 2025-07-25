@@ -24,10 +24,12 @@ import {
     SidebarMenuItem,
     SidebarMenuButton,
 } from '@/components/ui/sidebar';
+import { useMe } from '@/hooks/use-me';
 
 const pages = [
     { href: '/review', label: 'Review' },
     { href: '/decks', label: 'Decks' },
+    { href: '/admin', label: 'Admin', roles: ['admin'] },
 ];
 
 export function AppSidebar() {
@@ -35,6 +37,15 @@ export function AppSidebar() {
     const pathname = usePathname();
     const [cardDialogOpen, setCardDialogOpen] = useState(false);
     const [deckDialogOpen, setDeckDialogOpen] = useState(false);
+    const { data: user } = useMe();
+
+    const visiblePages = pages.filter((page) => {
+        if (!page.roles) return true;
+        
+        if (!user?.data?.role) return false;
+        
+        return page.roles.includes(user.data.role);
+    });
 
     return (
         <Sidebar variant="floating">
@@ -85,7 +96,7 @@ export function AppSidebar() {
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarMenu>
-                        {pages.map((page) => (
+                        {visiblePages.map((page) => (
                             <SidebarMenuItem key={page.label}>
                                 <SidebarMenuButton
                                     asChild
