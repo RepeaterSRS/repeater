@@ -42,7 +42,7 @@ export default function Login() {
                 body: values,
             }),
         onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['me']})
+            queryClient.invalidateQueries({ queryKey: ['me'] });
             loginForm.reset();
             window.location.href = '/review';
         },

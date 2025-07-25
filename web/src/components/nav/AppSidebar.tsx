@@ -41,9 +41,9 @@ export function AppSidebar() {
 
     const visiblePages = pages.filter((page) => {
         if (!page.roles) return true;
-        
+
         if (!user?.data?.role) return false;
-        
+
         return page.roles.includes(user.data.role);
     });
 
