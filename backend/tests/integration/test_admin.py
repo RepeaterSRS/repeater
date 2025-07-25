@@ -25,8 +25,8 @@ async def test_admin_get_users(db_session, admin, admin_client):
         "items": [
             {
                 "id": is_uuid_string(),
-                "email": admin.email,
-                "role": UserRole.ADMIN,
+                "email": "test2@domain.com",
+                "role": UserRole.USER,
                 "auth_provider": AuthProviders.PASSWORD,
                 "created_at": is_utc_isoformat_string(),
                 "updated_at": is_utc_isoformat_string(),
@@ -43,8 +43,8 @@ async def test_admin_get_users(db_session, admin, admin_client):
             },
             {
                 "id": is_uuid_string(),
-                "email": "test2@domain.com",
-                "role": UserRole.USER,
+                "email": admin.email,
+                "role": UserRole.ADMIN,
                 "auth_provider": AuthProviders.PASSWORD,
                 "created_at": is_utc_isoformat_string(),
                 "updated_at": is_utc_isoformat_string(),
@@ -74,8 +74,17 @@ async def test_admin_get_users_include_guests(db_session, admin, admin_client):
         "items": [
             {
                 "id": is_uuid_string(),
-                "email": admin.email,
-                "role": UserRole.ADMIN,
+                "email": "test3@domain.com",
+                "role": UserRole.GUEST,
+                "auth_provider": AuthProviders.PASSWORD,
+                "created_at": is_utc_isoformat_string(),
+                "updated_at": is_utc_isoformat_string(),
+                "is_guest": True,
+            },
+            {
+                "id": is_uuid_string(),
+                "email": "test2@domain.com",
+                "role": UserRole.USER,
                 "auth_provider": AuthProviders.PASSWORD,
                 "created_at": is_utc_isoformat_string(),
                 "updated_at": is_utc_isoformat_string(),
@@ -92,21 +101,12 @@ async def test_admin_get_users_include_guests(db_session, admin, admin_client):
             },
             {
                 "id": is_uuid_string(),
-                "email": "test2@domain.com",
-                "role": UserRole.USER,
+                "email": admin.email,
+                "role": UserRole.ADMIN,
                 "auth_provider": AuthProviders.PASSWORD,
                 "created_at": is_utc_isoformat_string(),
                 "updated_at": is_utc_isoformat_string(),
                 "is_guest": False,
-            },
-            {
-                "id": is_uuid_string(),
-                "email": "test3@domain.com",
-                "role": UserRole.GUEST,
-                "auth_provider": AuthProviders.PASSWORD,
-                "created_at": is_utc_isoformat_string(),
-                "updated_at": is_utc_isoformat_string(),
-                "is_guest": True,
             },
         ],
         "total": 4,
@@ -138,8 +138,8 @@ async def test_admin_get_users_pagination(db_session, admin, admin_client):
         "items": [
             {
                 "id": is_uuid_string(),
-                "email": admin.email,
-                "role": UserRole.ADMIN,
+                "email": "test3@domain.com",
+                "role": UserRole.USER,
                 "auth_provider": AuthProviders.PASSWORD,
                 "created_at": is_utc_isoformat_string(),
                 "updated_at": is_utc_isoformat_string(),
@@ -169,8 +169,8 @@ async def test_admin_get_users_pagination(db_session, admin, admin_client):
         "items": [
             {
                 "id": is_uuid_string(),
-                "email": "test3@domain.com",
-                "role": UserRole.USER,
+                "email": admin.email,
+                "role": UserRole.ADMIN,
                 "auth_provider": AuthProviders.PASSWORD,
                 "created_at": is_utc_isoformat_string(),
                 "updated_at": is_utc_isoformat_string(),
