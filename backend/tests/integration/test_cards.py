@@ -426,3 +426,57 @@ async def test_delete_deck_deletes_all_cards_in_deck(db_session, user, user_clie
 
     cards = Card.filter_by(db_session, deck_id=deck_id).all()
     assert cards == []
+
+
+async def test_get_due_cards_exclude_archived_decks(db_session, user, user_client):
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck 1",
+            "description": "my deck",
+        },
+    )
+    deck_1_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/cards",
+        json={
+            "deck_id": deck_1_id,
+            "content": "Test card 1",
+        },
+    )
+
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck 2",
+            "description": "my deck",
+        },
+    )
+    deck_2_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/cards",
+        json={
+            "deck_id": deck_2_id,
+            "content": "Test card 2",
+        },
+    )
+    card_2_id = res.json()["id"]
+
+    res = await user_client.patch(f"/decks/{deck_1_id}", json={"is_archived": True})
+    assert res.status_code == 200
+
+    res = await user_client.get("/cards", params={"exclude_archived": True})
+    assert res.json() == [
+        {
+            "id": card_2_id,
+            "deck_id": deck_2_id,
+            "deck_name": "deck 2",
+            "content": "Test card 2",
+            "next_review_date": is_utc_isoformat_string(),
+            "overdue": False,
+            "created_at": is_utc_isoformat_string(),
+            "updated_at": is_utc_isoformat_string(),
+        }
+    ]

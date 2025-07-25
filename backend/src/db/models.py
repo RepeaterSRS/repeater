@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from enum import StrEnum
 
 import bcrypt
-from sqlalchemy import UUID, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import UUID, Boolean, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Session, mapped_column, relationship
 
 from src.const import SCHEDULE_DEFAULT_EASE_FACTOR
@@ -123,6 +123,7 @@ class Deck(Base, BaseMixin):
     )
     name = mapped_column(String, nullable=False)
     description = mapped_column(String)
+    is_archived = mapped_column(Boolean, default=False)
 
     user = relationship("User", back_populates="decks")
     category = relationship("Category", back_populates="decks")

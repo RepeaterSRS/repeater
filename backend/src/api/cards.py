@@ -35,12 +35,13 @@ def create_card(
 def get_cards(
     deck_id: UUID = None,
     only_due: bool = False,
+    exclude_archived: bool = False,
     user: User = Depends(get_current_user),
     db_session: Session = Depends(get_db),
 ):
     query = (
         db_session.query(Card)
-        .join(Deck)
+        .join(Deck, Card.deck_id == Deck.id)
         .filter(Deck.user_id == user.id)
         .options(contains_eager(Card.deck))
     )
@@ -49,9 +50,13 @@ def get_cards(
         query = query.filter(Card.deck_id == deck_id)
 
     if only_due:
-        query = query.filter(
-            Card.next_review_date <= datetime.now(timezone.utc)
-        ).order_by(Card.next_review_date)
+        query = query.filter(Card.next_review_date <= datetime.now(timezone.utc))
+
+    if exclude_archived:
+        query = query.filter(Deck.is_archived == False)
+
+    if only_due:
+        query = query.order_by(Card.next_review_date)
     else:
         query = query.order_by(Card.created_at.desc())
 
