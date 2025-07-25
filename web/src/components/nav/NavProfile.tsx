@@ -19,25 +19,21 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMe } from '@/hooks/use-me';
 import { logoutAuthLogoutPost } from '@/gen';
+import { useMe } from '@/hooks/use-me';
 
 export function NavProfile() {
     const queryClient = useQueryClient();
-    const {
-        data: user,
-        isPending: userPending,
-        isError: userError,
-    } = useMe();
+    const { data: user, isPending: userPending, isError: userError } = useMe();
 
     const logoutMutation = useMutation({
         mutationFn: () => logoutAuthLogoutPost(),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['me']})
+            queryClient.invalidateQueries({ queryKey: ['me'] });
             window.location.href = '/login';
         },
         onError: () => {
-            toast.error('There was an error when logging out. Try again.')
+            toast.error('There was an error when logging out. Try again.');
         },
     });
 
