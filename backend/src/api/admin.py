@@ -23,7 +23,7 @@ def get_users(
     if not user.is_admin:
         raise HTTPException(status_code=403)
 
-    query = db_session.query(User).order_by(User.created_at, User.id)
+    query = db_session.query(User).order_by(User.created_at.desc(), User.id)
 
     if not show_guests:
         query = query.filter(User.role != UserRole.GUEST)
