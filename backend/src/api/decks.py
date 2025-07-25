@@ -50,7 +50,7 @@ def get_decks(
     user: User = Depends(get_current_user),
     db_session: Session = Depends(get_db),
 ):
-    query = db_session.query(Deck).filter(Deck.user_id == user.id)
+    query = db_session.query(Deck).filter(Deck.user_id == user.id).order_by(Deck.name)
 
     if category_id:
         query = query.filter(Deck.category_id == category_id)

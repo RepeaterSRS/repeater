@@ -94,32 +94,12 @@ async def test_get_cards(user, user_client):
 
     res = await user_client.get("/cards")
     assert res.status_code == 200
-    assert sorted(res.json(), key=lambda c: c["created_at"]) == [
+    assert res.json() == [
         {
             "id": is_uuid_string(),
             "deck_id": deck_id,
             "deck_name": "deck",
-            "content": "Test card 1",
-            "next_review_date": is_utc_isoformat_string(),
-            "overdue": False,
-            "created_at": is_utc_isoformat_string(),
-            "updated_at": is_utc_isoformat_string(),
-        },
-        {
-            "id": is_uuid_string(),
-            "deck_id": deck_id,
-            "deck_name": "deck",
-            "content": "Test card 2",
-            "next_review_date": is_utc_isoformat_string(),
-            "overdue": False,
-            "created_at": is_utc_isoformat_string(),
-            "updated_at": is_utc_isoformat_string(),
-        },
-        {
-            "id": is_uuid_string(),
-            "deck_id": deck_id,
-            "deck_name": "deck",
-            "content": "Test card 3",
+            "content": "Test card 5",
             "next_review_date": is_utc_isoformat_string(),
             "overdue": False,
             "created_at": is_utc_isoformat_string(),
@@ -139,7 +119,27 @@ async def test_get_cards(user, user_client):
             "id": is_uuid_string(),
             "deck_id": deck_id,
             "deck_name": "deck",
-            "content": "Test card 5",
+            "content": "Test card 3",
+            "next_review_date": is_utc_isoformat_string(),
+            "overdue": False,
+            "created_at": is_utc_isoformat_string(),
+            "updated_at": is_utc_isoformat_string(),
+        },
+        {
+            "id": is_uuid_string(),
+            "deck_id": deck_id,
+            "deck_name": "deck",
+            "content": "Test card 2",
+            "next_review_date": is_utc_isoformat_string(),
+            "overdue": False,
+            "created_at": is_utc_isoformat_string(),
+            "updated_at": is_utc_isoformat_string(),
+        },
+        {
+            "id": is_uuid_string(),
+            "deck_id": deck_id,
+            "deck_name": "deck",
+            "content": "Test card 1",
             "next_review_date": is_utc_isoformat_string(),
             "overdue": False,
             "created_at": is_utc_isoformat_string(),
@@ -238,7 +238,7 @@ async def test_get_due_cards(db_session, user, user_client):
 
     # Cards should be scheduled for review as soon as they're created
     res = await user_client.get("/cards", params={"only_due": True})
-    assert sorted(res.json(), key=lambda c: c["created_at"]) == [
+    assert res.json() == [
         {
             "id": card_1_id,
             "deck_id": deck_1_id,

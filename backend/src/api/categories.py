@@ -46,17 +46,27 @@ def create_category(
 def get_categories(
     user: User = Depends(get_current_user), db_session: Session = Depends(get_db)
 ):
-    return user.categories
+    query = (
+        db_session.query(Category)
+        .filter(Category.user_id == user.id)
+        .order_by(Category.name)
+    )
+
+    return query.all()
 
 
 @router.get("/tree", response_model=CategoryTree)
 def get_categories_tree(
     user: User = Depends(get_current_user), db_session: Session = Depends(get_db)
 ):
-    categories = Category.filter_by(db_session, user_id=user.id).all()
-    uncategorized_decks = Deck.filter_by(
-        db_session, user_id=user.id, category_id=None
-    ).all()
+    categories = (
+        Category.filter_by(db_session, user_id=user.id).order_by(Category.name).all()
+    )
+    uncategorized_decks = (
+        Deck.filter_by(db_session, user_id=user.id, category_id=None)
+        .order_by(Deck.name)
+        .all()
+    )
 
     category_map = {cat.id: cat for cat in categories}
     root_categories = []
@@ -76,8 +86,8 @@ def get_categories_tree(
         return CategoryNode(
             id=category.id,
             name=category.name,
-            decks=decks,
-            children=children,
+            decks=sorted(decks, key=lambda d: d.name),
+            children=sorted(children, key=lambda c: c.name),
             deck_count=len(decks),
             depth=node_depth,
         )
