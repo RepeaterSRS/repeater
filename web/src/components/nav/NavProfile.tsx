@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { UserPlus, UserRoundX, User, LogIn, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -19,16 +19,22 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getUserInfoMeGet, logoutAuthLogoutPost } from '@/gen';
+import { logoutAuthLogoutPost } from '@/gen';
+import { useMe } from '@/hooks/use-me';
 
 export function NavProfile() {
-    const {
-        data: user,
-        isPending: userPending,
-        isError: userError,
-    } = useQuery({
-        queryKey: ['user'],
-        queryFn: () => getUserInfoMeGet(),
+    const queryClient = useQueryClient();
+    const { data: user, isPending: userPending, isError: userError } = useMe();
+
+    const logoutMutation = useMutation({
+        mutationFn: () => logoutAuthLogoutPost(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['me'] });
+            window.location.href = '/login';
+        },
+        onError: () => {
+            toast.error('There was an error when logging out. Try again.');
+        },
     });
 
     const { isMobile } = useSidebar();
@@ -115,16 +121,7 @@ export function NavProfile() {
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                        onClick={async () => {
-                                            try {
-                                                await logoutAuthLogoutPost();
-                                                window.location.href = '/login';
-                                            } catch {
-                                                toast.error(
-                                                    'There was an error when logging out. Try again.'
-                                                );
-                                            }
-                                        }}
+                                        onClick={() => logoutMutation.mutate()}
                                     >
                                         <LogOut className="text-destructive" />
                                         <span className="text-destructive">
