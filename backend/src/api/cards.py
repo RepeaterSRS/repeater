@@ -49,7 +49,11 @@ def get_cards(
         query = query.filter(Card.deck_id == deck_id)
 
     if only_due:
-        query = query.filter(Card.next_review_date <= datetime.now(timezone.utc))
+        query = query.filter(
+            Card.next_review_date <= datetime.now(timezone.utc)
+        ).order_by(Card.next_review_date)
+    else:
+        query = query.order_by(Card.created_at.desc())
 
     cards = query.all()
     return [CardOut.from_card(card) for card in cards]

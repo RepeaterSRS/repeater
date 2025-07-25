@@ -65,17 +65,7 @@ async def test_get_categories(user_client):
     child_id = res.json()["id"]
 
     res = await user_client.get("/categories")
-    assert sorted(res.json(), key=lambda c: c["created_at"]) == [
-        {
-            "id": parent_id,
-            "user_id": is_uuid_string(),
-            "name": "parent",
-            "description": None,
-            "parent_id": None,
-            "is_root": True,
-            "created_at": is_utc_isoformat_string(),
-            "updated_at": is_utc_isoformat_string(),
-        },
+    assert res.json() == [
         {
             "id": child_id,
             "user_id": is_uuid_string(),
@@ -83,6 +73,16 @@ async def test_get_categories(user_client):
             "description": None,
             "parent_id": parent_id,
             "is_root": False,
+            "created_at": is_utc_isoformat_string(),
+            "updated_at": is_utc_isoformat_string(),
+        },
+        {
+            "id": parent_id,
+            "user_id": is_uuid_string(),
+            "name": "parent",
+            "description": None,
+            "parent_id": None,
+            "is_root": True,
             "created_at": is_utc_isoformat_string(),
             "updated_at": is_utc_isoformat_string(),
         },
@@ -269,7 +269,7 @@ async def test_user_can_only_see_own_categories(user_client, admin_client):
     assert res.status_code == 201
 
     res = await user_client.get("/categories")
-    assert sorted(res.json(), key=lambda c: c["created_at"]) == [
+    assert res.json() == [
         {
             "id": is_uuid_string(),
             "user_id": is_uuid_string(),
