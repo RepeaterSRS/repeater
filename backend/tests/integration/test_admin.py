@@ -13,7 +13,7 @@ def create_user(email: str, role: UserRole, db_session: Session):
     return user
 
 
-async def test_admin_get_users(db_session, admin_client):
+async def test_admin_get_users(db_session, admin, admin_client):
     create_user("test1@domain.com", UserRole.USER, db_session)
     create_user("test2@domain.com", UserRole.USER, db_session)
     create_user("test3@domain.com", UserRole.GUEST, db_session)
@@ -25,7 +25,7 @@ async def test_admin_get_users(db_session, admin_client):
         "items": [
             {
                 "id": is_uuid_string(),
-                "email": "admin@domain.com",
+                "email": admin.email,
                 "role": UserRole.ADMIN,
                 "auth_provider": AuthProviders.PASSWORD,
                 "created_at": is_utc_isoformat_string(),
@@ -62,7 +62,7 @@ async def test_admin_get_users(db_session, admin_client):
     }
 
 
-async def test_admin_get_users_include_guests(db_session, admin_client):
+async def test_admin_get_users_include_guests(db_session, admin, admin_client):
     create_user("test1@domain.com", UserRole.USER, db_session)
     create_user("test2@domain.com", UserRole.USER, db_session)
     create_user("test3@domain.com", UserRole.GUEST, db_session)
@@ -74,7 +74,7 @@ async def test_admin_get_users_include_guests(db_session, admin_client):
         "items": [
             {
                 "id": is_uuid_string(),
-                "email": "admin@domain.com",
+                "email": admin.email,
                 "role": UserRole.ADMIN,
                 "auth_provider": AuthProviders.PASSWORD,
                 "created_at": is_utc_isoformat_string(),
@@ -120,7 +120,7 @@ async def test_admin_get_users_include_guests(db_session, admin_client):
     }
 
 
-async def test_admin_get_users_pagination(db_session, admin_client):
+async def test_admin_get_users_pagination(db_session, admin, admin_client):
     create_user("test1@domain.com", UserRole.USER, db_session)
     create_user("test2@domain.com", UserRole.USER, db_session)
     create_user("test3@domain.com", UserRole.USER, db_session)
@@ -138,7 +138,7 @@ async def test_admin_get_users_pagination(db_session, admin_client):
         "items": [
             {
                 "id": is_uuid_string(),
-                "email": "admin@domain.com",
+                "email": admin.email,
                 "role": UserRole.ADMIN,
                 "auth_provider": AuthProviders.PASSWORD,
                 "created_at": is_utc_isoformat_string(),
