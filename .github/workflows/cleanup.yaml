@@ -8,13 +8,16 @@ on:
 jobs:
   clean:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     name: Delete old Docker images
     steps:
       - uses: snok/container-retention-policy@v3.0.0
         with:
           account: repeatersrs
-          token: ${{ secrets.GHCR_PAT }}
-          image-names: "repeater-*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image-names: "repeater-backend repeater-web"
           image-tags: "*"
           cut-off: 1w
           dry-run: false
