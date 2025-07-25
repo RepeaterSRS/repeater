@@ -41,7 +41,7 @@ def get_cards(
 ):
     query = (
         db_session.query(Card)
-        .join(Deck, Card.deck_id == Deck.id)
+        .join(Deck)
         .filter(Deck.user_id == user.id)
         .options(contains_eager(Card.deck))
     )
