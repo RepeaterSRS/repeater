@@ -49,14 +49,13 @@ def get_cards(
     if deck_id:
         query = query.filter(Card.deck_id == deck_id)
 
-    if only_due:
-        query = query.filter(Card.next_review_date <= datetime.now(timezone.utc))
-
     if exclude_archived:
         query = query.filter(Deck.is_archived == False)
 
     if only_due:
-        query = query.order_by(Card.next_review_date)
+        query = query.filter(
+            Card.next_review_date <= datetime.now(timezone.utc)
+        ).order_by(Card.next_review_date)
     else:
         query = query.order_by(Card.created_at.desc())
 
