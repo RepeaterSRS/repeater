@@ -148,9 +148,11 @@ export default function Profile() {
                                                 Last studied
                                             </p>
                                             <p className="text-muted-foreground text-sm">
-                                                {new Date(
-                                                    deck_stat.last_studied
-                                                ).toLocaleDateString()}
+                                                {deck_stat.last_studied
+                                                    ? formatDateForDisplay(
+                                                          deck_stat.last_studied
+                                                      )
+                                                    : 'No data'}
                                             </p>
                                         </div>
                                         <div>

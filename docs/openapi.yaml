@@ -599,6 +599,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /stats/{deck_id}:
+    get:
+      tags:
+      - statistics
+      summary: Get User Deck Statistics
+      operationId: get_user_deck_statistics_stats__deck_id__get
+      parameters:
+      - name: deck_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Deck Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckStatistics'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /categories:
     post:
       tags:
@@ -1141,8 +1176,10 @@ components:
           type: integer
           title: Total Reviews
         last_studied:
-          type: string
-          format: date-time
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
           title: Last Studied
         difficulty_ranking:
           type: string
@@ -1153,7 +1190,6 @@ components:
       - deck_name
       - retention_rate
       - total_reviews
-      - last_studied
       - difficulty_ranking
       title: DeckStatistics
     DeckSummary:
