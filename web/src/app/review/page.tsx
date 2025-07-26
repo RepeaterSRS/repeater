@@ -60,6 +60,9 @@ export default function Review() {
             queryClient.invalidateQueries({
                 queryKey: ['reviews', activeCard!.id],
             });
+            queryClient.invalidateQueries({
+                queryKey: ['stats'],
+            });
         },
         // TODO: implement error handling
     });
