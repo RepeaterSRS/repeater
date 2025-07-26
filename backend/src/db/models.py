@@ -107,6 +107,10 @@ class User(Base, BaseMixin):
     def is_guest(self):
         return self.role == UserRole.GUEST
 
+    @property
+    def is_admin(self):
+        return self.role == UserRole.ADMIN
+
 
 class Deck(Base, BaseMixin):
     __tablename__ = "decks"

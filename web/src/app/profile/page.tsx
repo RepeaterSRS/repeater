@@ -44,9 +44,15 @@ export default function Profile() {
     return (
         <div className="container mx-auto px-6 py-6">
             <div className="space-y-6">
+                <div>
+                    <h1 className="text-3xl font-bold">Profile dashboard</h1>
+                    <p className="text-neutral-600">
+                        View profile information and statistics
+                    </p>
+                </div>
+
                 {/* Profile Card */}
                 <div className="w-full">
-                    <p className="mb-4 text-4xl">Welcome back!</p>
                     {profilePending && !profileError && (
                         <p className="text-muted-foreground">
                             Your profile information will go here

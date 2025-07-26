@@ -770,6 +770,62 @@ paths:
           content:
             application/json:
               schema: {}
+  /admin/users:
+    get:
+      tags:
+      - admin
+      summary: Get Users
+      operationId: get_users_admin_users_get
+      parameters:
+      - name: show_guests
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Show Guests
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Page number
+          default: 1
+          title: Page
+        description: Page number
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Items per page
+          default: 20
+          title: Size
+        description: Items per page
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_UserOut_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     Body_import_deck_decks_import_post:
@@ -1133,6 +1189,51 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    PaginatedResponse_UserOut_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/UserOut'
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+        page:
+          type: integer
+          title: Page
+        size:
+          type: integer
+          title: Size
+        pages:
+          type: integer
+          title: Pages
+        has_next:
+          type: boolean
+          title: Has Next
+        has_prev:
+          type: boolean
+          title: Has Prev
+        next_page:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Next Page
+        prev_page:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Prev Page
+      type: object
+      required:
+      - items
+      - total
+      - page
+      - size
+      - pages
+      - has_next
+      - has_prev
+      title: PaginatedResponse[UserOut]
     ReviewCreate:
       properties:
         card_id:
@@ -1306,6 +1407,9 @@ components:
           type: string
           format: date-time
           title: Updated At
+        is_guest:
+          type: boolean
+          title: Is Guest
       type: object
       required:
       - id
@@ -1314,6 +1418,7 @@ components:
       - auth_provider
       - created_at
       - updated_at
+      - is_guest
       title: UserOut
     ValidationError:
       properties:

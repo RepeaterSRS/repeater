@@ -4,11 +4,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
-from sqlalchemy.orm import Session, contains_eager
+from sqlalchemy.orm import Session
 
 from src.auth.jwt import get_current_user
 from src.db import get_db
-from src.db.models import Category, Deck, User
+from src.db.models import Deck, User
 from src.import_export import (
     BaseImporter,
     deck_to_deck_data,

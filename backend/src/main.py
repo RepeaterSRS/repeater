@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 from src.api import (
+    admin,
     auth,
     cards,
     categories,
@@ -71,3 +72,4 @@ app.include_router(reviews.router)
 app.include_router(statistics.router)
 app.include_router(categories.router)
 app.include_router(healthcheck.router)
+app.include_router(admin.router)
