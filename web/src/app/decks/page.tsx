@@ -14,6 +14,7 @@ import {
     getDecksDecksGet,
     getCardsCardsGet,
     getReviewHistoryReviewsCardIdGet,
+    getUserDeckStatisticsStatsDeckIdGet,
 } from '@/gen';
 
 export default function Decks() {
@@ -44,6 +45,17 @@ export default function Decks() {
             queryKey: ['reviews', cardId],
             queryFn: () =>
                 getReviewHistoryReviewsCardIdGet({ path: { card_id: cardId } }),
+            staleTime: 5 * 60 * 1000,
+        });
+    }
+
+    function prefetchDeckStatistics(deckId: string) {
+        queryClient.prefetchQuery({
+            queryKey: ['stats', deckId],
+            queryFn: () =>
+                getUserDeckStatisticsStatsDeckIdGet({
+                    path: { deck_id: deckId },
+                }),
             staleTime: 5 * 60 * 1000,
         });
     }
@@ -112,6 +124,9 @@ export default function Decks() {
                                 <Card
                                     key={deck.id}
                                     className="flex aspect-[3/4] cursor-pointer flex-col gap-2 p-4"
+                                    onMouseEnter={() =>
+                                        prefetchDeckStatistics(deck.id)
+                                    }
                                     onClick={() => {
                                         setActiveDeckIndex(deckIndex);
                                         setDeckInspectDialogOpen(true);

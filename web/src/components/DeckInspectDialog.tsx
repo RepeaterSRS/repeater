@@ -49,10 +49,13 @@ import {
     deleteDeckDecksDeckIdDelete,
     updateDeckDecksDeckIdPatch,
     getCategoriesCategoriesGet,
+    getUserDeckStatisticsStatsDeckIdGet,
 } from '@/gen';
 import { usePageShortcuts } from '@/hooks/use-shortcuts';
 import { createActions, getShortcut } from '@/lib/shortcuts';
 import { formatDateForDisplay } from '@/lib/utils';
+
+import DeckStatisticsPanel from './DeckStatisticsPanel';
 
 interface DeckInspectDialogProps {
     deck: DeckOut;
@@ -93,6 +96,17 @@ export default function DeckInspectDialog({
     const { data: categories } = useQuery({
         queryKey: ['categories'],
         queryFn: () => getCategoriesCategoriesGet(),
+    });
+
+    const {
+        data: deckStatistics,
+        isLoading: deckStatisticsPending,
+        isError: deckStatisticsError,
+    } = useQuery({
+        queryKey: ['stats', deck.id],
+        queryFn: () =>
+            getUserDeckStatisticsStatsDeckIdGet({ path: { deck_id: deck.id } }),
+        staleTime: 5 * 60 * 1000,
     });
 
     const deleteDeckMutation = useMutation({
@@ -350,7 +364,7 @@ export default function DeckInspectDialog({
                                         control={deckForm.control}
                                         name="is_archived"
                                         render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                            <FormItem className="flex flex-row items-center justify-between">
                                                 <div className="space-y-0.5">
                                                     <FormLabel className="text-base font-semibold">
                                                         Archived
@@ -381,6 +395,26 @@ export default function DeckInspectDialog({
                                         </span>{' '}
                                         {formatDateForDisplay(deck.created_at)}
                                     </p>
+                                </div>
+
+                                {/* Deck Statistics */}
+                                <div className="min-h-0 flex-1">
+                                    <h4 className="mb-2 font-semibold">
+                                        Statistics
+                                    </h4>
+                                    {deckStatisticsPending && (
+                                        <div>Loading statistics...</div>
+                                    )}
+                                    {deckStatisticsError && (
+                                        <div>Failed to load statistics</div>
+                                    )}
+                                    {!deckStatisticsPending &&
+                                        !deckStatisticsError &&
+                                        deckStatistics?.data && (
+                                            <DeckStatisticsPanel
+                                                deckStats={deckStatistics.data}
+                                            />
+                                        )}
                                 </div>
                             </div>
                         </div>

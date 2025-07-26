@@ -4,10 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 
 import { ActivityHeatmap, HeatmapData } from '@/components/ActivityHeatmap';
+import DeckStatisticsPanel from '@/components/DeckStatisticsPanel';
 import MetricCard from '@/components/MetricCard';
 import { Card, CardContent } from '@/components/ui/card';
-import { getUserStatisticsStatsGet } from '@/gen';
 import { useMe } from '@/hooks/use-me';
+import { getUserStatisticsStatsGet } from '@/gen';
 
 export default function Profile() {
     const {
@@ -142,44 +143,9 @@ export default function Profile() {
                                     key={deck_stat.deck_id}
                                     className="max-md:col-span-2"
                                 >
-                                    <div className="grid grid-cols-2 gap-y-4">
-                                        <div>
-                                            <p className="text-foreground text-sm font-medium">
-                                                Last studied
-                                            </p>
-                                            <p className="text-muted-foreground text-sm">
-                                                {deck_stat.last_studied
-                                                    ? formatDateForDisplay(
-                                                          deck_stat.last_studied
-                                                      )
-                                                    : 'No data'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-foreground text-sm font-medium">
-                                                Retention Rate
-                                            </p>
-                                            <p className="text-muted-foreground text-sm">
-                                                {deck_stat.retention_rate}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-foreground text-sm font-medium">
-                                                Total Reviews
-                                            </p>
-                                            <p className="text-muted-foreground text-sm">
-                                                {deck_stat.total_reviews}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-foreground text-sm font-medium">
-                                                Difficulty
-                                            </p>
-                                            <p className="text-muted-foreground text-sm">
-                                                {deck_stat.difficulty_ranking}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    <DeckStatisticsPanel
+                                        deckStats={deck_stat}
+                                    />
                                 </MetricCard>
                             ))}
                         </div>
