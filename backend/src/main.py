@@ -1,3 +1,5 @@
+import logging
+from contextlib import asynccontextmanager
 from os import getenv
 
 from dotenv import load_dotenv
@@ -18,8 +20,11 @@ from src.api import (
     reviews,
     statistics,
 )
+from src.db import get_db
+from src.db.models import User, UserRole
 from src.exceptions import RefreshTokenAuthenticationError
 from src.log import set_up_logger
+from src.util import add_user
 
 load_dotenv()
 set_up_logger()
@@ -28,7 +33,25 @@ frontend_url = getenv("FRONTEND_URL")
 assert frontend_url, "FRONTEND_URL must be set"
 origins = [frontend_url]
 
-app = FastAPI()
+
+# Add an admin user on startup
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    with next(get_db()) as db_session:
+        admin_email = "admin@domain.com"
+        admin_password = getenv("ADMIN_PASSWORD")
+
+        assert admin_password, "ADMIN_PASSWORD must be set"
+
+        if User.filter_by(db_session, email=admin_email).first():
+            logging.info("Admin user already exists")
+        else:
+            add_user(admin_email, admin_password, UserRole.ADMIN, db_session)
+
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.exception_handler(RefreshTokenAuthenticationError)

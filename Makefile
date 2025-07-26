@@ -22,7 +22,6 @@ migrate:
 
 .PHONY: bootstrap
 bootstrap:
-	$(BACKEND_EXEC) alembic upgrade head
 	$(BACKEND_EXEC) python -m src.db.bootstrap
 
 
