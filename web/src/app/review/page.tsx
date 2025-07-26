@@ -39,7 +39,10 @@ export default function Review() {
         data: dueCards,
     } = useQuery({
         queryKey: ['cards', 'due'],
-        queryFn: () => getCardsCardsGet({ query: { only_due: true } }),
+        queryFn: () =>
+            getCardsCardsGet({
+                query: { only_due: true, exclude_archived: true },
+            }),
     });
 
     const queryClient = useQueryClient();

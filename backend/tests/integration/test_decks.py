@@ -20,6 +20,7 @@ async def test_create_deck_returns_deck(db_session, user, user_client):
         "category_id": None,
         "name": "deck",
         "description": "my deck",
+        "is_archived": False,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -49,6 +50,7 @@ async def test_get_decks(user, user_client):
             "category_id": None,
             "name": "deck",
             "description": "my deck",
+            "is_archived": False,
             "created_at": is_utc_isoformat_string(),
             "updated_at": is_utc_isoformat_string(),
         }
@@ -76,6 +78,7 @@ async def test_update_deck(user, user_client):
         "category_id": None,
         "name": "test",
         "description": "test",
+        "is_archived": False,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -252,6 +255,7 @@ async def test_move_deck_to_existing_category(user_client):
         "category_id": c1_id,
         "name": "deck",
         "description": "my deck",
+        "is_archived": False,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -270,6 +274,7 @@ async def test_move_deck_to_existing_category(user_client):
         "category_id": c2_id,
         "name": "deck",
         "description": "my deck",
+        "is_archived": False,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -307,6 +312,7 @@ async def test_move_deck_to_uncategorized(user_client):
         "category_id": None,
         "name": "deck",
         "description": "my deck",
+        "is_archived": False,
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -394,6 +400,7 @@ async def test_get_decks_by_category(user, user_client):
             "category_id": category_id,
             "name": "deck inside category",
             "description": "my deck",
+            "is_archived": False,
             "created_at": is_utc_isoformat_string(),
             "updated_at": is_utc_isoformat_string(),
         }

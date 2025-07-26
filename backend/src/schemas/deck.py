@@ -17,6 +17,7 @@ class DeckOut(BaseModel):
     category_id: Optional[UUID] = None
     name: str
     description: str
+    is_archived: bool
     created_at: datetime
     updated_at: datetime
 
@@ -25,3 +26,4 @@ class DeckUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = ""
     category_id: Optional[UUID] = None
+    is_archived: Optional[bool] = None

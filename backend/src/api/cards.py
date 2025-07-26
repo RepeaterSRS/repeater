@@ -35,6 +35,7 @@ def create_card(
 def get_cards(
     deck_id: UUID = None,
     only_due: bool = False,
+    exclude_archived: bool = False,
     user: User = Depends(get_current_user),
     db_session: Session = Depends(get_db),
 ):
@@ -47,6 +48,9 @@ def get_cards(
 
     if deck_id:
         query = query.filter(Card.deck_id == deck_id)
+
+    if exclude_archived:
+        query = query.filter(Deck.is_archived == False)
 
     if only_due:
         query = query.filter(
