@@ -7,6 +7,7 @@ import { useState } from 'react';
 import CardCreationDialog from '@/components/CardCreationDialog';
 import CardInspectDialog from '@/components/CardInspectDialog';
 import DeckCreationDialog from '@/components/DeckCreationDialog';
+import DeckInspectDialog from '@/components/DeckInspectDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import {
@@ -62,6 +63,23 @@ export default function Decks() {
             setActiveCardIndex((prev) => prev - 1);
         }
     }
+
+    const [deckInspectDialogOpen, setDeckInspectDialogOpen] = useState(false);
+    const [activeDeckIndex, setActiveDeckIndex] = useState(-1);
+    const activeDeck = decks?.data?.[activeDeckIndex];
+
+    function nextDeck() {
+        if (decks?.data && activeDeckIndex < decks.data.length - 1) {
+            setActiveDeckIndex((prev) => prev + 1);
+        }
+    }
+
+    function prevDeck() {
+        if (activeDeckIndex > 0) {
+            setActiveDeckIndex((prev) => prev - 1);
+        }
+    }
+
     return (
         <div className="container mx-auto space-y-8 px-6 py-6">
             <div>
@@ -90,10 +108,14 @@ export default function Decks() {
                         </Card>
                         {decks?.data &&
                             decks.data.length > 0 &&
-                            decks.data.map((deck) => (
+                            decks.data.map((deck, deckIndex) => (
                                 <Card
                                     key={deck.id}
-                                    className="flex aspect-[3/4] flex-col gap-2 p-4"
+                                    className="flex aspect-[3/4] cursor-pointer flex-col gap-2 p-4"
+                                    onClick={() => {
+                                        setActiveDeckIndex(deckIndex);
+                                        setDeckInspectDialogOpen(true);
+                                    }}
                                 >
                                     <CardHeader className="p-0">
                                         <h3 className="text-lg font-bold">
@@ -186,6 +208,32 @@ export default function Decks() {
                         cards.data && activeCardIndex < cards.data.length - 1
                     }
                     hasPrev={activeCardIndex !== 0}
+                />
+            )}
+            {activeDeck && (
+                <DeckInspectDialog
+                    deck={activeDeck}
+                    open={deckInspectDialogOpen}
+                    onOpenChange={setDeckInspectDialogOpen}
+                    onUpdateSuccess={() => {
+                        queryClient.invalidateQueries({
+                            queryKey: ['decks'],
+                        });
+                    }}
+                    onDeleteSuccess={() => {
+                        queryClient.invalidateQueries({
+                            queryKey: ['decks'],
+                        });
+                        queryClient.invalidateQueries({
+                            queryKey: ['cards'],
+                        });
+                    }}
+                    onNext={nextDeck}
+                    onPrev={prevDeck}
+                    hasNext={
+                        decks.data && activeDeckIndex < decks.data.length - 1
+                    }
+                    hasPrev={activeDeckIndex !== 0}
                 />
             )}
         </div>

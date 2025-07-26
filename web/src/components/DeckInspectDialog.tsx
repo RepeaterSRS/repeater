@@ -8,6 +8,7 @@ import { z } from 'zod';
 import Kbd from '@/components/Kbd';
 import { useShortcutActions } from '@/components/ShortcutProvider';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogContent,
@@ -20,11 +21,13 @@ import {
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -41,21 +44,18 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import {
-    getDecksDecksGet,
-    getReviewHistoryReviewsCardIdGet,
-    CardOut,
-    CardUpdate,
-    deleteCardCardsCardIdDelete,
-    updateCardCardsCardIdPatch,
+    DeckOut,
+    DeckUpdate,
+    deleteDeckDecksDeckIdDelete,
+    updateDeckDecksDeckIdPatch,
+    getCategoriesCategoriesGet,
 } from '@/gen';
 import { usePageShortcuts } from '@/hooks/use-shortcuts';
 import { createActions, getShortcut } from '@/lib/shortcuts';
 import { formatDateForDisplay } from '@/lib/utils';
 
-import ReviewHistory from './ReviewHistory';
-
-interface CardInspectDialogProps {
-    card: CardOut;
+interface DeckInspectDialogProps {
+    deck: DeckOut;
     trigger?: React.ReactNode;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -69,8 +69,8 @@ interface CardInspectDialogProps {
     hasPrev?: boolean;
 }
 
-export default function CardInspectDialog({
-    card,
+export default function DeckInspectDialog({
+    deck,
     trigger,
     open,
     onOpenChange,
@@ -82,94 +82,76 @@ export default function CardInspectDialog({
     onPrev,
     hasNext,
     hasPrev,
-}: CardInspectDialogProps) {
-    usePageShortcuts('cards');
+}: DeckInspectDialogProps) {
+    usePageShortcuts('decks');
     const { registerAction, unregisterAction } = useShortcutActions();
 
     const [internalOpen, setInternalOpen] = useState(false);
     const isOpen = open ?? internalOpen;
     const setIsOpen = onOpenChange ?? setInternalOpen;
 
-    const { data: decks } = useQuery({
-        queryKey: ['decks'],
-        queryFn: () => getDecksDecksGet(),
+    const { data: categories } = useQuery({
+        queryKey: ['categories'],
+        queryFn: () => getCategoriesCategoriesGet(),
     });
 
-    const {
-        data: reviewHistory,
-        isLoading: reviewHistoryLoading,
-        isError: reviewHistoryError,
-    } = useQuery({
-        queryKey: ['reviews', card.id],
-        queryFn: () =>
-            getReviewHistoryReviewsCardIdGet({ path: { card_id: card.id } }),
-        staleTime: 5 * 60 * 1000,
-    });
-
-    const deleteCardMutation = useMutation({
+    const deleteDeckMutation = useMutation({
         mutationFn: () =>
-            deleteCardCardsCardIdDelete({ path: { card_id: card.id } }),
+            deleteDeckDecksDeckIdDelete({ path: { deck_id: deck.id } }),
         onSuccess: () => {
-            cardForm.reset();
+            deckForm.reset();
             setIsOpen(false);
             onDeleteSuccess?.();
             // TODO toast?
         },
         onError: (err: unknown) => {
-            const errorMessage = `There was an error deleting card: ${(err as Error)?.message ?? 'no details found'}`;
+            const errorMessage = `There was an error deleting deck: ${(err as Error)?.message ?? 'no details found'}`;
             onDeleteError?.(errorMessage);
         },
     });
 
-    const updateCardMutation = useMutation({
-        mutationFn: (values: z.infer<typeof cardFormSchema>) =>
-            updateCardCardsCardIdPatch({
-                path: { card_id: card.id },
+    const updateDeckMutation = useMutation({
+        mutationFn: (values: z.infer<typeof deckFormSchema>) =>
+            updateDeckDecksDeckIdPatch({
+                path: { deck_id: deck.id },
                 body: values,
             }),
         onSuccess: () => {
-            cardForm.reset({
-                content: card.content,
-                deck_id: card.deck_id,
-            });
+            deckForm.reset({ ...deck });
             setIsOpen(false);
             onUpdateSuccess?.();
             // TODO toast?
         },
         onError: (err: unknown) => {
-            const errorMessage = `There was an error updating card: ${(err as Error)?.message ?? 'no details found'}`;
+            const errorMessage = `There was an error updating deck: ${(err as Error)?.message ?? 'no details found'}`;
             onUpdateError?.(errorMessage);
         },
     });
 
-    const cardFormSchema = z.object({
-        content: z.string().min(1, 'Card must have contents'),
-        deck_id: z.string().min(1, 'Card must have a parent deck'),
-    }) satisfies z.ZodType<CardUpdate>;
+    const deckFormSchema = z.object({
+        name: z.string().min(1, 'Card must have a name'),
+        description: z.string(),
+        category_id: z.string().nullable(),
+        is_archived: z.boolean(),
+    }) satisfies z.ZodType<DeckUpdate>;
 
-    const cardForm = useForm<z.infer<typeof cardFormSchema>>({
-        resolver: zodResolver(cardFormSchema),
-        defaultValues: {
-            content: card.content,
-            deck_id: card.deck_id,
-        },
+    const deckForm = useForm<z.infer<typeof deckFormSchema>>({
+        resolver: zodResolver(deckFormSchema),
+        defaultValues: { ...deck },
     });
 
     useEffect(() => {
-        cardForm.reset({
-            content: card.content,
-            deck_id: card.deck_id,
-        });
-    }, [card, cardForm]);
+        deckForm.reset({ ...deck });
+    }, [deck, deckForm]);
 
     const {
         formState: { isDirty },
-    } = cardForm;
+    } = deckForm;
 
     useEffect(() => {
         const actions = createActions({
-            'card-prev': () => onPrev?.(),
-            'card-next': () => onNext?.(),
+            'deck-prev': () => onPrev?.(),
+            'deck-next': () => onNext?.(),
         });
 
         Object.entries(actions).forEach(([action, handler]) => {
@@ -192,7 +174,7 @@ export default function CardInspectDialog({
             >
                 <DialogHeader>
                     <div className="flex items-center justify-between">
-                        <DialogTitle>Inspect Card</DialogTitle>
+                        <DialogTitle>Inspect Deck</DialogTitle>
                         <div className="flex gap-1">
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -208,12 +190,12 @@ export default function CardInspectDialog({
                                 <TooltipContent>
                                     <div>
                                         {
-                                            getShortcut('card-prev', 'cards')
+                                            getShortcut('deck-prev', 'decks')
                                                 .description
                                         }
                                         <Kbd
-                                            action="card-prev"
-                                            scope="cards"
+                                            action="deck-prev"
+                                            scope="decks"
                                             className="ml-2"
                                         />
                                     </div>
@@ -233,12 +215,12 @@ export default function CardInspectDialog({
                                 <TooltipContent>
                                     <div>
                                         {
-                                            getShortcut('card-next', 'cards')
+                                            getShortcut('deck-next', 'decks')
                                                 .description
                                         }
                                         <Kbd
-                                            action="card-next"
-                                            scope="cards"
+                                            action="deck-next"
+                                            scope="decks"
                                             className="ml-2"
                                         />
                                     </div>
@@ -251,23 +233,44 @@ export default function CardInspectDialog({
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                         {/* Left side - Content */}
                         <div className="lg:col-span-2">
-                            <Form {...cardForm}>
+                            <Form {...deckForm}>
                                 <form
                                     className="flex h-full flex-col gap-4"
-                                    onSubmit={cardForm.handleSubmit((data) =>
-                                        updateCardMutation.mutate(data)
+                                    onSubmit={deckForm.handleSubmit((data) =>
+                                        updateDeckMutation.mutate(data)
                                     )}
                                 >
                                     <FormField
-                                        control={cardForm.control}
-                                        name="content"
+                                        control={deckForm.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="font-semibold">
+                                                    Name
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="Enter deck name"
+                                                        autoFocus={true}
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={deckForm.control}
+                                        name="description"
                                         render={({ field }) => (
                                             <FormItem className="flex-1">
+                                                <FormLabel className="font-semibold">
+                                                    Description
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Textarea
-                                                        className="h-96 resize-none"
-                                                        placeholder={`How are you? --- Ça va?`}
-                                                        autoFocus={true}
+                                                        className="h-64 resize-none"
+                                                        placeholder="Enter deck description"
                                                         {...field}
                                                     />
                                                 </FormControl>
@@ -279,47 +282,59 @@ export default function CardInspectDialog({
                             </Form>
                         </div>
 
-                        {/* Right side - Metadata and History */}
+                        {/* Right side - Metadata and Settings */}
                         <div className="flex flex-col gap-6">
                             {/* Metadata */}
                             <div className="space-y-4">
-                                <Form {...cardForm}>
+                                <Form {...deckForm}>
                                     <FormField
-                                        control={cardForm.control}
-                                        name="deck_id"
+                                        control={deckForm.control}
+                                        name="category_id"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="font-semibold">
-                                                    Deck
+                                                    Category
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Select
-                                                        value={field.value}
-                                                        onValueChange={
-                                                            field.onChange
+                                                        value={
+                                                            field.value ||
+                                                            'none'
+                                                        }
+                                                        onValueChange={(
+                                                            value
+                                                        ) =>
+                                                            field.onChange(
+                                                                value === 'none'
+                                                                    ? null
+                                                                    : value
+                                                            )
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Select a deck" />
+                                                            <SelectValue placeholder="Select a category" />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectGroup>
                                                                 <SelectLabel>
-                                                                    Deck
+                                                                    Categories
                                                                 </SelectLabel>
                                                             </SelectGroup>
-                                                            {decks?.data?.map(
-                                                                (deck) => (
+                                                            <SelectItem value="none">
+                                                                No category
+                                                            </SelectItem>
+                                                            {categories?.data?.map(
+                                                                (category) => (
                                                                     <SelectItem
                                                                         value={
-                                                                            deck.id
+                                                                            category.id
                                                                         }
                                                                         key={
-                                                                            deck.id
+                                                                            category.id
                                                                         }
                                                                     >
                                                                         {
-                                                                            deck.name
+                                                                            category.name
                                                                         }
                                                                     </SelectItem>
                                                                 )
@@ -331,6 +346,32 @@ export default function CardInspectDialog({
                                             </FormItem>
                                         )}
                                     />
+                                    <FormField
+                                        control={deckForm.control}
+                                        name="is_archived"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                                <div className="space-y-0.5">
+                                                    <FormLabel className="text-base font-semibold">
+                                                        Archived
+                                                    </FormLabel>
+                                                    <FormDescription>
+                                                        Archive this deck to
+                                                        remove its cards from
+                                                        review
+                                                    </FormDescription>
+                                                </div>
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={
+                                                            field.onChange
+                                                        }
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
                                 </Form>
 
                                 <div className="text-muted-foreground space-y-1 text-sm">
@@ -338,37 +379,9 @@ export default function CardInspectDialog({
                                         <span className="font-medium">
                                             Created:
                                         </span>{' '}
-                                        {formatDateForDisplay(card.created_at)}
-                                    </p>
-                                    <p>
-                                        <span className="font-medium">
-                                            Next review:
-                                        </span>{' '}
-                                        {formatDateForDisplay(
-                                            card.next_review_date
-                                        )}
+                                        {formatDateForDisplay(deck.created_at)}
                                     </p>
                                 </div>
-                            </div>
-
-                            {/* Review History */}
-                            <div className="min-h-0 flex-1">
-                                <h4 className="mb-2 font-semibold">
-                                    Review History
-                                </h4>
-                                {reviewHistoryLoading && (
-                                    <div>Loading reviews...</div>
-                                )}
-                                {reviewHistoryError && (
-                                    <div>Failed to load reviews</div>
-                                )}
-                                {!reviewHistoryLoading &&
-                                    !reviewHistoryError &&
-                                    reviewHistory?.data && (
-                                        <ReviewHistory
-                                            reviews={reviewHistory.data}
-                                        />
-                                    )}
                             </div>
                         </div>
                     </div>
@@ -377,7 +390,7 @@ export default function CardInspectDialog({
                 <DialogFooter className="mt-6">
                     <Button
                         onClick={() => {
-                            deleteCardMutation.mutate();
+                            deleteDeckMutation.mutate();
                         }}
                         type="button"
                         variant="destructive"
@@ -390,8 +403,8 @@ export default function CardInspectDialog({
                         </Button>
                     </DialogClose>
                     <Button
-                        onClick={cardForm.handleSubmit((data) =>
-                            updateCardMutation.mutate(data)
+                        onClick={deckForm.handleSubmit((data) =>
+                            updateDeckMutation.mutate(data)
                         )}
                         disabled={!isDirty}
                     >
