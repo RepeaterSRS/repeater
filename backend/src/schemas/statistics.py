@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -9,7 +9,7 @@ class DeckStatistics(BaseModel):
     deck_name: str
     retention_rate: float
     total_reviews: int
-    last_studied: datetime
+    last_studied: Optional[datetime] = None
     difficulty_ranking: str
 
 

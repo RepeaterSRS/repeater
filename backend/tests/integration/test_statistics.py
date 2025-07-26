@@ -275,3 +275,69 @@ async def test_get_statistics_deleted_deck(ignore_jwt_expiration, user_client):
         "streak": 1,
         "deck_statistics": [],
     }
+
+
+@freeze_time("2025-07-01")
+async def test_get_deck_statistics(ignore_jwt_expiration, user_client):
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    assert res.status_code == 201
+    deck_1_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/cards", json={"deck_id": deck_1_id, "content": "Test card"}
+    )
+    card_1_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    assert res.status_code == 201
+    deck_2_id = res.json()["id"]
+
+    res = await user_client.post(
+        "/cards", json={"deck_id": deck_2_id, "content": "Test card"}
+    )
+
+    with freeze_time("2025-07-02"):
+        await user_client.post(
+            "/reviews",
+            json={
+                "card_id": card_1_id,
+                "feedback": ReviewFeedback.OK,
+            },
+        )
+        assert res.status_code == 201
+
+        res = await user_client.get(
+            f"/stats/{deck_1_id}",
+        )
+        assert res.json() == {
+            "deck_id": deck_1_id,
+            "deck_name": "deck",
+            "retention_rate": 0,
+            "total_reviews": 1,
+            "last_studied": datetime(2025, 7, 2).isoformat(timespec="seconds") + "Z",
+            "difficulty_ranking": DifficultyRankings.NEW,
+        }
+
+        res = await user_client.get(
+            f"/stats/{deck_2_id}",
+        )
+        assert res.json() == {
+            "deck_id": deck_2_id,
+            "deck_name": "deck",
+            "retention_rate": 0,
+            "total_reviews": 0,
+            "last_studied": None,
+            "difficulty_ranking": DifficultyRankings.NEW,
+        }
