@@ -468,7 +468,6 @@ async def test_get_due_cards_exclude_archived_decks(db_session, user, user_clien
     assert res.status_code == 200
 
     res = await user_client.get("/cards", params={"exclude_archived": True})
-    print(res.json())
     assert res.json() == [
         {
             "id": card_2_id,
