@@ -43,7 +43,7 @@ export default function AdminDashboard() {
         <div className="container mx-auto space-y-8 px-6 py-6">
             <div>
                 <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                <p className="text-neutral-600">
+                <p className="text-muted-foreground">
                     Manage users and system settings
                 </p>
             </div>
@@ -62,9 +62,10 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
+                {/* TODO Add Skeleton */}
                 {isUsersLoading && <p>Loading users...</p>}
                 {isUsersError && (
-                    <p className="text-red-600">{usersError?.message}</p>
+                    <p className="text-destructive">{usersError?.message}</p>
                 )}
 
                 {!isUsersLoading && !isUsersError && usersData?.data && (

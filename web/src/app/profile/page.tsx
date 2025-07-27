@@ -46,7 +46,7 @@ export default function Profile() {
             <div className="space-y-6">
                 <div>
                     <h1 className="text-3xl font-bold">Profile dashboard</h1>
-                    <p className="text-neutral-600">
+                    <p className="text-accent-foreground">
                         View profile information and statistics
                     </p>
                 </div>
