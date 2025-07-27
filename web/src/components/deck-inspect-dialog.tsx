@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import Kbd from '@/components/Kbd';
-import { useShortcutActions } from '@/components/ShortcutProvider';
+import Kbd from '@/components/kbd';
+import { useShortcutActions } from '@/components/shortcut-provider';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -54,7 +54,7 @@ import { usePageShortcuts } from '@/hooks/use-shortcuts';
 import { createActions, getShortcut } from '@/lib/shortcuts';
 import { formatDateForDisplay } from '@/lib/utils';
 
-import DeckStatisticsPanel from './DeckStatisticsPanel';
+import DeckStatisticsPanel from './deck-statistics-panel';
 
 interface DeckInspectDialogProps {
     deck: DeckOut;

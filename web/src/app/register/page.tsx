@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import GoogleLogin from '@/components/GoogleLogin';
+import GoogleLogin from '@/components/google-login';
 import { Button } from '@/components/ui/button';
 import {
     Form,

@@ -3,7 +3,7 @@ import { UserPlus, UserRoundX, User, LogIn, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
-import { ThemeChangerItems } from '@/components/ThemeChangerItems';
+import { ThemeChangerItems } from '@/components/theme-changer-items';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
     DropdownMenu,

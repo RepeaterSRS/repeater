@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import Kbd from '@/components/Kbd';
-import { useShortcutActions } from '@/components/ShortcutProvider';
+import Kbd from '@/components/kbd';
+import { useShortcutActions } from '@/components/shortcut-provider';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -52,7 +52,7 @@ import { usePageShortcuts } from '@/hooks/use-shortcuts';
 import { createActions, getShortcut } from '@/lib/shortcuts';
 import { formatDateForDisplay } from '@/lib/utils';
 
-import ReviewHistory from './ReviewHistory';
+import ReviewHistory from './review-history';
 
 interface CardInspectDialogProps {
     card: CardOut;

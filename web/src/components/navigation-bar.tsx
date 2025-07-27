@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import ThemeChanger from '@/components/ThemeChanger';
+import ThemeChanger from '@/components/theme-changer';
 import { cn } from '@/lib/utils';
 
 export default function NavigationBar({

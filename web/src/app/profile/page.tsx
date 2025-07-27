@@ -3,9 +3,9 @@
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 
-import { ActivityHeatmap, HeatmapData } from '@/components/ActivityHeatmap';
-import DeckStatisticsPanel from '@/components/DeckStatisticsPanel';
-import MetricCard from '@/components/MetricCard';
+import { ActivityHeatmap, HeatmapData } from '@/components/activity-heatmap';
+import DeckStatisticsPanel from '@/components/deck-statistics-panel';
+import MetricCard from '@/components/metric-card';
 import { Card, CardContent } from '@/components/ui/card';
 import { getUserStatisticsStatsGet } from '@/gen';
 import { useMe } from '@/hooks/use-me';

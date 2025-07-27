@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
 
-import { ShortcutProvider } from '@/components/ShortcutProvider';
+import { ShortcutProvider } from '@/components/shortcut-provider';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import '@/lib/api-client';
 

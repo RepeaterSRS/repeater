@@ -1,6 +1,6 @@
 import { useHotkeys } from 'react-hotkeys-hook';
 
-import { useShortcutActions } from '@/components/ShortcutProvider';
+import { useShortcutActions } from '@/components/shortcut-provider';
 import { getShortcutsForScope } from '@/lib/shortcuts';
 
 export const usePageShortcuts = (scope: string, enabled = true) => {

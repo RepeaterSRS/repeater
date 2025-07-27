@@ -4,10 +4,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
-import CardCreationDialog from '@/components/CardCreationDialog';
-import CardInspectDialog from '@/components/CardInspectDialog';
-import DeckCreationDialog from '@/components/DeckCreationDialog';
-import DeckInspectDialog from '@/components/DeckInspectDialog';
+import CardCreationDialog from '@/components/card-creation-dialog';
+import CardInspectDialog from '@/components/card-inspect-dialog';
+import DeckCreationDialog from '@/components/deck-creation-dialog';
+import DeckInspectDialog from '@/components/deck-inspect-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import {
