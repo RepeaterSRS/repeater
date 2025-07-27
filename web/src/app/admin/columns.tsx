@@ -14,7 +14,7 @@ export const columns: ColumnDef<UserOut>[] = [
             return email ? (
                 email
             ) : (
-                <div className="text-neutral-600 italic">
+                <div className="text-muted-foreground italic">
                     No email registered
                 </div>
             );
