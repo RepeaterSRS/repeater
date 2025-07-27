@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { DataTable } from '@/components/table/DataTable';
+import { DataTable } from '@/components/table/data-table';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { getUsersAdminUsersGet } from '@/gen';

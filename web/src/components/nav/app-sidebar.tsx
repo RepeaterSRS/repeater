@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
-import CardCreationDialog from '@/components/CardCreationDialog';
-import DeckCreationDialog from '@/components/DeckCreationDialog';
-import { NavProfile } from '@/components/nav/NavProfile';
+import CardCreationDialog from '@/components/card-creation-dialog';
+import DeckCreationDialog from '@/components/deck-creation-dialog';
+import { NavProfile } from '@/components/nav/nav-profile';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,

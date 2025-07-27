@@ -4,8 +4,8 @@ import { PublicEnvScript } from 'next-runtime-env';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import './globals.css';
-import { AppSidebar } from '@/components/nav/AppSidebar';
-import NavigationBar from '@/components/NavigationBar';
+import { AppSidebar } from '@/components/nav/app-sidebar';
+import NavigationBar from '@/components/navigation-bar';
 import { SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
 

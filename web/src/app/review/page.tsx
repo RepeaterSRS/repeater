@@ -4,8 +4,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-import Kbd from '@/components/Kbd';
-import { useShortcutActions } from '@/components/ShortcutProvider';
+import Kbd from '@/components/kbd';
+import { useShortcutActions } from '@/components/shortcut-provider';
 import {
     Breadcrumb,
     BreadcrumbList,
