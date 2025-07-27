@@ -37,7 +37,7 @@ export default function Decks() {
         error: cardsError,
     } = useQuery({
         queryKey: ['cards'],
-        queryFn: () => getCardsCardsGet(),
+        queryFn: () => getCardsCardsGet({ query: { exclude_archived: true } }),
     });
 
     function prefetchCardHistory(cardId: string) {

@@ -41,7 +41,11 @@ export default function Review() {
         queryKey: ['cards', 'due'],
         queryFn: () =>
             getCardsCardsGet({
-                query: { only_due: true, exclude_archived: true },
+                query: {
+                    only_due: true,
+                    exclude_paused: true,
+                    exclude_archived: true,
+                },
             }),
     });
 

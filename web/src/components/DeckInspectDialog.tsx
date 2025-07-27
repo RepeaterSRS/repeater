@@ -21,7 +21,6 @@ import {
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -146,6 +145,7 @@ export default function DeckInspectDialog({
         name: z.string().min(1, 'Card must have a name'),
         description: z.string(),
         category_id: z.string().nullable(),
+        is_paused: z.boolean(),
         is_archived: z.boolean(),
     }) satisfies z.ZodType<DeckUpdate>;
 
@@ -362,6 +362,27 @@ export default function DeckInspectDialog({
                                     />
                                     <FormField
                                         control={deckForm.control}
+                                        name="is_paused"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-center justify-between">
+                                                <div className="space-y-0.5">
+                                                    <FormLabel className="text-base font-semibold">
+                                                        Paused
+                                                    </FormLabel>
+                                                </div>
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={
+                                                            field.onChange
+                                                        }
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={deckForm.control}
                                         name="is_archived"
                                         render={({ field }) => (
                                             <FormItem className="flex flex-row items-center justify-between">
@@ -369,11 +390,6 @@ export default function DeckInspectDialog({
                                                     <FormLabel className="text-base font-semibold">
                                                         Archived
                                                     </FormLabel>
-                                                    <FormDescription>
-                                                        Archive this deck to
-                                                        remove its cards from
-                                                        review
-                                                    </FormDescription>
                                                 </div>
                                                 <FormControl>
                                                     <Checkbox

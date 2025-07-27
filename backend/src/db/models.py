@@ -123,7 +123,8 @@ class Deck(Base, BaseMixin):
     )
     name = mapped_column(String, nullable=False)
     description = mapped_column(String)
-    is_archived = mapped_column(Boolean, default=False)
+    is_paused = mapped_column(Boolean, default=False, nullable=False)
+    is_archived = mapped_column(Boolean, default=False, nullable=False)
 
     user = relationship("User", back_populates="decks")
     category = relationship("Category", back_populates="decks")
