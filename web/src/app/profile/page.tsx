@@ -7,8 +7,8 @@ import { ActivityHeatmap, HeatmapData } from '@/components/ActivityHeatmap';
 import DeckStatisticsPanel from '@/components/DeckStatisticsPanel';
 import MetricCard from '@/components/MetricCard';
 import { Card, CardContent } from '@/components/ui/card';
-import { useMe } from '@/hooks/use-me';
 import { getUserStatisticsStatsGet } from '@/gen';
+import { useMe } from '@/hooks/use-me';
 
 export default function Profile() {
     const {
