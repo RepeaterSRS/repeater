@@ -121,7 +121,7 @@ export default function Review() {
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
                                     <BreadcrumbLink
-                                        href={`/decks?deck_id=${activeCard.deck_id}`}
+                                        href={`/decks/${activeCard.deck_id}`}
                                     >
                                         {activeCard.deck_name}
                                     </BreadcrumbLink>

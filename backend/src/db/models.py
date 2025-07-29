@@ -202,3 +202,17 @@ class Category(Base, BaseMixin):
     @property
     def is_root(self):
         return self.parent_id is None
+
+    @property
+    def path(self):
+        if self.is_root:
+            return self.name
+
+        path_parts = []
+        current = self
+
+        while current is not None:
+            path_parts.append(current.name)
+            current = current.parent
+
+        return "/".join(reversed(path_parts))

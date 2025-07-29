@@ -20,6 +20,7 @@ class CategoryOut(BaseModel):
     description: Optional[str] = None
     parent_id: Optional[UUID] = None
     is_root: bool
+    path: str
     created_at: datetime
     updated_at: datetime
 

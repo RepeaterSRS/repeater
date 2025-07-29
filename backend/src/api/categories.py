@@ -171,3 +171,17 @@ def delete_category(
     except Exception:
         db_session.rollback()
         raise
+
+
+@router.get("/{category_id}", response_model=CategoryOut)
+def get_category(
+    category_id: UUID,
+    user: User = Depends(get_current_user),
+    db_session: Session = Depends(get_db),
+):
+    try:
+        category = get_user_category(category_id, user.id, db_session)
+    except ValueError as err:
+        raise HTTPException(status_code=404, detail=str(err))
+
+    return category
