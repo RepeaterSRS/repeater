@@ -206,7 +206,7 @@ class Category(Base, BaseMixin):
     @property
     def path(self):
         if self.is_root:
-            return self.name
+            return [self.name]
 
         path_parts = []
         current = self
@@ -215,4 +215,4 @@ class Category(Base, BaseMixin):
             path_parts.append(current.name)
             current = current.parent
 
-        return "/".join(reversed(path_parts))
+        return list(reversed(path_parts))

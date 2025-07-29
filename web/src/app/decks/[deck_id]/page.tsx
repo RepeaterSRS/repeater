@@ -201,7 +201,7 @@ export default function DeckPage({
                         ) : (
                             category?.data?.name && (
                                 <p className="text-muted-foreground text-sm">
-                                    Category: {category.data.path}
+                                    Category: {category.data.path.join(' / ')}
                                 </p>
                             )
                         )}
