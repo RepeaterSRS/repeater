@@ -1108,7 +1108,9 @@ components:
           type: boolean
           title: Is Root
         path:
-          type: string
+          items:
+            type: string
+          type: array
           title: Path
         created_at:
           type: string
