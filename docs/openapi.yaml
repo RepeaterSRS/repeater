@@ -67,53 +67,20 @@ paths:
       responses:
         '204':
           description: Successful Response
-  /decks:
-    post:
-      tags:
-      - decks
-      summary: Create Deck
-      operationId: create_deck_decks_post
-      parameters:
-      - name: access_token
-        in: cookie
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Access Token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DeckCreate'
-      responses:
-        '201':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeckOut'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+  /decks/{deck_id}:
     get:
       tags:
       - decks
-      summary: Get Decks
-      operationId: get_decks_decks_get
+      summary: Get Deck
+      operationId: get_deck_decks__deck_id__get
       parameters:
-      - name: category_id
-        in: query
-        required: false
+      - name: deck_id
+        in: path
+        required: true
         schema:
           type: string
           format: uuid
-          title: Category Id
+          title: Deck Id
       - name: access_token
         in: cookie
         required: false
@@ -128,17 +95,13 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DeckOut'
-                title: Response Get Decks Decks Get
+                $ref: '#/components/schemas/DeckOut'
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /decks/{deck_id}:
     patch:
       tags:
       - decks
@@ -206,6 +169,77 @@ paths:
           content:
             application/json:
               schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /decks:
+    post:
+      tags:
+      - decks
+      summary: Create Deck
+      operationId: create_deck_decks_post
+      parameters:
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeckCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - decks
+      summary: Get Decks
+      operationId: get_decks_decks_get
+      parameters:
+      - name: category_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeckOut'
+                title: Response Get Decks Decks Get
         '422':
           description: Validation Error
           content:
@@ -807,6 +841,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - categories
+      summary: Get Category
+      operationId: get_category_categories__category_id__get
+      parameters:
+      - name: category_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Category Id
+      - name: access_token
+        in: cookie
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Access Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /healthz:
     get:
       tags:
@@ -1039,6 +1107,9 @@ components:
         is_root:
           type: boolean
           title: Is Root
+        path:
+          type: string
+          title: Path
         created_at:
           type: string
           format: date-time
@@ -1053,6 +1124,7 @@ components:
       - user_id
       - name
       - is_root
+      - path
       - created_at
       - updated_at
       title: CategoryOut

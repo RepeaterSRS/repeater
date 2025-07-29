@@ -30,6 +30,35 @@ async def test_create_deck_returns_deck(db_session, user, user_client):
     assert deck is not None
 
 
+async def test_get_deck(user, user_client):
+    res = await user_client.get(f"/decks/{uuid.uuid4()}")
+    assert res.status_code == 404
+
+    res = await user_client.post(
+        "/decks",
+        json={
+            "name": "deck",
+            "description": "my deck",
+        },
+    )
+    assert res.status_code == 201
+    deck_id = res.json()["id"]
+
+    res = await user_client.get(f"/decks/{deck_id}")
+    assert res.status_code == 200
+    assert res.json() == {
+        "id": deck_id,
+        "user_id": str(user.id),
+        "category_id": None,
+        "name": "deck",
+        "description": "my deck",
+        "is_paused": False,
+        "is_archived": False,
+        "created_at": is_utc_isoformat_string(),
+        "updated_at": is_utc_isoformat_string(),
+    }
+
+
 async def test_get_decks(user, user_client):
     res = await user_client.get("/decks")
     assert res.status_code == 200

@@ -37,6 +37,7 @@ import { createCardCardsPost, CardCreate, getDecksDecksGet } from '@/gen';
 interface CardCreationDialogProps {
     trigger?: React.ReactNode;
     open?: boolean;
+    defaultDeckId?: string;
     onOpenChange?: (open: boolean) => void;
     onSuccess?: () => void;
     onError?: (error: string) => void;
@@ -45,6 +46,7 @@ interface CardCreationDialogProps {
 export default function CardCreationDialog({
     trigger,
     open,
+    defaultDeckId,
     onOpenChange,
     onSuccess,
     onError,
@@ -67,7 +69,7 @@ export default function CardCreationDialog({
         resolver: zodResolver(cardFormSchema),
         defaultValues: {
             content: '',
-            deck_id: '',
+            deck_id: defaultDeckId || '',
         },
     });
 

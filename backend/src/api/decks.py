@@ -22,6 +22,20 @@ from src.util import get_user_category, get_user_deck
 router = APIRouter(prefix="/decks", tags=["decks"])
 
 
+@router.get("/{deck_id}", response_model=DeckOut)
+def get_deck(
+    deck_id: UUID = None,
+    user: User = Depends(get_current_user),
+    db_session: Session = Depends(get_db),
+):
+    try:
+        deck = get_user_deck(deck_id, user.id, db_session)
+    except ValueError as err:
+        raise HTTPException(status_code=404, detail=str(err))
+
+    return deck
+
+
 @router.post("", response_model=DeckOut, status_code=201)
 def create_deck(
     deck_req: DeckCreate,

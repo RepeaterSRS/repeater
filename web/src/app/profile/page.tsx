@@ -4,11 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 
 import { ActivityHeatmap, HeatmapData } from '@/components/activity-heatmap';
-import DeckStatisticsPanel from '@/components/deck-statistics-panel';
 import MetricCard from '@/components/metric-card';
 import { Card, CardContent } from '@/components/ui/card';
 import { getUserStatisticsStatsGet } from '@/gen';
 import { useMe } from '@/hooks/use-me';
+import { formatDateForDisplay } from '@/lib/utils';
 
 export default function Profile() {
     const {
@@ -129,23 +129,58 @@ export default function Profile() {
                                     {stats.data.retention_rate}
                                 </p>
                             </MetricCard>
-                            {stats.data.deck_statistics.map((deck_stat) => (
+                            {stats.data.deck_statistics.map((deckStat) => (
                                 <MetricCard
                                     title={
                                         <Link
-                                            href={`test${deck_stat.deck_id}`}
+                                            href={`test${deckStat.deck_id}`}
                                             className="underline"
                                         >
-                                            {deck_stat.deck_name}
+                                            {deckStat.deck_name}
                                         </Link>
                                     }
                                     description="Some explanation"
-                                    key={deck_stat.deck_id}
+                                    key={deckStat.deck_id}
                                     className="max-md:col-span-2"
                                 >
-                                    <DeckStatisticsPanel
-                                        deckStats={deck_stat}
-                                    />
+                                    <div className="grid grid-cols-2 gap-y-4">
+                                        <div>
+                                            <p className="text-foreground text-sm font-medium">
+                                                Last studied
+                                            </p>
+                                            <p className="text-muted-foreground text-sm">
+                                                {deckStat.last_studied
+                                                    ? formatDateForDisplay(
+                                                          deckStat.last_studied
+                                                      )
+                                                    : 'No data'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-foreground text-sm font-medium">
+                                                Retention Rate
+                                            </p>
+                                            <p className="text-muted-foreground text-sm">
+                                                {deckStat.retention_rate}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-foreground text-sm font-medium">
+                                                Total Reviews
+                                            </p>
+                                            <p className="text-muted-foreground text-sm">
+                                                {deckStat.total_reviews}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-foreground text-sm font-medium">
+                                                Difficulty
+                                            </p>
+                                            <p className="text-muted-foreground text-sm">
+                                                {deckStat.difficulty_ranking}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </MetricCard>
                             ))}
                         </div>

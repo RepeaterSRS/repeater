@@ -31,6 +31,7 @@ async def test_create_root_category(user_client):
         "description": None,
         "parent_id": None,
         "is_root": True,
+        "path": "category",
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -50,6 +51,29 @@ async def test_create_subcategory(user_client):
         "description": None,
         "parent_id": category_id,
         "is_root": False,
+        "path": "parent/child",
+        "created_at": is_utc_isoformat_string(),
+        "updated_at": is_utc_isoformat_string(),
+    }
+
+
+async def test_get_category(user_client):
+    res = await user_client.get(f"/categories/{uuid4()}")
+    assert res.status_code == 404
+
+    res = await create_category(user_client, name="parent")
+    assert res.status_code == 201
+    parent_id = res.json()["id"]
+
+    res = await user_client.get(f"/categories/{parent_id}")
+    assert res.json() == {
+        "id": parent_id,
+        "user_id": is_uuid_string(),
+        "name": "parent",
+        "description": None,
+        "parent_id": None,
+        "is_root": True,
+        "path": "parent",
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -73,6 +97,7 @@ async def test_get_categories(user_client):
             "description": None,
             "parent_id": parent_id,
             "is_root": False,
+            "path": "parent/child",
             "created_at": is_utc_isoformat_string(),
             "updated_at": is_utc_isoformat_string(),
         },
@@ -83,6 +108,7 @@ async def test_get_categories(user_client):
             "description": None,
             "parent_id": None,
             "is_root": True,
+            "path": "parent",
             "created_at": is_utc_isoformat_string(),
             "updated_at": is_utc_isoformat_string(),
         },
@@ -158,6 +184,7 @@ async def test_move_category_to_new_parent(user_client):
         "description": None,
         "parent_id": parent1_id,
         "is_root": False,
+        "path": "parent 1/child",
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -174,6 +201,7 @@ async def test_move_category_to_new_parent(user_client):
         "description": None,
         "parent_id": parent2_id,
         "is_root": False,
+        "path": "parent 2/child",
         "created_at": is_utc_isoformat_string(),
         "updated_at": is_utc_isoformat_string(),
     }
@@ -277,6 +305,7 @@ async def test_user_can_only_see_own_categories(user_client, admin_client):
             "description": None,
             "parent_id": None,
             "is_root": True,
+            "path": "user",
             "created_at": is_utc_isoformat_string(),
             "updated_at": is_utc_isoformat_string(),
         },
