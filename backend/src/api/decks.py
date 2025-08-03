@@ -134,7 +134,20 @@ async def import_deck(
         raise HTTPException(status_code=400, detail="Unknown format")
 
 
-@router.get("/{deck_id}/export")
+@router.get(
+    "/{deck_id}/export",
+    response_class=StreamingResponse,
+    responses={
+        200: {
+            "content": {
+                "application/octet-stream": {
+                    "schema": {"type": "string", "format": "binary"}
+                }
+            },
+            "description": "A downloadable JSON file",
+        }
+    },
+)
 def export_deck(
     deck_id: UUID,
     user: User = Depends(get_current_user),
@@ -148,12 +161,18 @@ def export_deck(
     except ValueError as err:
         raise HTTPException(status_code=404, detail=str(err))
 
+    safe_filename = "".join(
+        c for c in deck.name if c.isalnum() or c in (" ", "-", "_")
+    ).rstrip()
+    safe_filename = safe_filename or "deck"
+
     deck_data = deck_to_deck_data(deck)
     deck_bytes = export(deck_data)
     return StreamingResponse(
         BytesIO(deck_bytes),
-        media_type="application/octet-stream",
+        media_type="application/json",
         headers={
-            "Content-Disposition": f'attachment; filename="deck_{deck.name}.json"'
+            "Content-Disposition": f'attachment; filename="{safe_filename}.json"',
+            "Access-Control-Expose-Headers": "Content-Disposition",
         },
     )
