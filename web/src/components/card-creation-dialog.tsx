@@ -1,9 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { MarkdownPlugin } from '@platejs/markdown';
 import { useQuery } from '@tanstack/react-query';
+import { createPlateEditor } from 'platejs/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { EditorField } from '@/components/editor-field';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -31,7 +34,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { createCardCardsPost, CardCreate, getDecksDecksGet } from '@/gen';
 
 interface CardCreationDialogProps {
@@ -61,25 +63,50 @@ export default function CardCreationDialog({
     });
 
     const cardFormSchema = z.object({
-        content: z.string().min(1, 'Card must have contents'),
+        content: z
+            .array(z.any())
+            .min(1)
+            .refine(
+                // TODO: improve validation, current solution is fragile
+                (content) => {
+                    return content.some((node) => {
+                        if (node.children) {
+                            return node.children.some(
+                                (child: { text: string }) =>
+                                    child.text?.trim() !== ''
+                            );
+                        }
+                        return false;
+                    });
+                },
+                { message: 'Content is required' }
+            ),
         deck_id: z.string().min(1, 'Card must have a parent deck'),
-    }) satisfies z.ZodType<CardCreate>;
+    });
 
     const cardForm = useForm<z.infer<typeof cardFormSchema>>({
         resolver: zodResolver(cardFormSchema),
         defaultValues: {
-            content: '',
+            content: [{ type: 'p', children: [{ text: '' }] }],
             deck_id: defaultDeckId || '',
         },
     });
 
     async function onCardCreate(values: z.infer<typeof cardFormSchema>) {
         try {
+            const editor = createPlateEditor({
+                plugins: [MarkdownPlugin],
+                value: values.content,
+            });
+
+            const markdownContent = editor.api.markdown.serialize();
+
+            const payload: CardCreate = {
+                content: markdownContent,
+                deck_id: values.deck_id,
+            };
             await createCardCardsPost({
-                body: {
-                    content: values.content,
-                    deck_id: values.deck_id,
-                },
+                body: payload,
             });
             cardForm.reset();
             setIsOpen(false);
@@ -148,12 +175,9 @@ export default function CardCreationDialog({
                                         Content
                                     </FormLabel>
                                     <FormControl>
-                                        <Textarea
-                                            className="h-32"
-                                            placeholder={`How are you?
----
-Ça va?`}
+                                        <EditorField
                                             {...field}
+                                            placeholder="Enter card content..."
                                         />
                                     </FormControl>
                                     <FormMessage />
