@@ -310,10 +310,12 @@ paths:
           title: Access Token
       responses:
         '200':
-          description: Successful Response
+          description: A downloadable JSON file
           content:
-            application/json:
-              schema: {}
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
         '422':
           description: Validation Error
           content:

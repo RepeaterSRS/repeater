@@ -215,7 +215,7 @@ async def test_export_deck(db_session, user_client):
 
     res = await user_client.get(f"/decks/{deck_id}/export")
     assert res.status_code == 200
-    assert res.headers["content-type"] == "application/octet-stream"
+    assert res.headers["content-type"] == "application/json"
 
     json_str = res.content.decode("utf-8")
     json_obj = json.loads(json_str)
