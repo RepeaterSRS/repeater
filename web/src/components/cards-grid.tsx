@@ -1,8 +1,10 @@
 import { Plus } from 'lucide-react';
+import Markdown from 'react-markdown';
 
 import CardCreationDialog from '@/components/card-creation-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CardOut } from '@/gen';
 
@@ -78,7 +80,14 @@ export default function CardsGrid({
                             </p>
                         </CardHeader>
                         <CardContent className="flex-1 overflow-hidden p-0">
-                            <div className="line-clamp-4">{card.content}</div>
+                            {card.content.split('---').map((content, index) => (
+                                <>
+                                    {index !== 0 && (
+                                        <Separator className="my-1" />
+                                    )}
+                                    <Markdown key={index}>{content}</Markdown>
+                                </>
+                            ))}
                         </CardContent>
                     </Card>
                 ))}
