@@ -62,25 +62,25 @@ export default function CardCreationDialog({
         queryFn: () => getDecksDecksGet(),
     });
 
+    // TODO: improve validation. Current solution is fragile, uses any
+    // and only checks specific a subset of potential node types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function validateCardContent(content: any[]) {
+        return content.some((node) => {
+            if (node.children) {
+                return node.children.some(
+                    (child: { text: string }) => child.text?.trim() !== ''
+                );
+            }
+            return false;
+        });
+    }
+
     const cardFormSchema = z.object({
         content: z
             .array(z.any())
             .min(1)
-            .refine(
-                // TODO: improve validation, current solution is fragile
-                (content) => {
-                    return content.some((node) => {
-                        if (node.children) {
-                            return node.children.some(
-                                (child: { text: string }) =>
-                                    child.text?.trim() !== ''
-                            );
-                        }
-                        return false;
-                    });
-                },
-                { message: 'Content is required' }
-            ),
+            .refine(validateCardContent, { message: 'Content is required' }),
         deck_id: z.string().min(1, 'Card must have a parent deck'),
     });
 
@@ -178,6 +178,7 @@ export default function CardCreationDialog({
                                         <EditorField
                                             {...field}
                                             placeholder="Enter card content..."
+                                            className="h-36"
                                         />
                                     </FormControl>
                                     <FormMessage />
