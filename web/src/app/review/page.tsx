@@ -168,7 +168,7 @@ export default function Review() {
                                     {index !== 0 && (
                                         <Separator className="my-2" />
                                     )}
-                                    <Markdown>{content}</Markdown>
+                                    <Markdown key={index}>{content}</Markdown>
                                 </>
                             ))}
                         </CardContent>
