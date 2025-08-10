@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { EditorField } from '@/components/editor-field';
 import Kbd from '@/components/kbd';
 import { useShortcutActions } from '@/components/shortcut-provider';
 import { Button } from '@/components/ui/button';
@@ -34,7 +35,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Tooltip,
     TooltipContent,
@@ -49,6 +49,11 @@ import {
     updateCardCardsCardIdPatch,
 } from '@/gen';
 import { usePageShortcuts } from '@/hooks/use-shortcuts';
+import {
+    validateCardContent,
+    deserializeMarkdown,
+    serializeToMarkdown,
+} from '@/lib/editor-utils';
 import { createActions, getShortcut } from '@/lib/shortcuts';
 import { formatDateForDisplay } from '@/lib/utils';
 
@@ -122,14 +127,21 @@ export default function CardInspectDialog({
     });
 
     const updateCardMutation = useMutation({
-        mutationFn: (values: z.infer<typeof cardFormSchema>) =>
-            updateCardCardsCardIdPatch({
+        mutationFn: (values: z.infer<typeof cardFormSchema>) => {
+            const markdownContent = serializeToMarkdown(values.content);
+
+            const payload: CardUpdate = {
+                content: markdownContent,
+                deck_id: values.deck_id,
+            };
+            return updateCardCardsCardIdPatch({
                 path: { card_id: card.id },
-                body: values,
-            }),
+                body: payload,
+            });
+        },
         onSuccess: () => {
             cardForm.reset({
-                content: card.content,
+                content: deserializeMarkdown(card.content),
                 deck_id: card.deck_id,
             });
             setIsOpen(false);
@@ -143,21 +155,24 @@ export default function CardInspectDialog({
     });
 
     const cardFormSchema = z.object({
-        content: z.string().min(1, 'Card must have contents'),
+        content: z
+            .array(z.any())
+            .min(1)
+            .refine(validateCardContent, { message: 'Content is required' }),
         deck_id: z.string().min(1, 'Card must have a parent deck'),
-    }) satisfies z.ZodType<CardUpdate>;
+    });
 
     const cardForm = useForm<z.infer<typeof cardFormSchema>>({
         resolver: zodResolver(cardFormSchema),
         defaultValues: {
-            content: card.content,
+            content: deserializeMarkdown(card.content),
             deck_id: card.deck_id,
         },
     });
 
     useEffect(() => {
         cardForm.reset({
-            content: card.content,
+            content: deserializeMarkdown(card.content),
             deck_id: card.deck_id,
         });
     }, [card, cardForm]);
@@ -264,9 +279,8 @@ export default function CardInspectDialog({
                                         render={({ field }) => (
                                             <FormItem className="flex-1">
                                                 <FormControl>
-                                                    <Textarea
+                                                    <EditorField
                                                         className="h-96 resize-none"
-                                                        placeholder={`How are you? --- Ça va?`}
                                                         autoFocus={true}
                                                         {...field}
                                                     />

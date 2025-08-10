@@ -1,7 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MarkdownPlugin } from '@platejs/markdown';
 import { useQuery } from '@tanstack/react-query';
-import { createPlateEditor } from 'platejs/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -35,6 +33,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { createCardCardsPost, CardCreate, getDecksDecksGet } from '@/gen';
+import { validateCardContent, serializeToMarkdown } from '@/lib/editor-utils';
 
 interface CardCreationDialogProps {
     trigger?: React.ReactNode;
@@ -62,20 +61,6 @@ export default function CardCreationDialog({
         queryFn: () => getDecksDecksGet(),
     });
 
-    // TODO: improve validation. Current solution is fragile, uses any
-    // and only checks specific a subset of potential node types
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function validateCardContent(content: any[]) {
-        return content.some((node) => {
-            if (node.children) {
-                return node.children.some(
-                    (child: { text: string }) => child.text?.trim() !== ''
-                );
-            }
-            return false;
-        });
-    }
-
     const cardFormSchema = z.object({
         content: z
             .array(z.any())
@@ -94,12 +79,7 @@ export default function CardCreationDialog({
 
     async function onCardCreate(values: z.infer<typeof cardFormSchema>) {
         try {
-            const editor = createPlateEditor({
-                plugins: [MarkdownPlugin],
-                value: values.content,
-            });
-
-            const markdownContent = editor.api.markdown.serialize();
+            const markdownContent = serializeToMarkdown(values.content);
 
             const payload: CardCreate = {
                 content: markdownContent,
