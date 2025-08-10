@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import Markdown from 'react-markdown';
 
 import Kbd from '@/components/kbd';
@@ -69,30 +69,41 @@ export default function Review() {
             queryClient.invalidateQueries({
                 queryKey: ['stats'],
             });
+            setSidesVisible(1);
         },
         // TODO: implement error handling
     });
 
     const [activeCardIndex, setActiveCardIndex] = useState(0);
+    const [sidesVisible, setSidesVisible] = useState(1);
     const activeCard = dueCards?.data?.[activeCardIndex];
-    const activeCardSides = activeCard?.content.split('---');
+    const activeCardSides = activeCard?.content.split('---') || [];
 
     const nextCard = () => {
         if (dueCards?.data && activeCardIndex < dueCards.data.length - 1) {
             setActiveCardIndex((prev) => prev + 1);
+            setSidesVisible(1);
         }
     };
 
     const prevCard = () => {
         if (activeCardIndex > 0) {
             setActiveCardIndex((prev) => prev - 1);
+            setSidesVisible(1);
         }
     };
+
+    const revealNext = useCallback(() => {
+        if (sidesVisible < activeCardSides.length) {
+            setSidesVisible((prev) => prev + 1);
+        }
+    }, [activeCardSides.length, sidesVisible]);
 
     useEffect(() => {
         const actions = createActions({
             'card-forgot': () => reviewCard.mutate('forgot'),
             'card-ok': () => reviewCard.mutate('ok'),
+            'reveal-next': revealNext,
         });
 
         Object.entries(actions).forEach(([action, handler]) => {
@@ -104,7 +115,7 @@ export default function Review() {
                 unregisterAction(action);
             });
         };
-    }, [registerAction, unregisterAction, reviewCard]);
+    }, [registerAction, unregisterAction, reviewCard, revealNext]);
 
     return (
         <div className="flex h-[calc(100dvh-4rem)] w-full flex-col items-center justify-between gap-4 py-4">
@@ -163,65 +174,98 @@ export default function Review() {
                                     )}
                                 </p>
                             )}
-                            {activeCardSides?.map((content, index) => (
-                                <div key={index}>
-                                    {index !== 0 && (
-                                        <Separator className="my-2" />
-                                    )}
-                                    <Markdown>{content}</Markdown>
-                                </div>
-                            ))}
+                            {activeCardSides?.map(
+                                (content, index) =>
+                                    index < sidesVisible && (
+                                        <div key={index}>
+                                            {index !== 0 && (
+                                                <Separator className="my-2" />
+                                            )}
+                                            <Markdown>{content}</Markdown>
+                                        </div>
+                                    )
+                            )}
                         </CardContent>
                         <CardFooter className="flex flex-row justify-center gap-4"></CardFooter>
                     </Card>
-                    <div className="flex gap-4">
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="secondary"
-                                    className="h-12 w-30"
-                                    onClick={() => reviewCard.mutate('forgot')}
-                                >
-                                    Forgor
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <div>
-                                    {
-                                        getShortcut('card-forgot', 'review')
-                                            .description
-                                    }
-                                    <Kbd
-                                        action="card-forgot"
-                                        scope="review"
-                                        className="ml-2"
-                                    />
-                                </div>
-                            </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    className="h-12 w-30"
-                                    onClick={() => reviewCard.mutate('ok')}
-                                >
-                                    I got it :)
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <div>
-                                    {
-                                        getShortcut('card-ok', 'review')
-                                            .description
-                                    }
-                                    <Kbd
-                                        action="card-ok"
-                                        scope="review"
-                                        className="ml-2"
-                                    />
-                                </div>
-                            </TooltipContent>
-                        </Tooltip>
+                    <div className="flex flex-col items-center gap-4">
+                        {sidesVisible < activeCardSides.length && (
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        onClick={revealNext}
+                                        className="h-10"
+                                    >
+                                        Reveal next side
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <div>
+                                        {
+                                            getShortcut('reveal-next', 'review')
+                                                .description
+                                        }
+                                        <Kbd
+                                            action="reveal-next"
+                                            scope="review"
+                                            className="ml-2"
+                                        />
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        )}
+                        <div className="flex gap-4">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="secondary"
+                                        className="h-12 w-30"
+                                        onClick={() =>
+                                            reviewCard.mutate('forgot')
+                                        }
+                                    >
+                                        Forgor
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <div>
+                                        {
+                                            getShortcut('card-forgot', 'review')
+                                                .description
+                                        }
+                                        <Kbd
+                                            action="card-forgot"
+                                            scope="review"
+                                            className="ml-2"
+                                        />
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        className="h-12 w-30"
+                                        onClick={() => reviewCard.mutate('ok')}
+                                    >
+                                        I got it :)
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <div>
+                                        {
+                                            getShortcut('card-ok', 'review')
+                                                .description
+                                        }
+                                        <Kbd
+                                            action="card-ok"
+                                            scope="review"
+                                            className="ml-2"
+                                        />
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
                     </div>
                 </>
             )}

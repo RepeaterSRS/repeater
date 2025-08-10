@@ -19,6 +19,12 @@ export const SHORTCUT_CONFIG: ShortcutConfig[] = [
         scope: 'review',
     },
     {
+        key: ' ',
+        action: 'reveal-next',
+        description: 'Reveal next side',
+        scope: 'review',
+    },
+    {
         key: 'ArrowLeft',
         action: 'card-prev',
         description: 'Go to the previous card',
