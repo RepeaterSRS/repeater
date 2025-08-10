@@ -234,7 +234,7 @@ export default function DeckPage({
     const deckForm = useForm<z.infer<typeof deckUpdateSchema>>({
         resolver: zodResolver(deckUpdateSchema),
         defaultValues: {
-            name: deck?.data?.name || '',
+            name: deck?.data?.name,
             description: deck?.data?.description || '',
             category_id: deck?.data?.category_id || '',
         },
