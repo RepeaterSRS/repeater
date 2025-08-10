@@ -164,12 +164,12 @@ export default function Review() {
                                 </p>
                             )}
                             {activeCardSides?.map((content, index) => (
-                                <>
+                                <div key={index}>
                                     {index !== 0 && (
                                         <Separator className="my-2" />
                                     )}
-                                    <Markdown key={index}>{content}</Markdown>
-                                </>
+                                    <Markdown>{content}</Markdown>
+                                </div>
                             ))}
                         </CardContent>
                         <CardFooter className="flex flex-row justify-center gap-4"></CardFooter>
