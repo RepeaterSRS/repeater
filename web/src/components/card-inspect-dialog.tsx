@@ -3,6 +3,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { EditorField } from '@/components/editor-field';
@@ -118,7 +119,7 @@ export default function CardInspectDialog({
             cardForm.reset();
             setIsOpen(false);
             onDeleteSuccess?.();
-            // TODO toast?
+            toast.success('Deleted card');
         },
         onError: (err: unknown) => {
             const errorMessage = `There was an error deleting card: ${(err as Error)?.message ?? 'no details found'}`;
