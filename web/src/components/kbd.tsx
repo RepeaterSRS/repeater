@@ -12,7 +12,10 @@ export default function Kbd({ action, scope, className = '' }: KbdProps) {
     if (!shortcutKey) return null;
 
     function formatKey(key: string) {
-        return key.replace('ctrl+', '⌃').replace('escape', 'Esc');
+        return key
+            .replace('ctrl+', '⌃')
+            .replace('escape', 'Esc')
+            .replace(' ', 'Space');
     }
 
     return (
