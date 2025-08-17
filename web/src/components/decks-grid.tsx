@@ -65,17 +65,18 @@ export default function DecksGrid({
                 decks.map((deck) => (
                     <Card
                         key={deck.id}
-                        className="flex aspect-[3/4] cursor-pointer flex-col gap-2 p-4 transition-shadow hover:shadow-md"
+                        className="flex aspect-[3/4] cursor-pointer flex-col gap-2 px-4 py-0 transition-shadow hover:shadow-md"
                         onMouseEnter={() => onDeckMouseEnter?.(deck.id)}
                         onClick={() => onDeckClick(deck.id)}
                     >
-                        <CardHeader className="p-0">
+                        <CardHeader className="p-0 mt-4">
                             <h3 className="text-lg font-bold">{deck.name}</h3>
                         </CardHeader>
-                        <CardContent className="p-0">
+                        <CardContent className="flex-1 relative overflow-hidden p-0">
                             <p className="text-accent-foreground text-sm">
                                 {deck.description}
                             </p>
+                            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-card to-transparent pointer-events-none" />
                         </CardContent>
                     </Card>
                 ))}
