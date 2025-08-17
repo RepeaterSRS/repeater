@@ -74,12 +74,12 @@ export default function CardsGrid({
                         onMouseEnter={() => onCardMouseEnter(card.id)}
                         onClick={() => onCardClick(cardIndex)}
                     >
-                        <CardHeader className="p-0 mt-4">
+                        <CardHeader className="mt-4 p-0">
                             <p className="text-accent-foreground text-xs">
                                 {card.deck_name}
                             </p>
                         </CardHeader>
-                        <CardContent className="flex-1 overflow-hidden p-0 relative">
+                        <CardContent className="relative flex-1 overflow-hidden p-0">
                             {card.content.split('---').map((content, index) => (
                                 <>
                                     {index !== 0 && (
@@ -88,7 +88,7 @@ export default function CardsGrid({
                                     <Markdown key={index}>{content}</Markdown>
                                 </>
                             ))}
-                            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-card to-transparent pointer-events-none" />
+                            <div className="from-card pointer-events-none absolute right-0 bottom-0 left-0 h-8 bg-gradient-to-t to-transparent" />
                         </CardContent>
                     </Card>
                 ))}

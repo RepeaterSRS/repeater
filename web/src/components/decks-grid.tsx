@@ -69,14 +69,14 @@ export default function DecksGrid({
                         onMouseEnter={() => onDeckMouseEnter?.(deck.id)}
                         onClick={() => onDeckClick(deck.id)}
                     >
-                        <CardHeader className="p-0 mt-4">
+                        <CardHeader className="mt-4 p-0">
                             <h3 className="text-lg font-bold">{deck.name}</h3>
                         </CardHeader>
-                        <CardContent className="flex-1 relative overflow-hidden p-0">
+                        <CardContent className="relative flex-1 overflow-hidden p-0">
                             <p className="text-accent-foreground text-sm">
                                 {deck.description}
                             </p>
-                            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-card to-transparent pointer-events-none" />
+                            <div className="from-card pointer-events-none absolute right-0 bottom-0 left-0 h-8 bg-gradient-to-t to-transparent" />
                         </CardContent>
                     </Card>
                 ))}
