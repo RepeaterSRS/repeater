@@ -70,16 +70,16 @@ export default function CardsGrid({
                 cards.map((card, cardIndex) => (
                     <Card
                         key={card.id}
-                        className="flex aspect-[3/4] cursor-pointer flex-col gap-1 p-4 transition-shadow hover:shadow-md"
+                        className="flex aspect-[3/4] cursor-pointer flex-col gap-1 px-4 py-0 transition-shadow hover:shadow-md"
                         onMouseEnter={() => onCardMouseEnter(card.id)}
                         onClick={() => onCardClick(cardIndex)}
                     >
-                        <CardHeader className="p-0">
+                        <CardHeader className="p-0 mt-4">
                             <p className="text-accent-foreground text-xs">
                                 {card.deck_name}
                             </p>
                         </CardHeader>
-                        <CardContent className="flex-1 overflow-hidden p-0">
+                        <CardContent className="flex-1 overflow-hidden p-0 relative">
                             {card.content.split('---').map((content, index) => (
                                 <>
                                     {index !== 0 && (
@@ -88,6 +88,7 @@ export default function CardsGrid({
                                     <Markdown key={index}>{content}</Markdown>
                                 </>
                             ))}
+                            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-card to-transparent pointer-events-none" />
                         </CardContent>
                     </Card>
                 ))}
