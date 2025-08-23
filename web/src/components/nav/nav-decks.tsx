@@ -39,6 +39,7 @@ export function NavDecks() {
                     <SidebarGroupAction
                         title="Create deck"
                         className="cursor-pointer"
+                        hidden={isError}
                     >
                         <Plus /> <span className="sr-only">Create deck</span>
                     </SidebarGroupAction>
