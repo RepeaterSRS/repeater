@@ -1,9 +1,9 @@
+import { FlatCompat } from '@eslint/eslintrc';
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
+import perfectionist from 'eslint-plugin-perfectionist';
+import prettier from 'eslint-plugin-prettier/recommended';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
-import perfectionist from 'eslint-plugin-perfectionist';
-import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
-import prettier from 'eslint-plugin-prettier/recommended';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

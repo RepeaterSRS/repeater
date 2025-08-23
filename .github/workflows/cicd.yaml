@@ -5,7 +5,7 @@ on:
     branches:
       - main
   pull_request:
-    branches: 
+    branches:
       - main
 
 env:
@@ -15,7 +15,7 @@ env:
 jobs:
   backend-test:
     runs-on: ubuntu-latest
-    
+
     services:
       db:
         image: postgres:17
@@ -30,30 +30,30 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
-      
+          python-version: "3.11"
+
       - name: Install UV
         uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
-      
+
       - name: Install dependencies
         run: uv sync
         working-directory: ./backend
-      
+
       - name: Run backend formatting check
         run: |
           uvx ruff check --select I .
           uvx ruff format --check .
         working-directory: ./backend
-      
+
       - name: Run tests
         run: uv run pytest
         env:
@@ -66,7 +66,7 @@ jobs:
 
   frontend-check:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
 
@@ -87,11 +87,10 @@ jobs:
       - name: Generate frontend client
         run: pnpm run openapi-ts
         working-directory: ./web
-      
+
       - name: Run frontend formatting check
         run: |
           pnpm run lint
-          pnpm exec prettier --check .
         working-directory: ./web
 
       - name: Upload generated client
@@ -109,7 +108,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
