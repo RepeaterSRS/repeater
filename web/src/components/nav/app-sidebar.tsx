@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import CardCreationDialog from '@/components/card-creation-dialog';
 import DeckCreationDialog from '@/components/deck-creation-dialog';
+import { NavDecks } from '@/components/nav/nav-decks';
 import { NavProfile } from '@/components/nav/nav-profile';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,7 +29,6 @@ import { useMe } from '@/hooks/use-me';
 
 const pages = [
     { href: '/review', label: 'Review' },
-    { href: '/decks', label: 'Decks' },
     { href: '/admin', label: 'Admin', roles: ['admin'] },
 ];
 
@@ -108,6 +108,7 @@ export function AppSidebar() {
                         ))}
                     </SidebarMenu>
                 </SidebarGroup>
+                <NavDecks />
             </SidebarContent>
             <SidebarFooter>
                 <NavProfile />
