@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import { FlatCompat } from '@eslint/eslintrc';
 import perfectionist from 'eslint-plugin-perfectionist';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
+import prettier from 'eslint-plugin-prettier/recommended';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -16,6 +17,7 @@ const eslintConfig = [
         ignores: ['src/gen/**/*'],
     },
     ...compat.extends('next/core-web-vitals', 'next/typescript'),
+    prettier,
     {
         plugins: {
             perfectionist,
