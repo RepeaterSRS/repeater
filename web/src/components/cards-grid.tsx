@@ -81,12 +81,12 @@ export default function CardsGrid({
                         </CardHeader>
                         <CardContent className="relative flex-1 overflow-hidden p-0">
                             {card.content.split('---').map((content, index) => (
-                                <>
+                                <div key={index}>
                                     {index !== 0 && (
                                         <Separator className="my-1" />
                                     )}
-                                    <Markdown key={index}>{content}</Markdown>
-                                </>
+                                    <Markdown>{content}</Markdown>
+                                </div>
                             ))}
                             <div className="from-card pointer-events-none absolute right-0 bottom-0 left-0 h-8 bg-gradient-to-t to-transparent" />
                         </CardContent>
