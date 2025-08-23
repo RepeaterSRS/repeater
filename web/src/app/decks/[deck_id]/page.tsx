@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { env } from 'next-runtime-env';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -73,6 +74,7 @@ export default function DeckPage({
 }) {
     const { deck_id } = use(params);
     const queryClient = useQueryClient();
+    const router = useRouter();
     const apiUrl = env('NEXT_PUBLIC_API_URL');
     const [isEditing, setIsEditing] = useState(false);
 
@@ -221,7 +223,7 @@ export default function DeckPage({
             deleteDeckDecksDeckIdDelete({ path: { deck_id: deck.id } }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['decks'] });
-            window.location.href = '/decks';
+            router.push('/decks');
         },
     });
 

@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -20,6 +21,7 @@ import { loginAuthLoginPost, UserLogin } from '@/gen';
 
 export default function Login() {
     const queryClient = useQueryClient();
+    const router = useRouter();
     const apiURL = process.env.NEXT_PUBLIC_API_URL ?? '';
     const googleOAuthURI = '/oauth/login';
 
@@ -44,7 +46,7 @@ export default function Login() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['me'] });
             loginForm.reset();
-            window.location.href = '/review';
+            router.push('/review');
         },
     });
 

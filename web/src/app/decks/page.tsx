@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import CardInspectDialog from '@/components/card-inspect-dialog';
@@ -14,6 +15,7 @@ import {
 
 export default function Decks() {
     const queryClient = useQueryClient();
+    const router = useRouter();
 
     const {
         data: decks,
@@ -70,7 +72,7 @@ export default function Decks() {
                     isError={isDecksError}
                     error={decksError}
                     onDeckClick={(deckId) => {
-                        window.location.href = `/decks/${deckId}`;
+                        router.push(`/decks/${deckId}`);
                     }}
                     onDeckCreated={() => {
                         queryClient.invalidateQueries({ queryKey: ['decks'] });
