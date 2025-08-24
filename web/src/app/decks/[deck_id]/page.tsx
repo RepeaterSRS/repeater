@@ -238,7 +238,7 @@ export default function DeckPage({
         defaultValues: {
             name: deck?.data?.name,
             description: deck?.data?.description || '',
-            category_id: deck?.data?.category_id || '',
+            category_id: deck?.data?.category_id || undefined,
         },
     });
 
@@ -247,7 +247,7 @@ export default function DeckPage({
             deckForm.reset({
                 name: deck.data.name,
                 description: deck.data.description || '',
-                category_id: deck.data.category_id || '',
+                category_id: deck.data.category_id || undefined,
             });
         }
     }, [deck?.data, deckForm]);
