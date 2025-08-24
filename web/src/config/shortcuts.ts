@@ -19,7 +19,7 @@ export const SHORTCUT_CONFIG: ShortcutConfig[] = [
         scope: 'review',
     },
     {
-        key: ' ',
+        key: 'space',
         action: 'reveal-next',
         description: 'Reveal next side',
         scope: 'review',
