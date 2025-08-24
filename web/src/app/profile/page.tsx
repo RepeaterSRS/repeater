@@ -133,7 +133,7 @@ export default function Profile() {
                                 <MetricCard
                                     title={
                                         <Link
-                                            href={`test${deckStat.deck_id}`}
+                                            href={`/decks/${deckStat.deck_id}`}
                                             className="underline"
                                         >
                                             {deckStat.deck_name}
